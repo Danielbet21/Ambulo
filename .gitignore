@@ -49,5 +49,5 @@ app.*.map.json
 .vscode/tasks.json
 .vscode/
 
-update_branch_shai.py
+
 update_branch.py
