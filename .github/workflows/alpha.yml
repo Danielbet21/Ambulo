@@ -1,13 +1,13 @@
-name: Main tests
+name: Alpha tests
 
-# Trigger the workflow on push or pull request to the main branch
+# Trigger the workflow on push or pull request to the alpha branch
 on:
   push:
     branches:
-      - main
+      - alpha
   pull_request:
     branches:
-      - main
+      - alpha
 
 jobs:
   build:

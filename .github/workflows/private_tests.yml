@@ -1,13 +1,15 @@
-name: Main tests
+name: Private Tests
 
 # Trigger the workflow on push or pull request to the main branch
 on:
   push:
     branches:
-      - main
+      - shai
+      - daniel
   pull_request:
     branches:
-      - main
+      - shai
+      - daniel
 
 jobs:
   build:
@@ -36,11 +38,3 @@ jobs:
       # Step 5: Run all tests
       - run: flutter test
         name: Run All Tests
-
-      # Step 6: Build APK
-      - run: flutter build apk --release
-        name: Build APK
-
-      # Step 7: Build Web
-      - run: flutter build web --release
-        name: Build Web
