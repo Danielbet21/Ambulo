@@ -15,9 +15,15 @@ def update_shai(): # sync the shai branch with alpha branch
     run_command("git push origin shai")
     
 def add_commit_push(addArgument, commitMessage):# commit the changes in shai branch
-    run_command("git add "+addArgument)
-    run_command('git commit -m "{}"'.format(commitMessage))
-    run_command("git push origin shai")
+    run_command("git checkout shai")
+    run_command("git status")
+    print("Are you sure you want to add the following files?")
+    option = input("Do you want to continue? (y/n): ")
+    if (option == "Y" or option == "y" or option == "yes" or option == "YES"):
+        print("Adding the files")
+        run_command("git add "+addArgument)
+        run_command('git commit -m "{}"'.format(commitMessage))
+        run_command("git push origin shai")
 
 def sync_alpha_shai_with_main():
     run_command("git checkout shai")
@@ -28,6 +34,20 @@ def sync_alpha_shai_with_main():
     run_command("git pull origin main") # Pulls main into alpha
     run_command("git push origin alpha")
     run_command("git checkout shai")
+
+def pull_from_shai():
+    # Get the current branch
+    result = subprocess.run("git branch --show-current", shell=True, capture_output=True, text=True)
+    current_branch = result.stdout.strip()
+    print(f"Current branch: {current_branch}")
+    
+    # If not on shai branch, checkout shai first
+    if current_branch != "shai":
+        run_command("git checkout shai")
+    
+    # Pull from remote shai branch
+    run_command("git pull origin shai")
+    print("Successfully pulled latest changes from shai branch")
 
 
 def validate(num):
@@ -42,6 +62,9 @@ def validate(num):
     elif (num == 3):
         print("Stage 3:")
         print("Sync shai branch & alpha branch with main branch")
+    elif (num == 4):
+        print("Stage 4:")
+        print("Pull the latest changes from shai branch")
     else:
         print("Invalid option")
     
@@ -88,9 +111,11 @@ if __name__ == '__main__':
             sys.exit(1)
 
         add_commit_push(add_argument, commit_message)
+        
+    elif task == "pull_from_shai":
+        validate(4)
+        pull_from_shai()
 
     else:
         print("Invalid option.")
         sys.exit(1)
-
-
