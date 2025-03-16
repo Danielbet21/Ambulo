@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'shai_page.dart';
+import 'daniel_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,6 +35,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: {
+        '/shai': (context) => const ShaiPage(),
+        '/daniel': (context) => const DanielPage(),
+      },
     );
   }
 }
@@ -112,6 +118,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/shai');
+              },
+              child: const Text('Shai'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/daniel');
+              },
+              child: const Text('Daniel'),
             ),
           ],
         ),
