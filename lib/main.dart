@@ -1,3 +1,4 @@
+import 'package:ambulo/data/styles/conatant.dart';
 import 'package:flutter/material.dart';
 import 'shai_page.dart';
 import 'daniel_page.dart';
@@ -125,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Shai'),
             ),
+            AppConstants.kSizedBoxMedium,
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/daniel');

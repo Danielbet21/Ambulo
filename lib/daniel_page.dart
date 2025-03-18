@@ -1,4 +1,7 @@
+import 'package:ambulo/views/pages/login_page.dart';
 import 'package:flutter/material.dart';
+
+
 
 class DanielPage extends StatelessWidget {
   const DanielPage({super.key});
@@ -9,10 +12,8 @@ class DanielPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Daniel Page'),
       ),
-      body: const Center(
-        child: Text('This is Daniel\'s development page.'),
-      ),
+      // The body is now the login content
+      body: const LoginPage(),
     );
   }
 }
-

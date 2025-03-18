@@ -38,4 +38,11 @@ class AppConstants {
   static const EdgeInsets kPaddingSmall = EdgeInsets.all(8.0);
   static const EdgeInsets kPaddingMedium = EdgeInsets.all(16.0);
   static const EdgeInsets kPaddingLarge = EdgeInsets.all(24.0);
+
+  // sized box
+  static const SizedBox kSizedBoxSmall = SizedBox(height: kSpacingSmall);
+  static const SizedBox kSizedBoxMedium = SizedBox(height: kSpacingMedium);
+  static const SizedBox kSizedBoxLarge = SizedBox(height: kSpacingLarge);
+  static const SizedBox kSizedBoxXL = SizedBox(height: kSpacingXL);
+  static const SizedBox kSizedBoxXXL = SizedBox(height: kSpacingXXL);
 }
