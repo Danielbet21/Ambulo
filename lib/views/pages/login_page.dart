@@ -9,6 +9,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _obscureText = true; 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -35,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             // White box decoration
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.white.withOpacity(0.8),
               borderRadius: BorderRadius.circular(8.0),
               boxShadow: const [
                 BoxShadow(
@@ -49,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
                     Text(
-                      'Welcome Back!\n Login for your next Adventure.',
+                      'Welcome back!\n Login for your next adventure.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
@@ -64,7 +65,11 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
+                    labelStyle: TextStyle(),
                     border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -72,26 +77,53 @@ class _LoginPageState extends State<LoginPage> {
                 // Password field
                 TextField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
+                    ),
+                    suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
                   ),
-                  obscureText: true,
+                  ),
+                  obscureText: _obscureText,
+                
+                  
+                
                 ),
                 AppConstants.kSizedBoxMedium,
                 ElevatedButton(
-                  //color of the button
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 5, 91, 35),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(
+                        const Color.fromARGB(255, 5, 91, 35),
+                      ),
+                      // Change text color based on state
+                      foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                        (Set<WidgetState> states) {
+                          if (states.contains(WidgetState.hovered)) {
+                            return Colors.white;
+                          }
+                          return const Color.fromARGB(255, 17, 233, 92); // default
+                        },
+                      ),
+                    ),
+                    onPressed: () {
+                      final email = _emailController.text;
+                      final password = _passwordController.text;
+                      debugPrint('Email: $email, Password: $password');
+                    },
+                    child: const Text('Login'),
                   ),
-                  onPressed: () {
-                    // TODO: Add your login logic
-                    final email = _emailController.text;
-                    final password = _passwordController.text;
-                    debugPrint('Email: $email, Password: $password');
-                  },
-                  child: const Text('Login', style: TextStyle(color: Color.fromARGB(255, 17, 233, 92),)),
-                ),
                 AppConstants.kSizedBoxMedium,
 
                 // Placeholder for 3rd-party comment or sign-in
@@ -121,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                 Text("Area for the 3rd-party sign-in buttons"),
                 const SizedBox(height: 24),
                 // Login button
-                Text("Don't have an account? Sign up"),
+                Text("Don't have an account?"),
                 Text("Sign Up", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
                 Text("Forgot password?"),
                 Text("Reset password", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
