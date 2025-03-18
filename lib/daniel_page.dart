@@ -9,9 +9,6 @@ class DanielPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daniel Page'),
-      ),
       // The body is now the login content
       body: const LoginPage(),
     );
