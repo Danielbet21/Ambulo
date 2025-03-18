@@ -45,4 +45,11 @@ class AppConstants {
   static const SizedBox kSizedBoxLarge = SizedBox(height: kSpacingLarge);
   static const SizedBox kSizedBoxXL = SizedBox(height: kSpacingXL);
   static const SizedBox kSizedBoxXXL = SizedBox(height: kSpacingXXL);
+
+  // Font sizes
+  static const double kFontSizeSmall = 12.0;
+  static const double kFontSizeMedium = 16.0;
+  static const double kFontSizeLarge = 20.0;
+  static const double kFontSizeXL = 24.0;
+  static const double kFontSizeXXL = 32.0;
 }
