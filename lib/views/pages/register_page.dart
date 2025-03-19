@@ -1,34 +1,33 @@
 import 'package:ambulo/data/styles/conatant.dart';
-import 'package:ambulo/views/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  bool _obscureText = true; 
+class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController(); 
 
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return Scaffold(
-      // Make the entire body a background image
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/background/tree_login.png'),
+            image: AssetImage('assets/background/road_to_the_mountains_register.jpg'),
             fit: BoxFit.cover, // Adjust how the image fills the screen
           ),
         ),
-        // Center the login box
-        child: Center(
+       child: Center(
           child: Container(
             padding: const EdgeInsets.all(24.0),
             // Limit the max width so it doesn’t stretch too wide
@@ -51,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
                     Text(
-                      'Good to see you again!\n Lets look at your next adventure.',
+                      'Welcome to Ambulo!\n Let\'s get you started.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
@@ -62,6 +61,38 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   AppConstants.kSizedBoxLarge,
                 // Email field
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _firstNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
+                          labelStyle: TextStyle(),
+                          border: OutlineInputBorder(),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextField(
+                        controller: _lastNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
+                          labelStyle: TextStyle(),
+                          border: OutlineInputBorder(),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                AppConstants.kSizedBoxMedium,
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
@@ -83,25 +114,9 @@ class _LoginPageState extends State<LoginPage> {
                     border: const OutlineInputBorder(),
                     focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
-                    ),
-                    suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
+                    )
                   ),
                   ),
-                  obscureText: _obscureText,
-                
-                  
-                
-                ),
                 AppConstants.kSizedBoxMedium,
                 ElevatedButton(
                     style: ButtonStyle(
@@ -123,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                       final password = _passwordController.text;
                       debugPrint('Email: $email, Password: $password');
                     },
-                    child: const Text('Login'),
+                    child: const Text('Sign Up'),
                   ),
                 AppConstants.kSizedBoxMedium,
 
@@ -154,27 +169,6 @@ class _LoginPageState extends State<LoginPage> {
                 Text("Area for the 3rd-party sign-in buttons"),
                 const SizedBox(height: 24),
                 // Login button
-                Text("Don't have an account?"),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RegisterPage()),
-                    );
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.blue,
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    "Sign Up",
-                    style: TextStyle(decoration: TextDecoration.underline),
-                  ),
-                ),
-                Text("Forgot password?"),
-                Text("Reset password", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
               ],
             ),
           ),
