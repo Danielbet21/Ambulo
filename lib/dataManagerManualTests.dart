@@ -1,10 +1,9 @@
-import 'dart:typed_data';
+// ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Needed for Clipboard
-import 'package:flutter_application_3/main.dart';
-import 'package:flutter_application_3/services/data_manager.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:ambulo/main.dart';
+import 'package:ambulo/data/database/data_manager.dart';
 
 class DataManagerManualTests extends StatefulWidget {
   const DataManagerManualTests({super.key});
