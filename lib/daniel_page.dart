@@ -1,4 +1,8 @@
+import 'package:ambulo/views/pages/intro_page.dart';
+// import 'package:ambulo/views/pages/register_page.dart';
 import 'package:flutter/material.dart';
+
+
 
 class DanielPage extends StatelessWidget {
   const DanielPage({super.key});
@@ -6,13 +10,7 @@ class DanielPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daniel Page'),
-      ),
-      body: const Center(
-        child: Text('This is Daniel\'s development page.'),
-      ),
+      body: IntroPage(),
     );
   }
 }
-

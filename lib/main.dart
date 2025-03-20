@@ -1,8 +1,20 @@
+import 'package:ambulo/data/styles/conatant.dart';
 import 'package:flutter/material.dart';
 import 'shai_page.dart';
 import 'daniel_page.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  // Ensure that the app is initialized before running
+  WidgetsFlutterBinding.ensureInitialized();
+  // Set preferred orientations
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+  // Set UI overlay style for full immersive mode
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.immersive,  // Full immersive mode - hides both status bar and navigation bar
+  );
   runApp(const MyApp());
 }
 
@@ -125,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Shai'),
             ),
+            AppConstants.kSizedBoxMedium,
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/daniel');
