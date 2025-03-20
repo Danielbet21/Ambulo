@@ -23,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/background/road_to_the_mountains_register.jpg'),
+            image: AssetImage('assets/background/roads/road_to_the_mountains_register.jpg'),
             fit: BoxFit.cover, // Adjust how the image fills the screen
           ),
         ),
