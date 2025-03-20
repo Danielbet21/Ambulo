@@ -1,4 +1,5 @@
 import 'package:ambulo/data/styles/conatant.dart';
+import 'package:ambulo/views/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -141,7 +142,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: const Text('Sign Up'),
                   ),
                 AppConstants.kSizedBoxMedium,
-
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                      );
+                    }, 
+                    child: const Text('Already have an account? Login here')
+                  ), 
                 // Placeholder for 3rd-party comment or sign-in
                 Row(
                   children: [
@@ -166,9 +175,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                 ),
+                AppConstants.kSizedBoxMedium,
                 Text("Area for the 3rd-party sign-in buttons"),
                 const SizedBox(height: 24),
-                // Login button
               ],
             ),
           ),
