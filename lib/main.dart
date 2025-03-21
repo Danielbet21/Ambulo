@@ -13,7 +13,8 @@ void main() {
   ]);
   // Set UI overlay style for full immersive mode
   SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.immersive,  // Full immersive mode - hides both status bar and navigation bar
+    SystemUiMode.immersiveSticky,  // Full immersive mode with a swipe gesture
+    //  to show the system bars
   );
   runApp(const MyApp());
 }

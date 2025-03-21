@@ -1,4 +1,5 @@
 import 'package:ambulo/views/pages/register_page.dart';
+import 'package:ambulo/views/widgets/final_slide.dart';
 import 'package:ambulo/views/widgets/slide_four.dart';
 import 'package:ambulo/views/widgets/slide_one.dart';
 import 'package:ambulo/views/widgets/slide_three.dart';
@@ -14,7 +15,7 @@ class IntroPage extends StatefulWidget {
 class _IntroPageState extends State<IntroPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final int _numPages = 4;
+  final int _numPages = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,8 @@ class _IntroPageState extends State<IntroPage> {
               SlideThree(),
               // Slide 4
               SlideFour(),
+              // Slide 5
+              FinalSlide(),
             ],
           ),
           // Dots indicator and Next/Done button
@@ -96,25 +99,6 @@ class _IntroPageState extends State<IntroPage> {
                 child: _currentPage == _numPages - 1 ? Text("Let's go!") : Icon(Icons.arrow_forward),
               ),
             ),
-            if (!showButtons && _currentPage == _numPages - 1)
-            Positioned(
-              bottom: 10,
-              right: 20,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Adjust radius as needed
-                  ),
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  ),
-                onPressed: () {
-                  Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => RegisterPage()));
-                },
-                child: Text("Let's go!"),
-              ),
-            ), 
         ],
       ),
     );

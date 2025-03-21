@@ -11,25 +11,13 @@ class SlideFour extends BaseSlide {
 class _SlideFourState extends BaseSlideState<SlideFour> {
   @override
   AssetImage getBackgroundImage() {
-    return const AssetImage('assets/background/luke_skywalker_retrite.jpg');
+    return const AssetImage('assets/background/sunset_mountian.jpg');
   }
 
   @override
   Widget buildContent(BuildContext context) {
   return Stack(
-      children: [
-        // Main content
-        Container(
-          padding: EdgeInsets.all(32),
-          // add a background image
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/background/sunset_mountian.jpg'),
-              fit: BoxFit.cover, // Adjust how the image fills the screen
-            ),
-          ),
-        ),
-        
+      children: [        
         // Rectangle at bottom between buttons
         Positioned(
           bottom: 50,
