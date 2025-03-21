@@ -12,7 +12,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  // final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController(); 
 
@@ -37,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             // White box decoration
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 50),
+              color: Colors.white.withOpacity(0.7),
               borderRadius: BorderRadius.circular(8.0),
               boxShadow: const [
                 BoxShadow(

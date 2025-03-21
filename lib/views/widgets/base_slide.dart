@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 abstract class BaseSlide extends StatefulWidget {
-  const BaseSlide({Key? key}) : super(key: key);
+  final double sizeOfFont;
+  const BaseSlide({Key? key, required this.sizeOfFont}) : super(key: key);
 }
 
 abstract class BaseSlideState<T extends BaseSlide> extends State<T> {

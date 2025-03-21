@@ -4,7 +4,9 @@ import 'dart:ui'; // For ImageFilter
 import 'base_slide.dart';
 
 class FinalSlide extends BaseSlide {
-  const FinalSlide({Key? key}) : super(key: key);
+  const FinalSlide({Key? key,
+    required double sizeOfFont
+    }) : super(key: key, sizeOfFont: sizeOfFont);
 
   @override
   State<FinalSlide> createState() => _FinalSlideState();
@@ -50,7 +52,7 @@ class _FinalSlideState extends BaseSlideState<FinalSlide> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Color.fromARGB(255, 117, 201, 117),
                   foregroundColor: Colors.white,
                 ),
                 onPressed: () {

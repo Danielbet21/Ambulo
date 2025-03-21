@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'base_slide.dart';
 
 class SlideFour extends BaseSlide {
-  const SlideFour({Key? key}) : super(key: key);
+  const SlideFour({Key? key,
+    required double sizeOfFont
+    }) : super(key: key, sizeOfFont: sizeOfFont);
 
   @override
   State<SlideFour> createState() => _SlideFourState();
@@ -37,7 +39,7 @@ class _SlideFourState extends BaseSlideState<SlideFour> {
                   'Tricky part alerts',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width * 0.06,
+                    fontSize: widget.sizeOfFont,
                     fontFamily: 'arial',
                     fontWeight: FontWeight.bold,
                   ),

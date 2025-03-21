@@ -55,7 +55,9 @@ import 'package:flutter/material.dart';
 import 'base_slide.dart';
 
 class SlideThree extends BaseSlide {
-  const SlideThree({Key? key}) : super(key: key);
+  const SlideThree({Key? key,
+    required double sizeOfFont
+    }) : super(key: key, sizeOfFont: sizeOfFont);
 
   @override
   State<SlideThree> createState() => _SlideThreeState();
@@ -89,8 +91,7 @@ class _SlideThreeState extends BaseSlideState<SlideThree> {
                 'Demograph Alerts',
                  textAlign: TextAlign.center,
                 style: TextStyle(
-                    // fontSize: 24,
-                    fontSize: MediaQuery.of(context).size.width * 0.06,
+                    fontSize: widget.sizeOfFont,
                     fontFamily: 'arial',
                     fontWeight: FontWeight.bold,),
                 
