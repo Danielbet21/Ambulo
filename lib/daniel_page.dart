@@ -1,6 +1,6 @@
-import 'package:ambulo/views/pages/intro_page.dart';
-// import 'package:ambulo/views/pages/register_page.dart';
+import 'package:ambulo/views/pages/profile_mobile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' as kIsWeb;
 
 
 
@@ -10,7 +10,7 @@ class DanielPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IntroPage(),
+      body: ProfileMobilePage(),
     );
   }
 }
