@@ -1,23 +1,24 @@
-// import 'package:ambulo/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthenticationInterface {
-  // Basic Email Authentication
-  Future<void> signInWithEmail(String email, String password);
-  Future<void> createUserWithEmail(String email, String password);
-  
-  // Social Authentication
-  Future<void> signInWithGoogle();
-  Future<void> signInWithFacebook();
-  Future<void> signInWithTwitter();
-  Future<void> signInWithApple();
+  // Get the currently signed-in user
+  User? getCurrentUser();
 
-  // Password and Verification Methods
-  Future<void> sendPasswordResetEmail(String email);
-  Future<void> sendEmailVerification();
-  Future<void> updatePassword(String newPassword);
+  // Sign in with email and password
+  Future<UserCredential?> signInWithEmailAndPassword(String email, String password);
 
-  // Sign Out and User State
+  // Register a new user with email and password
+  Future<UserCredential?> createUserWithEmailAndPassword(String email, String password);
+
+  // Sign out the current user
   Future<void> signOut();
-  // Future<User?> getCurrentUser(); // Assuming a User model is defined in your project.
-  // Stream<User?> get onAuthStateChanged;
+
+  // Delete the current user
+  Future<void> deleteUser();
+
+  // Create an admin user
+  Future<UserCredential?> createAdminUser(String email, String password);
+
+  // Check if the current user is an admin
+  bool isAdmin();
 }

@@ -1,20 +1,39 @@
-import 'package:ambulo/data/styles/conatant.dart';
+import 'package:ambulo/data/database/data_manager.dart';
+import 'package:ambulo/data/database/firebase_services.dart';
+import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'shai_page.dart';
 import 'daniel_page.dart';
+import 'dataManagerManualTests.dart'; // Import the new page
 import 'package:flutter/services.dart';
 
-void main() {
-  // Ensure that the app is initialized before running
+// Global DataManager instance for easy access throughout the app
+late DataManager dataManager;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Set preferred orientations
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  // Set UI overlay style for full immersive mode
   SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.immersiveSticky,  // Full immersive mode with a swipe gesture
-    //  to show the system bars
+    SystemUiMode.immersiveSticky,
+  );
+
+  try {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+    print("✔️ Firebase initialized successfully.");
+  } catch (e) {
+    print("❌ Firebase initialization failed: $e");
+  }
+
+  // Initialize services
+  final firebaseServices = FirebaseFirestoreServices();
+  dataManager = DataManager(
+    authService: firebaseServices,
+    databaseService: firebaseServices,
   );
   runApp(const MyApp());
 }
@@ -22,7 +41,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,6 +54,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/shai': (context) => const ShaiPage(),
         '/daniel': (context) => const DanielPage(),
+        '/dataManagerManualTests': (context) => const DataManagerManualTests(),
       },
     );
   }
@@ -43,6 +62,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
   final String title;
 
   @override
@@ -62,9 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        
         title: Text(widget.title),
       ),
       body: Center(
@@ -90,6 +108,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pushNamed(context, '/daniel');
               },
               child: const Text('Daniel'),
+            ),
+            AppConstants.kSizedBoxMedium, // Add spacing between buttons
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/dataManagerManualTests');
+              },
+              child: const Text('Data Manager Manual Tests'),
             ),
           ],
         ),

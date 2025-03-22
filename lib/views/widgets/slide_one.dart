@@ -1,4 +1,4 @@
-import 'package:ambulo/data/styles/conatant.dart';
+import 'package:ambulo/data/styles/constant.dart';
 import 'package:flutter/material.dart';
 import 'base_slide.dart';
 

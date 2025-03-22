@@ -1,4 +1,4 @@
-import 'package:ambulo/data/styles/conatant.dart';
+import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/views/widgets/final_slide.dart';
 import 'package:ambulo/views/widgets/slide_four.dart';
 import 'package:ambulo/views/widgets/slide_one.dart';
