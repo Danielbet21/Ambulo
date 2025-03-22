@@ -1,4 +1,5 @@
-import 'package:ambulo/views/pages/register_page.dart';
+import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/views/widgets/final_slide.dart';
 import 'package:ambulo/views/widgets/slide_four.dart';
 import 'package:ambulo/views/widgets/slide_one.dart';
 import 'package:ambulo/views/widgets/slide_three.dart';
@@ -7,18 +8,21 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 class IntroPage extends StatefulWidget {
+ const IntroPage({Key? key}) : super(key: key);
+
   @override
-  _IntroPageState createState() => _IntroPageState();
+   State<IntroPage> createState() => _IntroPageState();
 }
 
 class _IntroPageState extends State<IntroPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final int _numPages = 4;
+  final int _numPages = 5;
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+  final double sizeOfFont = MediaQuery.of(context).size.width * 0.06 > 30 ? 30 : AppConstants.kFontSizeLarge;
+  final screenWidth = MediaQuery.of(context).size.width;
   final isLikelyMobileSize = screenWidth < 600;
   final showButtons = kIsWeb && !isLikelyMobileSize;
 
@@ -34,13 +38,15 @@ class _IntroPageState extends State<IntroPage> {
             },
             children: [
               // Slide 1
-              SlideOne(),
+              SlideOne(sizeOfFont: sizeOfFont),
               // Slide 2
-              SlideTwo(),
+              SlideTwo(sizeOfFont: sizeOfFont),
               // Slide 3
-              SlideThree(),
+              SlideThree(sizeOfFont: sizeOfFont),
               // Slide 4
-              SlideFour(),
+              SlideFour(sizeOfFont: sizeOfFont),
+              // Slide 5
+              FinalSlide(sizeOfFont: sizeOfFont),
             ],
           ),
           // Dots indicator and Next/Done button
@@ -63,58 +69,46 @@ class _IntroPageState extends State<IntroPage> {
               left: 20,
               child: _currentPage > 0 ? 
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 143, 181, 143),
+                  side: BorderSide(color: Colors.green.shade800, width: 2), // Add green border
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8), // Optional: rounded corners
+                  ),
+                ),
                     onPressed: () {
                       _pageController.previousPage(
                         duration: Duration(milliseconds: 300),
                         curve: Curves.easeIn,
                       );
                     },
-                    child: Icon(Icons.arrow_back),
+                    child: Icon(Icons.arrow_back, color: Colors.black),
                   )
                 : 
                 SizedBox.shrink(), // Hide on first page
             ),
-           if(showButtons)
+           if (showButtons && _currentPage < _numPages - 1) // Hide on last page
             Positioned(
               bottom: 30,
               right: 20,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 143, 181, 143),
+                  side: BorderSide(color: Colors.green.shade800, width: 2), // Add green border
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8), // Optional: rounded corners
+                  ),
+                ),
                 onPressed: () {
-                  if (_currentPage == _numPages - 1) {
-                    // On the last slide -> do something (e.g., navigate or close)
-                    // For example:
-                    Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (_) => RegisterPage()));
-                  } else {
-                    // Move to next page
-                    _pageController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                  }
+                  // Move to next page (last page button won't be visible)
+                  _pageController.nextPage(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeIn,
+                  );
                 },
-                child: _currentPage == _numPages - 1 ? Text("Let's go!") : Icon(Icons.arrow_forward),
+                child: Icon(Icons.arrow_forward, color: Colors.black),
               ),
             ),
-            if (!showButtons && _currentPage == _numPages - 1)
-            Positioned(
-              bottom: 10,
-              right: 20,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0), // Adjust radius as needed
-                  ),
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  ),
-                onPressed: () {
-                  Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => RegisterPage()));
-                },
-                child: Text("Let's go!"),
-              ),
-            ), 
         ],
       ),
     );
