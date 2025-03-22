@@ -19,3 +19,8 @@ Ctrl+Alt+2
 ```
 Ctrl+Alt+3
 ```
+#### Only for shai (because 2 computers) - Pull shai branch
+```
+Ctrl+Alt+4
+```
+

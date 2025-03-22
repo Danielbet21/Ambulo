@@ -1,0 +1,2 @@
+C:/Users/Home/Desktop/Ambulo_Dir/Ambulo/android/app/.cxx/Debug/6w433x1k/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Home/Desktop/Ambulo_Dir/Ambulo/android/app/.cxx/Debug/6w433x1k/armeabi-v7a/CMakeFiles/rebuild_cache.dir
