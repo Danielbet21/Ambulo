@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:ambulo/data/styles/conatant.dart';
+import 'package:ambulo/data/styles/constant.dart';
 import 'package:flutter/material.dart';
 
 
