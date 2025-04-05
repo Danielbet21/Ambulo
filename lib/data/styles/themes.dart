@@ -18,19 +18,22 @@ class AppTheme {
     ),
     // Text styles for light theme
     textTheme: const TextTheme(
-      // Title text will be yellow in light mode as requested
+
+      //------------------------- Title text
       titleLarge: TextStyle(
-        color: Colors.yellow,
+        color: Colors.black,
         fontSize: 24,
         fontWeight: FontWeight.bold,
       ),
-      // Subtitle style
+
+      //------------------------ Subtitle style
       titleMedium: TextStyle(
-        color: Colors.orange,
+        color: Colors.grey,
         fontSize: 20,
         fontWeight: FontWeight.w500,
       ),
-      // Body text style
+
+      //------------------------- Body text style
       bodyLarge: TextStyle(
         color: Colors.black87,
         fontSize: 16,
@@ -45,9 +48,15 @@ class AppTheme {
       color: Colors.white,
       elevation: AppConstants.kDefaultElevation,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppConstants.kRadiusMedium),
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(
+          color: Color.fromARGB(255, 137, 134, 134),
+          width: 1,
+        ),
       ),
     ),
+
+
     // Button theme
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -69,7 +78,7 @@ class AppTheme {
     useMaterial3: true,
     // Base colors for the dark theme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.deepPurple,
+      seedColor: Colors.lightGreen,
       brightness: Brightness.dark,
     ),
     // Text styles for dark theme
@@ -98,10 +107,14 @@ class AppTheme {
     ),
     // Card theme
     cardTheme: CardTheme(
-      color: Colors.grey[850],
+      color: Colors.white,
       elevation: AppConstants.kDefaultElevation,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppConstants.kRadiusMedium),
+        borderRadius: BorderRadius.circular(20),
+        // side: const BorderSide(
+        //   color: Color.fromARGB(255, 214, 211, 211),
+        //   width: 5,
+        // ),
       ),
     ),
     // Button theme
