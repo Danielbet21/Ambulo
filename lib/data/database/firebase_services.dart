@@ -12,6 +12,7 @@ class FirebaseFirestoreServices
   // Firebase instances
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // ignore: unused_field
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // AuthenticationInterface implementation
@@ -97,24 +98,6 @@ class FirebaseFirestoreServices
   }
 
   @override
-  Future<String> uploadFile(String path, String fileName, File file) async {
-    final reference = _storage.ref().child(path).child(fileName);
-    final downloadUrl = await reference.getDownloadURL();
-    return downloadUrl;
-  }
-
-  @override
-  Future<void> deleteFile(String url) async {
-    try {
-      final reference = _storage.refFromURL(url);
-      await reference.delete();
-    } catch (e) {
-      debugPrint('Error deleting file: $e');
-      rethrow;
-    }
-  }
-
-  @override
   Future<void> arrayUnion(
       String collection, String documentId, String field, dynamic value) async {
     await _firestore.collection(collection).doc(documentId).update({
@@ -178,75 +161,126 @@ class FirebaseFirestoreServices
     return false;
   }
 
-// firebase cloud storage
-  @override
-  Future<bool> uploadPicture(
-      String pathToSave, String fileName, XFile file) async {
-    Reference referenceRoot = FirebaseStorage.instance.ref();
-    Reference referenceDirType = referenceRoot.child(pathToSave);
-    Reference referenceImageToUpload = referenceDirType.child(fileName);
+// ----------- IMAGE UPLOAD ------------------
 
-    // Store the file
-    try {
-      if (kIsWeb) {
-        // For web platform - use bytes
-        Uint8List imageBytes = await file.readAsBytes();
-        await referenceImageToUpload.putData(imageBytes);
-      } else {
-        // For mobile platforms - use file
-        await referenceImageToUpload.putFile(File(file.path));
-      }
-
-      // Get download URL and return it
-      String downloadURL = await referenceImageToUpload.getDownloadURL();
-      print("URL: $downloadURL");
-      return true;
-    } catch (error) {
-      {
-        print("Error: $error");
-        return false;
-      }
-    }
-  }
-
-  @override
-  Future<bool> uploadPictureManual(
-    String type,
-    String fileName,
-  ) async {
+  Future<String> uploadProfilePictureManual(String userID) async {
     ImagePicker imagePicker = ImagePicker();
     XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
     if (file == null) {
+      return "";
+    }
+
+    final imageUrl = await uploadUserProfileImage(userID, file);
+    if (imageUrl != null) {
+      return imageUrl;
+    }
+    return "";
+  }
+
+  // Upload user profile image to Firebase Storage
+  @override
+  Future<String?> uploadUserProfileImage(String userId, XFile image) async {
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference userProfileDir = referenceRoot.child("UserProfileImages");
+
+    // Get just the file name from the path
+    String fileExtention = image.name; // TODO check if work on android
+    // connect the userID with the fileName extension
+    fileExtention = fileExtention.split('.').last;
+    String fileName = "${userId}.$fileExtention";
+    print("File name: $fileName");
+
+    Reference referenceImageToUpload = userProfileDir.child(fileName);
+
+    try {
+      if (kIsWeb) {
+        Uint8List imageBytes = await image.readAsBytes();
+        await referenceImageToUpload.putData(imageBytes);
+      } else {
+        await referenceImageToUpload.putFile(File(image.path));
+      }
+
+      String downloadURL = await referenceImageToUpload.getDownloadURL();
+      print("URL: $downloadURL");
+      return downloadURL;
+    } catch (error) {
+      print("Error: $error");
+      return "";
+    }
+  }
+
+  @override
+  Future<bool> deleteUserProfileImage(String imageUrl) async {
+    try {
+      // Delete the file from Firebase Storage
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+      return true;
+    } catch (e) {
+      debugPrint('Error deleting user profile image: $e');
       return false;
     }
+  }
 
-    if (await uploadPicture(type, fileName, file)) {
+// ----------- TRAIL IMAGE UPLOAD ------------------
+  @override
+  Future<String?> uploadTrailImageManual(String trailID) async {
+    ImagePicker imagePicker = ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+    if (file == null) {
+      return "";
+    }
+
+    final imageUrl = await uploadTrailImage(trailID, file);
+    if (imageUrl != null) {
+      return imageUrl;
+    }
+    return "";
+  }
+
+  @override
+  Future<String?> uploadTrailImage(String trailId, XFile image) async {
+    Reference referenceRoot = FirebaseStorage.instance.ref();
+    Reference trailDir = referenceRoot.child("trail");
+    Reference trailImagesDir = trailDir.child(trailId);
+
+    // Get just the file name from the path
+    String fileExtention = image.name; // TODO check if work on android
+    // connect the userID with the fileName extension
+    fileExtention = fileExtention.split('.').last;
+    // get timestamp to make the file name unique
+    String timeStamp = DateTime.now().millisecondsSinceEpoch.toString();
+    // create a unique file name using the trailId and timestamp
+    String fileName = "${trailId}_$timeStamp.$fileExtention";
+    print("File name: $fileName");
+
+    Reference referenceImageToUpload = trailImagesDir.child(fileName);
+
+    try {
+      if (kIsWeb) {
+        Uint8List imageBytes = await image.readAsBytes();
+        await referenceImageToUpload.putData(imageBytes);
+      } else {
+        await referenceImageToUpload.putFile(File(image.path));
+      }
+
+      String downloadURL = await referenceImageToUpload.getDownloadURL();
+      print("URL: $downloadURL");
+      return downloadURL;
+    } catch (error) {
+      print("Error: $error");
+      return "";
+    }
+  }
+
+  @override
+  Future<bool> deleteTrailImage(String imageUrl) async {
+    try {
+      // Delete the file from Firebase Storage
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
       return true;
-    }
-    return false;
-  }
-
-  @override
-  Future<void> deleteUserProfilePicture(String path) async {
-    try {
-      final reference = _storage.ref().child(path);
-      await reference.delete();
-      debugPrint('Profile picture deleted successfully');
     } catch (e) {
-      debugPrint('Error deleting profile picture: $e');
-      rethrow;
-    }
-  }
-
-  @override
-  Future<String> getUserProfilePicture(String path) async {
-    try {
-      final reference = _storage.ref().child(path);
-      final downloadUrl = await reference.getDownloadURL();
-      return downloadUrl;
-    } catch (e) {
-      debugPrint('Error getting profile picture URL: $e');
-      rethrow;
+      debugPrint('Error deleting user profile image: $e');
+      return false;
     }
   }
 }

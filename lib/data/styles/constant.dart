@@ -53,4 +53,11 @@ class AppConstants {
   static const double kFontSizeXL = 24.0;
   static const double kFontSizeXXL = 28.0;
   static const double kFontSizeXXXL = 70.0;
-}
+
+  // divider
+  static const  kDivider = Divider(
+    color: Colors.grey,
+    thickness: 1.0,
+    height: 1.0,
+  );
+   }

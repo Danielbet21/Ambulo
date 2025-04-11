@@ -16,7 +16,7 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
             Text(
-              'Welcome to your profile!',
+              'Welcome to your Mobile profile!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

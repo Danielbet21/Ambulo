@@ -1,6 +1,7 @@
 import 'package:ambulo/data/database/data_manager.dart';
 import 'package:ambulo/data/database/firebase_services.dart';
 import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -46,10 +47,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
       routes: {
         '/shai': (context) => const ShaiPage(),

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -25,12 +24,6 @@ abstract class DatabaseInterface {
   // Delete a document
   Future<void> deleteDocument(String collection, String documentId);
 
-  // Upload a file to storage
-  Future<String> uploadFile(String path, String fileName, File file);
-
-  // Delete a file from storage
-  Future<void> deleteFile(String url);
-
   // Add item to an array
   Future<void> arrayUnion(
       String collection, String documentId, String field, dynamic value);
@@ -43,17 +36,17 @@ abstract class DatabaseInterface {
   Future<DocumentSnapshot?> getDocumentByField(
       String collection, String field, dynamic value); // Add this line
 
-  // upload picture
-  Future<bool> uploadPicture(String path, String fileName, XFile file);
+  // Upload a user profile image
+  Future<String> uploadProfilePictureManual(String userID);
 
-  Future<bool> uploadPictureManual(
-    String type,
-    String fileName,
-  );
+  Future<String?> uploadUserProfileImage(String userId, XFile image);
 
-  // get user profile picture
-  Future<String> getUserProfilePicture(String path);
+  Future<bool> deleteUserProfileImage(String imageUrl);
 
-  // delete user profile picture
-  Future<void> deleteUserProfilePicture(String path);
+  // trail upload images
+  Future<String?> uploadTrailImageManual(String trailID);
+
+  Future<String?> uploadTrailImage(String trailId, XFile image);
+
+  Future<bool> deleteTrailImage(String imageUrl);
 }
