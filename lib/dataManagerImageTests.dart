@@ -24,11 +24,29 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
   @override
   void initState() {
     super.initState();
+
     imageHelpers = ImageHelpers(dataManager: dataManager);
-    _loadImages();
+
+    dataManager.signIn(userEmail, userPassword).then((userCredential) {
+      if (userCredential != null) {
+        debugPrint(
+            "✅ User signed in successfully: ${userCredential.user?.uid}");
+        _loadImages(); // Load images after successful sign-in
+      } else {
+        debugPrint("❌ Error: User sign-in failed.");
+      }
+    }).catchError((error) {
+      debugPrint("❌ Error signing in: $error");
+    });
   }
 
   Future<void> _loadImages() async {
+    final currentUser = dataManager.getCurrentUser();
+    if (currentUser == null) {
+      debugPrint("Error: No user is signed in yet. Skipping image loading.");
+      return;
+    }
+
     final profile = await imageHelpers.getCurrentUserProfileImage();
     final trailPhotos = await imageHelpers.getTrailPhotos(testTrailID);
 
