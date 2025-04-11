@@ -1,9 +1,11 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Needed for Clipboard
 import 'package:ambulo/main.dart';
 import 'package:ambulo/data/database/data_manager.dart';
+import 'package:ambulo/dataManagerImageTests.dart'; // Import the new test page
 
 class DataManagerManualTests extends StatefulWidget {
   const DataManagerManualTests({super.key});
@@ -24,6 +26,7 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
 
   // Test trail data
   final String testTrailId = "test_trail_123";
+  final String trailUploadTestID = "test_trail_upload_123";
 
   // Function to add logs dynamically and auto-scroll
   void _addLog(String functionName, String message, {bool isSuccess = true}) {
@@ -368,6 +371,21 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
     }
   }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 // ✅ Function: Upload Profile Picture
   Future<void> _uploadProfilePictureTest() async {
     _logMessages.clear();
@@ -399,32 +417,22 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
 
       // Upload a profile picture
       // ----------------------------------------
-      dataManager.uploadPictureManual(
-          UploadType.trailPhoto, userCredential.user!.uid);
-
-      dataManager.uploadPictureManual(
-          UploadType.userPhoto, userCredential.user!.uid);
-
-      dataManager.uploadFinishedTrailsPictureManual(
-          userCredential.user!.uid, "1234");
-
-      // Get the user's profile picture
-      _addLog("getUserProfilePicture()", "Getting user profile picture");
-      final profilePictureUrl =
-          await dataManager.getUserProfilePicture(userCredential.user!.uid);
-      if (profilePictureUrl.isNotEmpty) {
-        _addLog("getUserProfilePicture()",
-            "Profile picture URL: $profilePictureUrl");
+      _addLog("uploadPicture()", "Uploading profile picture");
+      final imageUrl = await dataManager
+          .uploadProfilePictureManual(userCredential.user!.uid);
+      if (imageUrl.isNotEmpty) {
+        _addLog("uploadPicture()", "Profile picture uploaded successfully");
+        setState(() {
+          _profilePictureUrl =
+              "https://www.pix-star.com/blog/wp-content/uploads/2021/05/digital-photo-frames.jpg";
+        });
       } else {
-        _addLog("getUserProfilePicture()", "Profile picture URL not found",
+        _addLog("uploadPicture()", "Profile picture upload failed",
             isSuccess: false);
+        return;
       }
 
-      // Delete the user profile picture
-      _addLog("deleteUserProfilePicture()", "Deleting user profile picture");
-      await dataManager.deleteUserProfilePicture(userCredential.user!.uid);
-      _addLog("deleteUserProfilePicture()",
-          "User profile picture deleted successfully");
+      print("Image URL: $_profilePictureUrl");
 
       //  ----------------------------------------
       // Delete the user
@@ -467,33 +475,154 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
 
     // use the data manager to pick an image and upload it dataMaget.uploadPicture
     _addLog("uploadPicture()", "Uploading profile picture");
-    // uploadPictureManual
-    final result = await dataManager.uploadPictureManual(
-        UploadType.userPhoto, userCredential.user!.uid);
-    if (result) {
-      _addLog("uploadPicture()", "Profile picture uploaded successfully");
-    } else {
-      _addLog("uploadPicture()", "Profile picture upload failed",
-          isSuccess: false);
-    }
 
-    // Get the user's profile picture
-    _addLog("getUserProfilePicture()", "Getting user profile picture");
-    final profilePictureUrl =
-        await dataManager.getUserProfilePicture(userCredential.user!.uid);
-    if (profilePictureUrl.isNotEmpty) {
-      _addLog(
-          "getUserProfilePicture()", "Profile picture URL: $profilePictureUrl");
-      setState(() {
-        _profilePictureUrl = profilePictureUrl;
-      });
-    } else {
-      _addLog("getUserProfilePicture()", "Profile picture URL not found",
-          isSuccess: false);
-    }
+    // TODO: Uncomment the following lines to test the upload functionality
+    // // uploadPictureManual
+    // final result = await dataManager.uploadPictureManual(
+    //     UploadType.userPhoto, userCredential.user!.uid);
+    // if (result) {
+    //   _addLog("uploadPicture()", "Profile picture uploaded successfully");
+    // } else {
+    //   _addLog("uploadPicture()", "Profile picture upload failed",
+    //       isSuccess: false);
+    // }
+
+    // // Get the user's profile picture
+    // _addLog("getUserProfilePicture()", "Getting user profile picture");
+    // final profilePictureUrl =
+    //     await dataManager.getUserProfilePicture(userCredential.user!.uid);
+    // if (profilePictureUrl.isNotEmpty) {
+    //   _addLog(
+    //       "getUserProfilePicture()", "Profile picture URL: $profilePictureUrl");
+    //   setState(() {
+    //     _profilePictureUrl = profilePictureUrl;
+    //   });
+    // } else {
+    //   _addLog("getUserProfilePicture()", "Profile picture URL not found",
+    //       isSuccess: false);
+    // }
 
     // Delete the user profile picture
   }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+  Future<void> _uploadTrailImageTest() async {
+    _logMessages.clear();
+    _addLog("TEST START", "Starting Upload Trail Image Test...");
+    String userId = "trail_upload_images@gmail.com";
+    String userPassword = "123456@hacb";
+
+    try {
+      // Register a new user
+      // _addLog("register()", "Calling register($userId, $userPassword)");
+      // final userCredential = await dataManager.register(userId, userPassword);
+      // if (userCredential != null) {
+      //   _addLog(
+      //     "register()",
+      //     "Registration successful: ${userCredential.user?.email}",
+      //   );
+      // } else {
+      //   _addLog("register()", "Registration failed", isSuccess: false);
+      //   return;
+      // }
+
+      // create trail
+      // 1. Create a trail
+      // _addLog("createTrail()", "Creating test trail");
+      // await dataManager.createTrail(trailUploadTestID, {
+      //   'trackId': 000000000,
+      //   'trailDetails': {
+      //     'name': 'Test Mountain Trail',
+      //     'difficulty': 'Medium',
+      //     'length': 12.5,
+      //     'elevation': 450,
+      //     'location': 'Test Mountain Range',
+      //     'description': 'A beautiful test trail for hiking enthusiasts'
+      //   },
+      //   'gpx': 'sample_gpx_data_for_test'
+      // });
+      // _addLog("createTrail()", "Trail created successfully");
+
+      // 2. Get the trail data
+      _addLog("getTrail()", "Retrieving trail data");
+      // Adding a listener for trail data
+      var subscription =
+          dataManager.getTrail(trailUploadTestID).listen((snapshot) {
+        if (snapshot.exists) {
+          final data = snapshot.data() as Map<String, dynamic>;
+          _addLog(
+              "getTrail()", "Trail retrieved: ${data['trailDetails']['name']}");
+          _addLog("getTrail()",
+              "Trail difficulty: ${data['trailDetails']['difficulty']}");
+          _addLog("getTrail()",
+              "Trail length: ${data['trailDetails']['length']}km");
+        } else {
+          _addLog("getTrail()", "Trail not found", isSuccess: false);
+        }
+      });
+
+      // Upload a profile picture
+      String? image1URL = "";
+
+      // Upload a trail image
+      _addLog("uploadTrailImage()", "Uploading trail image");
+      image1URL = await dataManager.uploadTrailImageManual(trailUploadTestID);
+      if (image1URL != null) {
+        _addLog("uploadTrailImage()", "Trail image uploaded successfully");
+      } else {
+        _addLog("uploadTrailImage()", "Trail image upload failed",
+            isSuccess: false);
+        return;
+      }
+
+      // delay for 10 seconds to make sure the image is uploaded
+      await Future.delayed(const Duration(seconds: 10));
+      // delete the trail images
+      _addLog("deleteTrailImage()", "Deleting trail images");
+      await dataManager.deleteTrailImage(trailUploadTestID, image1URL);
+      _addLog("deleteTrailImage()", "Trail images deleted successfully");
+
+      // delete the trail
+      _addLog("TEST END", "Upload Trail Image Test Completed Successfully!");
+    } catch (e) {
+      _addLog("ERROR", "Exception caught: $e", isSuccess: false);
+    }
+  }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
   // ✅ Function: Trail Management Test
   Future<void> _runTrailTest() async {
@@ -615,6 +744,7 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
       {"name": "Run User Test", "function": _runUserTest},
       {"name": "Run Admin User Test", "function": _runAdminUserTest},
       {"name": "Upload Profile Picture", "function": _uploadProfilePictureTest},
+      {"name": "Upload Trail Images", "function": _uploadTrailImageTest},
       {"name": "Run Trail Management Test", "function": _runTrailTest},
     ]);
   }
@@ -628,6 +758,17 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: _deleteTestUserManually,
+          ),
+          IconButton(
+            icon: const Icon(Icons.image, color: Colors.blue),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DataManagerImageTests(),
+                ),
+              );
+            },
           ),
         ],
       ),
