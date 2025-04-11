@@ -12,11 +12,6 @@ class ProfileWebPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // centerTitle: true,
-        // title: Image.asset(
-        //   'assets/background/my_logo.jpg',
-        //   height: 80,
-        // ),
         actions: [
           // Settings button
           IconButton(
