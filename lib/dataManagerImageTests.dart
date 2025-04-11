@@ -1,3 +1,6 @@
+// ignore_for_file: unused_local_variable
+
+import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
 import 'package:flutter/material.dart';
 
@@ -16,25 +19,40 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
   String? profileImageUrl;
   List<String> trailPhotoUrls = [];
 
+  late final ImageHelpers imageHelpers;
+
   @override
   void initState() {
     super.initState();
-    _fetchUserProfileImage();
-    _fetchTrailPhotos();
-  }
 
-  Future<void> _fetchUserProfileImage() async {
-    final imageUrl =
-        await dataManager.loadUserProfileImage(userEmail, userPassword);
-    setState(() {
-      profileImageUrl = imageUrl;
+    imageHelpers = ImageHelpers(dataManager: dataManager);
+
+    dataManager.signIn(userEmail, userPassword).then((userCredential) {
+      if (userCredential != null) {
+        debugPrint(
+            "✅ User signed in successfully: ${userCredential.user?.uid}");
+        _loadImages(); // Load images after successful sign-in
+      } else {
+        debugPrint("❌ Error: User sign-in failed.");
+      }
+    }).catchError((error) {
+      debugPrint("❌ Error signing in: $error");
     });
   }
 
-  Future<void> _fetchTrailPhotos() async {
-    final photos = await dataManager.loadTrailPhotos(testTrailID);
+  Future<void> _loadImages() async {
+    final currentUser = dataManager.getCurrentUser();
+    if (currentUser == null) {
+      debugPrint("Error: No user is signed in yet. Skipping image loading.");
+      return;
+    }
+
+    final profile = await imageHelpers.getCurrentUserProfileImage();
+    final trailPhotos = await imageHelpers.getTrailPhotos(testTrailID);
+
     setState(() {
-      trailPhotoUrls = photos;
+      profileImageUrl = profile;
+      trailPhotoUrls = trailPhotos;
     });
   }
 
@@ -60,7 +78,10 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
         await dataManager.uploadProfilePictureManual(userCredential!.user!.uid);
 
     // Refresh the profile image
-    await _fetchUserProfileImage();
+    final profile = await imageHelpers.getCurrentUserProfileImage();
+    setState(() {
+      profileImageUrl = profile;
+    });
   }
 
   Future<void> _initTrail() async {
@@ -95,7 +116,13 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
 
     // 2. Upload trail image
     final imageUrl = await dataManager.uploadTrailImageManual(testTrailID);
-    await _fetchTrailPhotos();
+
+    // Reload all trail images after upload
+    final trailPhotos = await imageHelpers.getTrailPhotos(testTrailID);
+
+    setState(() {
+      trailPhotoUrls = trailPhotos;
+    });
   }
 
   @override

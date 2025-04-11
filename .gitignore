@@ -51,3 +51,8 @@ app.*.map.json
 
 
 update_branch_daniel.py
+# Ignore platform-specific generated files
+linux/
+macos/
+windows/
+

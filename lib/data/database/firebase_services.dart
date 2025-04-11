@@ -12,6 +12,7 @@ class FirebaseFirestoreServices
   // Firebase instances
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // ignore: unused_field
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // AuthenticationInterface implementation

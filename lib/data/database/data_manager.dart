@@ -186,21 +186,10 @@ class DataManager {
     return null;
   }
 
-  Future<Map<String, dynamic>?> fetchUserProfile(String userId) async {
-    try {
-      final userProfile = await databaseService.getDocument('users', userId);
-      return userProfile;
-    } catch (e) {
-      print("Error fetching user profile: $e");
-      return null;
-    }
-  }
-
-  Future<String?> loadUserProfileImage(String email, String password) async {
-    final userCredential = await signIn(email, password);
-    if (userCredential != null) {
-      final userId = userCredential.user!.uid;
-      return await getUserProfileImage(userId);
+  Future<String?> loadUserProfileImageForCurrentUser() async {
+    final user = getCurrentUser();
+    if (user != null) {
+      return await getUserProfileImage(user.uid);
     }
     return null;
   }
