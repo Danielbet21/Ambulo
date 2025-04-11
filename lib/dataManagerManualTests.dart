@@ -1,10 +1,7 @@
-// ignore_for_file: library_private_types_in_public_api
-
-import 'package:firebase_storage/firebase_storage.dart';
+// ignore_for_file: library_private_types_in_public_api, unused_local_variable
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Needed for Clipboard
 import 'package:ambulo/main.dart';
-import 'package:ambulo/data/database/data_manager.dart';
 import 'package:ambulo/dataManagerImageTests.dart'; // Import the new test page
 
 class DataManagerManualTests extends StatefulWidget {

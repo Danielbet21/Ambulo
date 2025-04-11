@@ -1,3 +1,6 @@
+// ignore_for_file: unused_local_variable
+
+import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
 import 'package:flutter/material.dart';
 
@@ -16,25 +19,22 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
   String? profileImageUrl;
   List<String> trailPhotoUrls = [];
 
+  late final ImageHelpers imageHelpers;
+
   @override
   void initState() {
     super.initState();
-    _fetchUserProfileImage();
-    _fetchTrailPhotos();
+    imageHelpers = ImageHelpers(dataManager: dataManager);
+    _loadImages();
   }
 
-  Future<void> _fetchUserProfileImage() async {
-    final imageUrl =
-        await dataManager.loadUserProfileImage(userEmail, userPassword);
-    setState(() {
-      profileImageUrl = imageUrl;
-    });
-  }
+  Future<void> _loadImages() async {
+    final profile = await imageHelpers.getCurrentUserProfileImage();
+    final trailPhotos = await imageHelpers.getTrailPhotos(testTrailID);
 
-  Future<void> _fetchTrailPhotos() async {
-    final photos = await dataManager.loadTrailPhotos(testTrailID);
     setState(() {
-      trailPhotoUrls = photos;
+      profileImageUrl = profile;
+      trailPhotoUrls = trailPhotos;
     });
   }
 
@@ -60,7 +60,10 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
         await dataManager.uploadProfilePictureManual(userCredential!.user!.uid);
 
     // Refresh the profile image
-    await _fetchUserProfileImage();
+    final profile = await imageHelpers.getCurrentUserProfileImage();
+    setState(() {
+      profileImageUrl = profile;
+    });
   }
 
   Future<void> _initTrail() async {
@@ -95,7 +98,13 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
 
     // 2. Upload trail image
     final imageUrl = await dataManager.uploadTrailImageManual(testTrailID);
-    await _fetchTrailPhotos();
+
+    // Reload all trail images after upload
+    final trailPhotos = await imageHelpers.getTrailPhotos(testTrailID);
+
+    setState(() {
+      trailPhotoUrls = trailPhotos;
+    });
   }
 
   @override
