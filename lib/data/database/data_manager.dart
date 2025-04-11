@@ -54,7 +54,7 @@ class DataManager {
     await databaseService.setData('users', userId, {
       'name': name,
       'email': email,
-      'userPhoto': '',
+      'userPhotoPath': '',
       'userPreference': {
         'theme': 'light',
         'notifications': true,
@@ -135,6 +135,76 @@ class DataManager {
       String userId, Map<String, dynamic> trail) async {
     await databaseService.arrayRemove('users', userId, 'savedHikes', trail);
   }
+
+  // Upload a user profile image manually
+  Future<String> uploadProfilePictureManual(String userID) async {
+    final imagePath = await databaseService.uploadProfilePictureManual(userID);
+    if (imagePath.isNotEmpty) {
+      await databaseService.updateDocument('users', userID, {
+        'userPhotoPath': imagePath,
+      });
+      return imagePath;
+    } else {
+      throw Exception("Failed to upload image");
+    }
+  }
+
+  // Upload a user profile image
+  Future<String?> uploadUserProfileImage(String userId, XFile image) async {
+    final imagePath =
+        await databaseService.uploadUserProfileImage(userId, image);
+
+    if (imagePath != null) {
+      await databaseService.updateDocument('users', userId, {
+        'userPhotoPath': imagePath,
+      });
+      return imagePath;
+    } else {
+      throw Exception("Failed to upload image");
+    }
+  }
+
+  // Delete a user profile image
+  Future<bool> deleteUserProfileImage(String imageUrl) async {
+    final imagePath = await databaseService.deleteUserProfileImage(imageUrl);
+    if (imagePath) {
+      await databaseService.updateDocument('users', getCurrentUser()!.uid, {
+        'userPhotoPath': '',
+      });
+      return true;
+    } else {
+      throw Exception("Failed to delete image");
+    }
+  }
+
+  // Get user profile image by user ID
+  Future<String?> getUserProfileImage(String userId) async {
+    final doc = await databaseService.getDocument('users', userId);
+    if (doc != null && doc['userPhotoPath'] != null) {
+      return doc['userPhotoPath'];
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> fetchUserProfile(String userId) async {
+    try {
+      final userProfile = await databaseService.getDocument('users', userId);
+      return userProfile;
+    } catch (e) {
+      print("Error fetching user profile: $e");
+      return null;
+    }
+  }
+
+  Future<String?> loadUserProfileImage(String email, String password) async {
+    final userCredential = await signIn(email, password);
+    if (userCredential != null) {
+      final userId = userCredential.user!.uid;
+      return await getUserProfileImage(userId);
+    }
+    return null;
+  }
+
   // ----------- Admin Part -----------
 
   // Check if the current user is an admin
@@ -175,7 +245,7 @@ class DataManager {
     await databaseService.setData('trails', trailId, {
       'trackId': trailData['trackId'],
       'trailDetails': trailData['trailDetails'] ?? {},
-      'photos': [],
+      'photosURL': [],
       'gpx': trailData['gpx'] ?? '',
       'uploadDate': DateTime.now().millisecondsSinceEpoch,
       'uploadBy': getCurrentUser()?.uid,
@@ -189,25 +259,6 @@ class DataManager {
   // Stream trail data
   Stream<DocumentSnapshot> getTrail(String trailId) {
     return databaseService.streamDocument('trails', trailId);
-  }
-
-  // Add photo to a trail
-  Future<bool> addPhotoToTrail(String trailId, XFile photo) async {
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    String path = "Images/Trails/$trailId";
-
-    bool success = await databaseService.uploadPicture(path, fileName, photo);
-
-    if (success) {
-      // Get the URL of the uploaded photo
-      String photoUrl =
-          await databaseService.getUserProfilePicture("$path/$fileName");
-
-      // Add the URL to the trail's photos array
-      await databaseService.arrayUnion('trails', trailId, 'photos', photoUrl);
-      return true;
-    }
-    return false;
   }
 
   // Edit trail details
@@ -289,52 +340,50 @@ class DataManager {
     await databaseService.deleteDocument('trails', trailId);
   }
 
-  // ----------- Images Part -----------
-  // Upload a picture to storage
-  Future<bool> uploadPicture(
-      String path, String objectId, String fileName, XFile file) async {
-    return await databaseService.uploadPicture(path, fileName, file);
-  }
-
-  // Upload a picture to storage manually
-  Future<bool> uploadPictureManual(
-    Enum type,
-    String objectId,
-  ) async {
-    String filePath = "Images";
-    String typePath = "";
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    if (type == UploadType.userPhoto) {
-      typePath = "Users";
-      fileName = "profilePicture";
-    } else if (type == UploadType.trailPhoto) {
-      typePath = "Trails";
+  // Upload a trail image manually
+  Future<String?> uploadTrailImageManual(String trailID) async {
+    final imagePath = await databaseService.uploadTrailImageManual(trailID);
+    if (imagePath != null) {
+      await databaseService.updateDocument('trails', trailID, {
+        'photosURL': FieldValue.arrayUnion([imagePath]),
+      });
+      return imagePath;
+    } else {
+      throw Exception("Failed to upload image");
     }
-    filePath = "$filePath/$typePath/$objectId";
-    print("filePath: $filePath");
-    return await databaseService.uploadPictureManual(filePath, fileName);
   }
 
-  // Upload Finished Trails Picture
-  Future<bool> uploadFinishedTrailsPictureManual(
-      String userID, String trailID) async {
-    String filePath = "Images/Users/$userID/FinishedTrails/$trailID";
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    return await databaseService.uploadPictureManual(filePath, fileName);
+  // Upload a trail image
+  Future<String?> uploadTrailImage(String trailId, XFile image) async {
+    final imagePath = await databaseService.uploadTrailImage(trailId, image);
+    if (imagePath != null) {
+      await databaseService.updateDocument('trails', trailId, {
+        'photosURL': FieldValue.arrayUnion([imagePath]),
+      });
+      return imagePath;
+    } else {
+      throw Exception("Failed to upload image");
+    }
   }
 
-  // Get a user's profile picture
-  Future<String> getUserProfilePicture(String userId) async {
-    String path = "Images/Users/$userId/profilePicture";
-    path = "${path}.jpg";
-    print(path);
-
-    return await databaseService.getUserProfilePicture(path);
+  // Delete a trail image
+  Future<bool> deleteTrailImage(String trailID, String imageUrl) async {
+    final imagePath = await databaseService.deleteTrailImage(imageUrl);
+    if (imagePath) {
+      await databaseService.updateDocument('trails', trailID, {
+        'photosURL': FieldValue.arrayRemove([imageUrl]),
+      });
+      return true;
+    } else {
+      throw Exception("Failed to delete image");
+    }
   }
 
-  // Delete a user's profile picture
-  Future<void> deleteUserProfilePicture(String userId) async {
-    String path = "Images/Users/$userId/profilePicture";
-    await databaseService.deleteUserProfilePicture(path);
+  Future<List<String>> loadTrailPhotos(String trailId) async {
+    final doc = await databaseService.getDocument('trails', trailId);
+    if (doc != null && doc['photosURL'] != null) {
+      return List<String>.from(doc['photosURL']);
+    }
+    return [];
   }
 }
