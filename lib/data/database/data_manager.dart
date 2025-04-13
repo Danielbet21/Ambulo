@@ -219,7 +219,6 @@ class DataManager {
   }
 
   Future<void> deleteUserAccount(String email) async {
-    if (!isAdmin()) throw Exception("Only an admin can delete accounts");
     final docSnap =
         await databaseService.getDocumentByField("users", "email", email);
     if (docSnap == null) throw Exception("User not found");
