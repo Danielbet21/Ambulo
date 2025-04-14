@@ -1,3 +1,4 @@
+import 'package:ambulo/manualTest/WeatherTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:flutter/material.dart';
 import 'manualTest/usertTests.dart'; // Import the userTests page
@@ -31,7 +32,22 @@ class ShaiPage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => TrailTestsPage()),
                 );
               },
-              child: const Text('To to Trail Tests'),
+              child: const Text('Go to Trail Tests'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WeatherTestsPage()),
+                );
+              },
+              child: const Text('Go To Weather Test'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Add navigation logic for another page here
+              },
+              child: const Text('Button 3'),
             ),
             ElevatedButton(
               onPressed: () {
