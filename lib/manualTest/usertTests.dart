@@ -13,7 +13,6 @@ String testName = "userAutoTestName";
 class UserTestsPage extends StatelessWidget {
   const UserTestsPage({super.key});
 
-  // Show an input dialog and return the entered string
   Future<String?> showInputDialog(
       BuildContext context, String title, String hintText) async {
     String? input;
@@ -45,275 +44,130 @@ class UserTestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Tests'),
-      ),
+      appBar: AppBar(title: const Text('User Tests')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
+          padding: const EdgeInsets.all(20),
           children: [
             ElevatedButton(
               onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 0: Login.");
                 final user = await loginAndWrapUser(
-                  dataManager,
-                  testEmail,
-                  testPassword,
-                );
+                    dataManager, testEmail, testPassword);
                 if (user != null) {
+                  await user.load();
                   currentUser = user;
-                  print("✅ Test 0 Passed: User logged in.");
+                  print("✅ Login successful");
                 } else {
-                  print("❌ Test 0 Failed: Login failed.");
+                  print("❌ Login failed");
                 }
               },
-              child: const Text('Test 0: Login'),
+              child: const Text("Login and Load"),
             ),
             ElevatedButton(
               onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 1: Init user.");
-
                 final user = await createAndWrapUser(
-                  dataManager,
-                  testEmail,
-                  testPassword,
-                  testName,
-                );
-
+                    dataManager, testEmail, testPassword, testName);
                 if (user != null) {
+                  await user.load();
                   currentUser = user;
-                  print("✅ Test 1 Passed: User initialized.");
+                  print("✅ User created and loaded");
                 } else {
-                  print("❌ Test 1 Failed: Init failed.");
+                  print("❌ Failed to create user");
                 }
               },
-              child: const Text('Test 1: Init User'),
+              child: const Text("Create and Load"),
+            ),
+            ElevatedButton(
+              onPressed: () => print("👤 Name: ${currentUser?.name}"),
+              child: const Text("Get Name"),
             ),
             ElevatedButton(
               onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 2: Get Name");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
+                final name =
+                    await showInputDialog(context, "Set Name", "Enter name");
+                if (name != null && name.isNotEmpty) {
+                  await currentUser?.setName(name);
+                  print("✏️ New name: ${currentUser?.name}");
                 }
-
-                final name = await currentUser!.getName();
-                print("👤 Name: $name");
               },
-              child: const Text('Test 2: Get Name'),
+              child: const Text("Set Name"),
             ),
             ElevatedButton(
               onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 3: Set Name");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final newName = await showInputDialog(
-                    context, "Set Name", "Enter new name");
-                if (newName == null || newName.isEmpty) return;
-
-                await currentUser!.setName(newName);
-                final name = await currentUser!.getName();
-                print("✏️ New Name: $name");
+                print("Current self title: ${currentUser?.selfTitle}");
               },
-              child: const Text('Test 3: Set Name'),
+              child: const Text("Get Self Title"),
             ),
             ElevatedButton(
               onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 4: Set/Get Preferences");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
+                final title = await showInputDialog(
+                    context, "Set Title", "Enter self title");
+                if (title != null && title.isNotEmpty) {
+                  await currentUser?.setSelfTitle(title);
+                  print("🏷️ Self title: ${currentUser?.selfTitle}");
                 }
-
-                final key = await showInputDialog(
-                    context, "Set Preference", "Enter preference key");
-                if (key == null || key.isEmpty) return;
-
-                final value = await showInputDialog(
-                    context, "Set Preference", "Enter value for '$key'");
-                if (value == null || value.isEmpty) return;
-
-                await currentUser!.setPreference(key, value);
-                final prefs = await currentUser!.getPreferences();
+              },
+              child: const Text("Set Self Title"),
+            ),
+            ElevatedButton(
+              onPressed: () => print("📧 Email: ${currentUser?.email}"),
+              child: const Text("Get Email"),
+            ),
+            ElevatedButton(
+              onPressed: () => print("🚶 KM: ${currentUser?.totalKm}"),
+              child: const Text("Get Total KM"),
+            ),
+            ElevatedButton(
+              onPressed: () =>
+                  print("⛰️ Elevation: ${currentUser?.totalElevation}"),
+              child: const Text("Get Elevation"),
+            ),
+            ElevatedButton(
+              onPressed: () =>
+                  print("🥾 Hikes: ${currentUser?.completedHikes}"),
+              child: const Text("Get Completed Hikes"),
+            ),
+            ElevatedButton(
+              onPressed: () =>
+                  print("🌓 Theme is Light: ${currentUser?.isLightTheme}"),
+              child: const Text("Check Light Theme"),
+            ),
+            ElevatedButton(
+              onPressed: () => print(
+                  "🔔 Notifications: ${currentUser?.isNotificationsEnabled}"),
+              child: const Text("Check Notifications"),
+            ),
+            ElevatedButton(
+              onPressed: () => currentUser
+                  ?.setLightTheme(!(currentUser?.isLightTheme ?? true)),
+              child: const Text("Toggle Theme"),
+            ),
+            ElevatedButton(
+              onPressed: () => currentUser?.setNotifications(
+                  !(currentUser?.isNotificationsEnabled ?? true)),
+              child: const Text("Toggle Notifications"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final prefs = currentUser?.preferences;
                 print("⚙️ Preferences: $prefs");
               },
-              child: const Text('Test 4: Preferences'),
+              child: const Text("Show Preferences"),
             ),
-            // Test 5: Get Email
             ElevatedButton(
               onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 5: Get Email");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final email = await currentUser!.getEmail();
-                print("📧 Email: $email");
+                final history = await currentUser?.getHikingHistory();
+                print("📜 History: ${history?.length}");
               },
-              child: const Text('Test 5: Get Email'),
-            ),
-
-// Test 6: Get Total KM
-            ElevatedButton(
-              onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 6: Get Total KM");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final km = await currentUser!.getTotalKm();
-                print("🚶‍♂️ Total KM: $km");
-              },
-              child: const Text('Test 6: Get Total KM'),
-            ),
-
-// Test 7: Get Completed Hikes
-            ElevatedButton(
-              onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 7: Get Completed Hikes");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final hikes = await currentUser!.getCompletedHikes();
-                print("✅ Completed Hikes: $hikes");
-              },
-              child: const Text('Test 7: Get Completed Hikes'),
-            ),
-
-// Test 8: Get Self Title
-            ElevatedButton(
-              onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 8: Get Self Title");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final title = await currentUser!.getSelfTitle();
-                print("🧑 Self Title: $title");
-              },
-              child: const Text('Test 8: Get Self Title'),
-            ),
-
-// Test 9: Get Hiking History
-            ElevatedButton(
-              onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 9: Get Hiking History");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final history = await currentUser!.getHikingHistory();
-                print("🗺️ Hiking History (${history.length}): $history");
-              },
-              child: const Text('Test 9: Get Hiking History'),
-            ),
-
-// Test 10: Add to Saved Hikes
-            ElevatedButton(
-              onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 10: Add to Saved Hikes");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final trail = {
-                  'id': 'trail_test_001',
-                  'name': 'Test Trail',
-                  'addedAt': DateTime.now().toIso8601String()
-                };
-
-                await currentUser!.addToSaved(trail);
-                print("➕ Trail added to saved.");
-              },
-              child: const Text('Test 10: Add to Saved Hike'),
-            ),
-
-// Test 11: Remove from Saved Hikes
-            ElevatedButton(
-              onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 11: Remove from Saved Hikes");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final trail = {
-                  'id': 'trail_test_001',
-                  'name': 'Test Trail',
-                  'addedAt': DateTime.now().toIso8601String()
-                };
-
-                await currentUser!.removeFromSaved(trail);
-                print("➖ Trail removed from saved.");
-              },
-              child: const Text('Test 11: Remove from Saved Hike'),
-            ),
-
-// Test 12: Delete Hike from History
-            ElevatedButton(
-              onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 12: Delete Hike from History");
-
-                if (currentUser == null) {
-                  print("⚠️ User not initialized.");
-                  return;
-                }
-
-                final history = await currentUser!.getHikingHistory();
-                if (history.isEmpty) {
-                  print("⚠️ No hikes to delete.");
-                  return;
-                }
-
-                final hike = history.first;
-                await currentUser!.deleteHike(hike);
-                print("🗑️ Deleted hike: $hike");
-              },
-              child: const Text('Test 12: Delete Hike from History'),
+              child: const Text("Get Hiking History"),
             ),
             ElevatedButton(
               onPressed: () async {
-                print("---- User Tests ----");
-                print("Test 13: Logout User");
-
                 await logoutUser(dataManager);
                 currentUser = null;
-                print("✅ User signed out.");
+                print("👋 Logged out");
               },
-              child: const Text('Test 13: Logout'),
+              child: const Text("Logout"),
             ),
           ],
         ),

@@ -4,86 +4,93 @@ class User {
   final DataManager db;
   final String uid;
 
-  // Constructor: wraps DataManager and gets the current signed-in user ID
+  // Local cached fields
+  String? _name;
+  String? _email;
+  String? _selfTitle;
+  Map<String, dynamic>? _preferences;
+  double _totalKm = 0.0;
+  double _totalElevation = 0.0;
+  int _completedHikes = 0;
+
   User(this.db) : uid = db.getCurrentUser()?.uid ?? '' {
     if (uid.isEmpty) throw Exception('No signed-in user.');
   }
 
-  /// Returns the user's UID
+  /// Loads user data from Firestore into local cache
+  Future<void> load() async {
+    final doc = await db.databaseService.getDocument('users', uid);
+    _name = doc?['name'];
+    _email = doc?['email'];
+    _selfTitle = doc?['selfTitle'];
+    _totalKm = (doc?['totalKm'] ?? 0.0).toDouble();
+    _totalElevation = (doc?['totalElevation'] ?? 0.0).toDouble();
+    _completedHikes = (doc?['completedHikes'] ?? 0).toInt();
+    _preferences = doc?['userPreference'] ?? await db.getUserPreferences(uid);
+  }
+
+  /// UID getter
   String get userUid => uid;
 
-  /// Helper to fetch the full user document from Firestore
-  Future<Map<String, dynamic>?> _getUserDoc() async {
-    return await db.databaseService.getDocument('users', uid);
+  /// Local getters (synchronous)
+  String? get name => _name;
+  String? get email => _email;
+  String? get selfTitle => _selfTitle;
+  Map<String, dynamic>? get preferences => _preferences;
+  double get totalKm => _totalKm;
+  double get totalElevation => _totalElevation;
+  int get completedHikes => _completedHikes;
+
+  /// Preference shortcuts
+  bool get isNotificationsEnabled => _preferences?['notifications'] ?? true;
+  bool get isLightTheme => (_preferences?['theme'] ?? 'light') == 'light';
+
+  Future<void> setNotifications(bool enabled) async {
+    await setPreference('notifications', enabled);
+    _preferences ??= {};
+    _preferences!['notifications'] = enabled;
   }
 
-  /// Gets the user's display name
-  Future<String?> getName() async {
-    final doc = await _getUserDoc();
-    return doc?['name'];
+  Future<void> setLightTheme(bool light) async {
+    final theme = light ? 'light' : 'dark';
+    await setPreference('theme', theme);
+    _preferences ??= {};
+    _preferences!['theme'] = theme;
   }
 
-  /// Updates the user's display name
+  /// Setters update both Firebase and local cache
   Future<void> setName(String name) async {
     await db.changeName(uid, name);
+    _name = name;
   }
 
-  /// Gets the user's email address
-  Future<String?> getEmail() async {
-    final doc = await _getUserDoc();
-    return doc?['email'];
+  Future<void> setSelfTitle(String title) async {
+    await db.databaseService.updateDocument('users', uid, {'selfTitle': title});
+    _selfTitle = title;
   }
 
-  /// Gets the user's preferences (theme, language, etc.)
-  Future<Map<String, dynamic>?> getPreferences() async {
-    return await db.getUserPreferences(uid);
-  }
-
-  /// Updates a single preference key (e.g., theme, language)
   Future<void> setPreference(String key, dynamic value) async {
     await db.updatePreferences(uid, key, value);
+    _preferences ??= {};
+    _preferences![key] = value;
   }
 
-  /// Gets the user's self-defined title
-  Future<String?> getSelfTitle() async {
-    final doc = await _getUserDoc();
-    return doc?['selfTitle'];
-  }
-
-  /// Gets the total kilometers hiked
-  Future<double> getTotalKm() async {
-    final doc = await _getUserDoc();
-    return (doc?['totalKm'] ?? 0.0).toDouble();
-  }
-
-  /// Gets the total elevation gained
-  Future<double> getTotalElevation() async {
-    final doc = await _getUserDoc();
-    return (doc?['totalElevation'] ?? 0.0).toDouble();
-  }
-
-  /// Gets the number of completed hikes
-  Future<int> getCompletedHikes() async {
-    final doc = await _getUserDoc();
-    return (doc?['completedHikes'] ?? 0) as int;
-  }
-
-  /// Gets the user's hiking history (list of completed trails)
+  /// Get user's hiking history (live from DB)
   Future<List<Map<String, dynamic>>> getHikingHistory() async {
     return await db.showHikingHistory(uid);
   }
 
-  /// Removes a specific hike from the user's history
+  /// Remove specific hike from history
   Future<void> deleteHike(Map<String, dynamic> hike) async {
     await db.deleteHikeFromHistory(uid, hike);
   }
 
-  /// Adds a trail to the user's saved hikes
+  /// Add trail to saved hikes
   Future<void> addToSaved(Map<String, dynamic> trail) async {
     await db.addToSaves(uid, trail);
   }
 
-  /// Removes a trail from the user's saved hikes
+  /// Remove trail from saved hikes
   Future<void> removeFromSaved(Map<String, dynamic> trail) async {
     await db.removeTrailSaves(uid, trail);
   }
