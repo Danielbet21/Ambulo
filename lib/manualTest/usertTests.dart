@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:ambulo/models/trail.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/utils/user_utils.dart';
@@ -161,6 +162,85 @@ class UserTestsPage extends StatelessWidget {
               },
               child: const Text("Get Hiking History"),
             ),
+            // Create Trail (with name + dummy gpx)
+            ElevatedButton(
+              onPressed: () async {
+                final trailName = await showInputDialog(
+                    context, "Trail Name", "Enter trail name");
+                if (trailName == null || trailName.isEmpty) return;
+
+                final gpx = await showInputDialog(
+                    context, "GPX XML", "Paste GPX data here");
+                if (gpx == null || gpx.isEmpty) return;
+
+                try {
+                  final trailId = await Trail.create(
+                    db: dataManager,
+                    name: trailName,
+                    gpx: gpx,
+                    additionalDetails: {
+                      'difficulty': 'easy',
+                      'season': 'summer',
+                    },
+                  );
+                  print("✅ Trail created: $trailId");
+                } catch (e) {
+                  print("❌ Failed to create trail: $e");
+                }
+              },
+              child: const Text("Create Trail (Quick)"),
+            ),
+
+// Save Trail
+            ElevatedButton(
+              onPressed: () async {
+                final id = await showInputDialog(
+                    context, "Trail ID", "Enter trail ID to save");
+                final name = await showInputDialog(
+                    context, "Trail Name", "Enter trail name");
+                if (id != null && name != null) {
+                  await currentUser?.saveTrail(id, name: name);
+                  print("✅ Trail saved: $id");
+                }
+              },
+              child: const Text("Save Trail"),
+            ),
+
+// Unsave Trail
+            ElevatedButton(
+              onPressed: () async {
+                final id = await showInputDialog(
+                    context, "Trail ID", "Enter trail ID to unsave");
+                if (id != null) {
+                  await currentUser?.unsaveTrail(id);
+                  print("🗑️ Trail unsaved: $id");
+                }
+              },
+              child: const Text("Unsave Trail"),
+            ),
+
+// Complete Trail (mark as hiked)
+            ElevatedButton(
+              onPressed: () async {
+                final id = await showInputDialog(
+                    context, "Trail ID", "Enter trail ID to complete");
+                if (id != null) {
+                  await currentUser?.completeTrail(id);
+                  print("🥾 Trail completed: $id");
+                }
+              },
+              child: const Text("Complete Trail"),
+            ),
+
+// Get saved trail IDs
+            ElevatedButton(
+              onPressed: () async {
+                final ids = await currentUser?.getSavedTrailIds();
+                print("📌 Saved Trails: $ids");
+              },
+              child: const Text("Get Saved Trail IDs"),
+            ),
+
             ElevatedButton(
               onPressed: () async {
                 await logoutUser(dataManager);

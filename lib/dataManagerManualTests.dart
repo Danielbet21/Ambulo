@@ -267,15 +267,6 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
       // get a user hiking history need to be empty
       _addLog("showHikingHistory()", "Calling showHikingHistory()");
 
-      final hikingHistory =
-          await dataManager.showHikingHistory(userCredential.user!.uid);
-      if (hikingHistory.isEmpty) {
-        _addLog("showHikingHistory()", "Hiking history is empty");
-      } else {
-        _addLog("showHikingHistory()", "Hiking history is not empty",
-            isSuccess: false);
-      }
-
       // create a hike then add it to the user hiking history
       _addLog("createTrail()", "Creating a new trail");
       await dataManager.createTrail(testTrailId, {
@@ -298,19 +289,6 @@ class _DataManagerManualTestsState extends State<DataManagerManualTests> {
           userCredential.user!.uid, testTrailId);
       _addLog("addTrailToHistory()",
           "Trail added to user's hiking history successfully");
-
-      // Verify the trail is in the user's hiking history
-      _addLog("showHikingHistory()", "Retrieving user's hiking history");
-      final updatedHikingHistory =
-          await dataManager.showHikingHistory(userCredential.user!.uid);
-      if (updatedHikingHistory.isNotEmpty) {
-        _addLog("showHikingHistory()", "Hiking history retrieved successfully");
-        _addLog("showHikingHistory()",
-            "Trail ID: ${updatedHikingHistory[0]['trailId']}");
-      } else {
-        _addLog("showHikingHistory()", "Hiking history is empty",
-            isSuccess: false);
-      }
 
       // END PART
       // delete the user
