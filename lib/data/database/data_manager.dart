@@ -231,7 +231,7 @@ class DataManager {
   Future<void> createTrail(
       String trailId, Map<String, dynamic> trailData) async {
     await databaseService.setData('trails', trailId, {
-      'trackId': trailData['trackId'],
+      'official': false,
       'trailDetails': trailData['trailDetails'] ?? {},
       'photosURL': [],
       'gpx': trailData['gpx'] ?? '',
@@ -294,7 +294,7 @@ class DataManager {
     // Get current rating data
     final trailData = await databaseService.getDocument('trails', trailId);
     int currentRatings = trailData?['ratingCount'] ?? 0;
-    double currentRating = trailData?['Rating'] ?? 0.0;
+    double currentRating = trailData?['rating'] ?? 0.0;
 
     // Calculate new average rating
     double newRating =
@@ -309,6 +309,9 @@ class DataManager {
 
   // Update mosquito rating
   Future<void> updateMosquitoRating(String trailId, double rating) async {
+    if (rating < 0 || rating > 5) {
+      throw Exception("Rating must be between 0 and 5");
+    }
     // Similar to trail rating, but for mosquito presence
     final trailData = await databaseService.getDocument('trails', trailId);
     int currentRatings = trailData?['mosquitoRatings'] ?? 0;
