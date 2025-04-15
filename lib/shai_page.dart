@@ -1,8 +1,9 @@
 import 'package:ambulo/manualTest/WeatherTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
-import 'package:ambulo/views/pages/map_page.dart';
+import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:flutter/material.dart';
 import 'manualTest/usertTests.dart'; // Import the userTests page
+import 'views/pages/NavigationPage.dart'; // Import the new NavigationPage
 
 class ShaiPage extends StatelessWidget {
   const ShaiPage({super.key});
@@ -55,9 +56,12 @@ class ShaiPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                // Add navigation logic for another page here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NavigationPage()),
+                );
               },
-              child: const Text('Button 3'),
+              child: const Text('Go To Navigation'),
             ),
             // Add more buttons as needed
           ],
