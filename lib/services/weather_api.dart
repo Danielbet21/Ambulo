@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // ====================================================================
-// 🔐 YOUR API KEY HERE
+// YOUR API KEY HERE
 const String _apiKey = '38fd749a09e0266464c859addd4b37fe';
 // ====================================================================
 
