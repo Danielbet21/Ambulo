@@ -1,6 +1,7 @@
 // trail_suggester_test.dart
 
 import 'package:ambulo/utils/trail_suggester.dart';
+import 'package:ambulo/views/widgets/trail_card.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/models/trail_keys.dart';
@@ -23,7 +24,7 @@ class _TrailSuggesterTestPageState extends State<TrailSuggesterTestPage> {
   double? maxDistance;
   int? maxEstimatedTime;
 
-  List<String> trailNames = [];
+  List<Map<String, dynamic>> suggestedTrailDetails = [];
 
   void _runSuggestion() async {
     final prefs = TrailPreferences(
@@ -42,13 +43,11 @@ class _TrailSuggesterTestPageState extends State<TrailSuggesterTestPage> {
     final results = await suggester.suggestTrails(prefs);
 
     setState(() {
-      trailNames = results
-          .map((doc) {
-            final details = Map<String, dynamic>.from(doc['trailDetails']);
-            return details[TrailKeys.name] ?? 'Unnamed Trail';
-          })
-          .toList()
-          .cast<String>();
+      suggestedTrailDetails = results.map((doc) {
+        final details = Map<String, dynamic>.from(doc['trailDetails']);
+        details['trailId'] = doc.id;
+        return details;
+      }).toList();
     });
   }
 
@@ -131,7 +130,10 @@ class _TrailSuggesterTestPageState extends State<TrailSuggesterTestPage> {
             const SizedBox(height: 20),
             const Text("Suggested Trails:",
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            ...trailNames.map((name) => ListTile(title: Text(name))).toList(),
+            ...suggestedTrailDetails.map((trail) => TrailCard(
+                  trailDetails: trail,
+                  onTap: () => print("Tapped ${trail[TrailKeys.name]}"),
+                )),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:ambulo/main.dart';
+import 'package:ambulo/manualTest/TrailPageTest.dart';
 import 'package:ambulo/manualTest/WeatherTest.dart';
 import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
@@ -120,6 +121,21 @@ class ShaiPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Go To Trail Suggester Test'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    const trailId = '1744731419543';
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TrailPageTest(
+                          trailId: trailId,
+                          testUser: testUser,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Go To Trail Page Test'),
                 ),
               ],
             ),

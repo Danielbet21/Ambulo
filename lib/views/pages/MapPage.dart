@@ -24,7 +24,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   final MapController _mapController = MapController();
-  final LatLng _currentPosition = LatLng(31.7683, 35.2137);
+  final LatLng _defaultPosition = LatLng(31.7683, 35.2137);
   String _currentMapLayer = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
   String _weatherInfo = 'Loading weather...';
   bool _isWeatherVisible = true;
@@ -33,8 +33,8 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    _initializeMap();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeMap();
       _fetchWeather();
     });
   }
@@ -42,18 +42,16 @@ class _MapPageState extends State<MapPage> {
   @override
   void didUpdateWidget(covariant MapPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.routePoints.length > 1) {
-      final bounds = LatLngBounds.fromPoints(widget.routePoints);
-      _mapController.fitCamera(CameraFit.bounds(
-        bounds: bounds,
-        padding: const EdgeInsets.all(50),
-      ));
-    }
+    _fitToRouteBounds();
   }
 
   Future<void> _initializeMap() async {
     try {
-      await MapsOps.centerToMyLocation(_mapController);
+      if (widget.routePoints.length > 1) {
+        _fitToRouteBounds();
+      } else {
+        await MapsOps.centerToMyLocation(_mapController);
+      }
       _mapController.mapEventStream.listen((event) {
         if (event is MapEventMove) {
           _updateScale();
@@ -63,6 +61,16 @@ class _MapPageState extends State<MapPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Unable to access location: $e')),
       );
+    }
+  }
+
+  void _fitToRouteBounds() {
+    if (widget.routePoints.length > 1) {
+      final bounds = LatLngBounds.fromPoints(widget.routePoints);
+      _mapController.fitCamera(CameraFit.bounds(
+        bounds: bounds,
+        padding: const EdgeInsets.all(50),
+      ));
     }
   }
 
@@ -92,41 +100,12 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Map', style: context.textTheme.titleLarge),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.wb_sunny),
-            onPressed: () {
-              setState(() {
-                _isWeatherVisible = !_isWeatherVisible;
-              });
-            },
-            tooltip: 'Toggle weather information',
-          ),
-          IconButton(
-            icon: const Icon(Icons.layers),
-            onPressed: () => _showMapLayersDialog(),
-            tooltip: 'Change map layer',
-          ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () => MapsOps.showLegend(context),
-            tooltip: 'Show map legend',
-          ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => _showSearchDialog(),
-            tooltip: 'Search location',
-          ),
-        ],
-      ),
       body: Stack(
         children: [
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: _currentPosition,
+              initialCenter: _defaultPosition,
               initialZoom: 13.0,
               maxZoom: 18.0,
               minZoom: 3.0,
@@ -200,13 +179,37 @@ class _MapPageState extends State<MapPage> {
             left: 16,
             child: _buildScaleBar(),
           ),
-          if (_isWeatherVisible)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: _buildWeatherInfo(),
+          Positioned(
+            top: 16,
+            right: 16,
+            child: Row(
+              children: [
+                _buildWeatherInfo(),
+                const SizedBox(width: 8),
+                _buildFAB(Icons.layers, _showMapLayersDialog, 'layers_btn',
+                    'Change map layer'),
+                _buildFAB(Icons.info_outline, () => MapsOps.showLegend(context),
+                    'legend_btn', 'Show map legend'),
+                _buildFAB(Icons.search, _showSearchDialog, 'search_btn',
+                    'Search location'),
+              ],
             ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFAB(
+      IconData icon, VoidCallback onTap, String tag, String tooltip) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FloatingActionButton(
+        mini: true,
+        heroTag: tag,
+        onPressed: onTap,
+        tooltip: tooltip,
+        child: Icon(icon),
       ),
     );
   }
