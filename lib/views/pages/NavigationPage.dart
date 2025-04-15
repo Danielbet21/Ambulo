@@ -195,16 +195,18 @@ class _NavigationPageState extends State<NavigationPage> {
           userAgentPackageName: 'com.example.ambulo',
         ),
         // Show the recorded route
-        PolylineLayer(
-          polylines: [
-            Polyline(
-              points: _routePoints,
-              strokeWidth: 4.0,
-              color: Colors.blue,
-              borderColor: Colors.white,
-              borderStrokeWidth: 2.0,
-            ),
-          ],
+        PolylineLayer<Object>(
+          polylines: _routePoints.isNotEmpty
+              ? [
+                  Polyline<Object>(
+                    points: _routePoints,
+                    strokeWidth: 4.0,
+                    color: Colors.blue,
+                    borderColor: Colors.white,
+                    borderStrokeWidth: 2.0,
+                  ),
+                ]
+              : [],
         ),
         // Show current position marker if navigating
         if (_isNavigating && _routePoints.isNotEmpty)
