@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
 import 'package:ambulo/utils/maps_ops.dart';
@@ -146,19 +148,39 @@ class _MapPageState extends State<MapPage> {
                     ),
                   ],
                 ),
-              if (widget.waypoints.isNotEmpty)
+              if (widget.routePoints.isNotEmpty)
                 MarkerLayer(
-                  markers: widget.waypoints.map((poi) {
-                    return Marker(
-                      point: poi['position'],
+                  markers: [
+                    Marker(
+                      point: widget.routePoints.first,
                       width: 40,
                       height: 40,
-                      child: Tooltip(
-                        message: poi['name'] ?? '',
-                        child: const Icon(Icons.place, color: Colors.red),
+                      child: const Tooltip(
+                        message: 'Start',
+                        child: Icon(Icons.flag, color: Colors.green),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                    Marker(
+                      point: widget.routePoints.last,
+                      width: 40,
+                      height: 40,
+                      child: const Tooltip(
+                        message: 'End',
+                        child: Icon(Icons.flag, color: Colors.red),
+                      ),
+                    ),
+                    ...widget.waypoints.map((poi) {
+                      return Marker(
+                        point: poi['position'],
+                        width: 40,
+                        height: 40,
+                        child: Tooltip(
+                          message: poi['name'] ?? '',
+                          child: const Icon(Icons.place, color: Colors.red),
+                        ),
+                      );
+                    }).toList(),
+                  ],
                 ),
             ],
           ),
