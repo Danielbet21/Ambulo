@@ -4,7 +4,6 @@ import '../data/database/data_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Trail {
-  
   static Future<String> create({
     required DataManager db,
     required String name,

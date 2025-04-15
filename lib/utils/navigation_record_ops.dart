@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -25,6 +26,9 @@ class NavigationRecordOps {
 
   // Recording timer
   Timer? _recordingTimer;
+
+  /// Optional callback for notifying UI on metric updates
+  VoidCallback? onMetricsUpdated;
 
   /// Constructor
   NavigationRecordOps();
@@ -59,7 +63,6 @@ class NavigationRecordOps {
 
         final newPoint = LatLng(position.latitude, position.longitude);
 
-        // Calculate distance if we have previous points
         if (_routePoints.isNotEmpty) {
           final lastPoint = _routePoints.last;
           final segmentDistance = const Distance().as(
@@ -70,13 +73,9 @@ class NavigationRecordOps {
           _totalDistance += segmentDistance;
         }
 
-        // Add new point to route
         _routePoints.add(newPoint);
-
-        // Record elevation
         _elevations.add(position.altitude);
 
-        // Calculate elevation gain
         if (_elevations.length > 1) {
           final elevDiff =
               _elevations.last - _elevations[_elevations.length - 2];
@@ -84,6 +83,8 @@ class NavigationRecordOps {
             _elevationGain += elevDiff;
           }
         }
+
+        onMetricsUpdated?.call();
       } catch (e) {
         print('Error recording position: $e');
       }
@@ -91,14 +92,10 @@ class NavigationRecordOps {
   }
 
   /// Load an existing track for navigation
-  ///
-  /// [routePoints] - List of points defining the route
-  /// [waypoints] - List of waypoints along the route (optional)
   void loadTrack(List<LatLng> routePoints,
       [List<Map<String, dynamic>>? waypoints]) {
     _routePoints = routePoints;
 
-    // Calculate target distance for progress tracking
     if (routePoints.length > 1) {
       _targetDistance = 0;
       for (int i = 0; i < routePoints.length - 1; i++) {
@@ -114,51 +111,45 @@ class NavigationRecordOps {
     if (waypoints != null) {
       _waypoints = waypoints;
     }
+
+    onMetricsUpdated?.call();
   }
 
   /// Show elapsed time in HH:MM:SS format
   String showElapsedTime() {
-    if (_startTime == null) {
-      return "00:00:00";
-    }
+    if (_startTime == null) return "00:00:00";
 
     final now = _endTime ?? DateTime.now();
-    final difference = now.difference(_startTime!);
+    final diff = now.difference(_startTime!);
 
-    final hours = difference.inHours.toString().padLeft(2, '0');
-    final minutes = (difference.inMinutes % 60).toString().padLeft(2, '0');
-    final seconds = (difference.inSeconds % 60).toString().padLeft(2, '0');
+    final h = diff.inHours.toString().padLeft(2, '0');
+    final m = (diff.inMinutes % 60).toString().padLeft(2, '0');
+    final s = (diff.inSeconds % 60).toString().padLeft(2, '0');
 
-    return "$hours:$minutes:$seconds";
+    return "$h:$m:$s";
   }
 
-  /// Show the distance traveled in kilometers
-  double showNumOfKM() {
-    return _totalDistance;
-  }
+  /// Show distance in kilometers
+  double showNumOfKM() => _totalDistance;
 
-  /// Show elevation gain in meters
-  double showElevationGain() {
-    return _elevationGain;
-  }
+  /// Show total elevation gain
+  double showElevationGain() => _elevationGain;
 
-  /// Show progress percentage based on target distance or time
+  /// Show progress percentage
   double showProgressPercentage() {
-    // If we have a target distance, use distance-based progress
     if (_targetDistance != null && _targetDistance! > 0) {
       return min(1.0, _totalDistance / _targetDistance!);
     }
-
-    // Otherwise return a placeholder value or time-based progress
     return 0.0;
   }
 
   /// Get the current route points
-  List<LatLng> getCurrentRoute() {
-    return _routePoints;
-  }
+  List<LatLng> getCurrentRoute() => _routePoints;
 
-  /// Get complete session data for export or analysis
+  /// ✅ NEW: Get waypoints
+  List<Map<String, dynamic>> getWaypoints() => _waypoints;
+
+  /// Get session data
   Map<String, dynamic> getSessionData() {
     return {
       'startTime': _startTime ?? DateTime.now(),
