@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ambulo/models/trail.dart';
 import 'package:gpx/gpx.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:ambulo/helpers/image_helper.dart';
 
 class TrailPage extends StatefulWidget {
   final String trailId;
@@ -23,6 +24,7 @@ class TrailPage extends StatefulWidget {
 class _TrailPageState extends State<TrailPage> {
   Map<String, dynamic>? trailDetails;
   List<LatLng> routePoints = [];
+  List<String> trailPhotos = [];
   bool isLoading = true;
 
   @override
@@ -54,8 +56,12 @@ class _TrailPageState extends State<TrailPage> {
         }
       }
 
+      final imageHelper = ImageHelpers(dataManager: widget.user.db);
+      final photos = await imageHelper.getTrailPhotos(widget.trailId);
+
       setState(() {
         trailDetails = details;
+        trailPhotos = photos;
         isLoading = false;
       });
     } catch (e) {
@@ -81,20 +87,51 @@ class _TrailPageState extends State<TrailPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (trailPhotos.isNotEmpty)
+            SizedBox(
+              height: 220,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: trailPhotos.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: AspectRatio(
+                      aspectRatio: 4 / 3,
+                      child: Image.network(
+                        trailPhotos[index],
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.broken_image),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          else
+            Container(
+              height: 200,
+              color: Colors.grey[300],
+              alignment: Alignment.center,
+              child: const Text("No images available"),
+            ),
+          const SizedBox(height: 16),
           Container(
-            height: 400,
-            color: Colors.grey[300],
-            alignment: Alignment.center,
+            height: 300,
             child: routePoints.isEmpty
-                ? const Text("No route map available")
+                ? const Center(child: Text("No route map available"))
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: SizedBox(
-                      height: 400,
-                      child: MapPage(
-                        routePoints: routePoints,
-                        waypoints: const [],
-                      ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return MapPage(
+                          routePoints: routePoints,
+                          waypoints: const [],
+                        );
+                      },
                     ),
                   ),
           ),
@@ -104,23 +141,33 @@ class _TrailPageState extends State<TrailPage> {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 24),
-          Wrap(
-            spacing: 20,
-            runSpacing: 12,
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 3,
             children: [
-              _infoRow("Region", trailDetails![TrailKeys.region]),
-              _infoRow("Distance (km)",
-                  trailDetails![TrailKeys.distance]?.toString()),
-              _infoRow("Estimated Time",
+              _infoCard(Icons.map, "Region", trailDetails![TrailKeys.region]),
+              _infoCard(Icons.straighten, "Distance",
+                  "${trailDetails![TrailKeys.distance]} km"),
+              _infoCard(Icons.timer, "Time",
                   "${trailDetails![TrailKeys.estimatedTime]} min"),
-              _infoRow("Loop", trailDetails![TrailKeys.loop] ? "Yes" : "No"),
-              _infoRow("Difficulty", trailDetails![TrailKeys.difficulty]),
-              _infoRow("Trail Type", trailDetails![TrailKeys.trailType]),
-              _infoRow("Surface", trailDetails![TrailKeys.surfaceType]),
-              _infoRow("Season", trailDetails![TrailKeys.recommendedSeason]),
-              _infoRow("Water Sections",
+              _infoCard(Icons.loop, "Loop",
+                  trailDetails![TrailKeys.loop] ? "Yes" : "No"),
+              _infoCard(Icons.trending_up, "Difficulty",
+                  trailDetails![TrailKeys.difficulty]),
+              _infoCard(Icons.group, "Trail Type",
+                  trailDetails![TrailKeys.trailType]),
+              _infoCard(Icons.terrain, "Surface",
+                  trailDetails![TrailKeys.surfaceType]),
+              _infoCard(Icons.wb_sunny, "Season",
+                  trailDetails![TrailKeys.recommendedSeason]),
+              _infoCard(Icons.water, "Water",
                   trailDetails![TrailKeys.hasWaterSections] ? "Yes" : "No"),
-              _infoRow(
+              _infoCard(
+                  Icons.attach_money,
                   "Payment",
                   trailDetails![TrailKeys.requiresPayment]
                       ? "Required"
@@ -163,6 +210,36 @@ class _TrailPageState extends State<TrailPage> {
         Text("$label: ", style: const TextStyle(fontWeight: FontWeight.bold)),
         Expanded(child: Text(value ?? "-")),
       ],
+    );
+  }
+
+  Widget _infoCard(IconData icon, String label, String? value) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: Theme.of(context).textTheme.labelSmall),
+                const SizedBox(height: 2),
+                Text(value ?? "-",
+                    style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

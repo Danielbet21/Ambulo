@@ -5,6 +5,10 @@ import 'package:ambulo/views/widgets/trail_card.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/models/trail_keys.dart';
+import 'package:ambulo/views/pages/trail_page.dart';
+import 'package:ambulo/models/user.dart';
+
+final testUser = User(dataManager);
 
 class TrailSuggesterTestPage extends StatefulWidget {
   const TrailSuggesterTestPage({super.key});
@@ -44,9 +48,10 @@ class _TrailSuggesterTestPageState extends State<TrailSuggesterTestPage> {
 
     setState(() {
       suggestedTrailDetails = results.map((doc) {
-        final details = Map<String, dynamic>.from(doc['trailDetails']);
-        details['trailId'] = doc.id;
-        return details;
+        final full =
+            Map<String, dynamic>.from(doc.data() as Map<String, dynamic>);
+        full['trailId'] = doc.id;
+        return full;
       }).toList();
     });
   }
@@ -130,10 +135,23 @@ class _TrailSuggesterTestPageState extends State<TrailSuggesterTestPage> {
             const SizedBox(height: 20),
             const Text("Suggested Trails:",
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            ...suggestedTrailDetails.map((trail) => TrailCard(
-                  trailDetails: trail,
-                  onTap: () => print("Tapped ${trail[TrailKeys.name]}"),
-                )),
+            ...suggestedTrailDetails.map((fullData) {
+              final details =
+                  fullData['trailDetails'] as Map<String, dynamic>? ?? {};
+              final imageList = fullData['photosURL'] as List? ?? [];
+              return TrailCard(
+                fullTrailData: fullData,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TrailPage(
+                      trailId: fullData['trailId'],
+                      user: testUser,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
           ],
         ),
       ),
