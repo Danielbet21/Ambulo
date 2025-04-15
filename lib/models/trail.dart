@@ -2,6 +2,7 @@
 
 import '../data/database/data_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'trail_keys.dart';
 
 class Trail {
   static Future<String> create({
@@ -12,11 +13,38 @@ class Trail {
   }) async {
     final trailId = DateTime.now().millisecondsSinceEpoch.toString();
     try {
-      final trailDetails = {'name': name, ...additionalDetails};
+      final trailDetails = {
+        TrailKeys.name: name,
+        TrailKeys.description: additionalDetails[TrailKeys.description] ?? '',
+        TrailKeys.distance: additionalDetails[TrailKeys.distance] ?? 0.0,
+        TrailKeys.region: additionalDetails[TrailKeys.region] ?? '',
+        TrailKeys.loop: additionalDetails[TrailKeys.loop] ?? false,
+        TrailKeys.hasWaterSections:
+            additionalDetails[TrailKeys.hasWaterSections] ?? false,
+        TrailKeys.nights: additionalDetails[TrailKeys.nights] ?? 0,
+        TrailKeys.trailType: additionalDetails[TrailKeys.trailType] ?? '',
+        TrailKeys.difficulty: additionalDetails[TrailKeys.difficulty] ?? '',
+        TrailKeys.startingPoint:
+            additionalDetails[TrailKeys.startingPoint] ?? '',
+        TrailKeys.endingPoint: additionalDetails[TrailKeys.endingPoint] ?? '',
+        TrailKeys.requiresPayment:
+            additionalDetails[TrailKeys.requiresPayment] ?? false,
+        TrailKeys.recommendedSeason:
+            additionalDetails[TrailKeys.recommendedSeason] ?? '',
+        TrailKeys.surfaceType: additionalDetails[TrailKeys.surfaceType] ?? '',
+        TrailKeys.estimatedTime:
+            additionalDetails[TrailKeys.estimatedTime] ?? 0,
+        TrailKeys.official: additionalDetails[TrailKeys.official] ?? false,
+        TrailKeys.userUid: additionalDetails[TrailKeys.userUid] ?? '',
+        TrailKeys.createdAt: additionalDetails[TrailKeys.createdAt] ??
+            FieldValue.serverTimestamp(),
+      };
+
       final data = {
         'trailDetails': trailDetails,
         'gpx': gpx,
       };
+
       await db.createTrail(trailId, data);
       return trailId;
     } catch (e) {
