@@ -1,5 +1,6 @@
 import 'package:ambulo/main.dart';
 import 'package:ambulo/manualTest/WeatherTest.dart';
+import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,16 @@ class ShaiPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Start Navigation from Trail'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TrailSuggesterTestPage()),
+                    );
+                  },
+                  child: const Text('Go To Trail Suggester Test'),
                 ),
               ],
             ),
