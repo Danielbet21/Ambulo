@@ -11,11 +11,13 @@ import 'package:ambulo/services/weather_api.dart';
 class MapPage extends StatefulWidget {
   final List<LatLng> routePoints;
   final List<Map<String, dynamic>> waypoints;
+  final bool triggerRender; // Add this parameter
 
   const MapPage({
     super.key,
     this.routePoints = const [],
     this.waypoints = const [],
+    this.triggerRender = false, // Default to false
   });
 
   @override
@@ -33,6 +35,7 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
+    // Use a shorter delay to initialize the map quickly after frame is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeMap();
       _fetchWeather();
@@ -42,12 +45,26 @@ class _MapPageState extends State<MapPage> {
   @override
   void didUpdateWidget(covariant MapPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _fitToRouteBounds();
+    // Ensure map is updated when widget is updated
+    if (widget.triggerRender && !oldWidget.triggerRender) {
+      // Add small delay to ensure controller is ready
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          _fitToRouteBounds();
+          // Force redraw of the map
+          setState(() {});
+        }
+      });
+    } else {
+      _fitToRouteBounds();
+    }
   }
 
   Future<void> _initializeMap() async {
     try {
       if (widget.routePoints.length > 1) {
+        // Add small delay to ensure controller is ready
+        await Future.delayed(const Duration(milliseconds: 50));
         _fitToRouteBounds();
       } else {
         await MapsOps.centerToMyLocation(_mapController);
@@ -57,20 +74,37 @@ class _MapPageState extends State<MapPage> {
           _updateScale();
         }
       });
+
+      // Force a rebuild after map is initialized
+      if (mounted) {
+        setState(() {});
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to access location: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to access location: $e')),
+        );
+      }
     }
   }
 
   void _fitToRouteBounds() {
     if (widget.routePoints.length > 1) {
-      final bounds = LatLngBounds.fromPoints(widget.routePoints);
-      _mapController.fitCamera(CameraFit.bounds(
-        bounds: bounds,
-        padding: const EdgeInsets.all(50),
-      ));
+      try {
+        final bounds = LatLngBounds.fromPoints(widget.routePoints);
+        _mapController.fitCamera(CameraFit.bounds(
+          bounds: bounds,
+          padding: const EdgeInsets.all(50),
+        ));
+
+        // Force a rebuild after fitting bounds
+        if (mounted && widget.triggerRender) {
+          setState(() {});
+        }
+      } catch (e) {
+        // Handle any potential errors during fitting bounds
+        print('Error fitting bounds: $e');
+      }
     }
   }
 

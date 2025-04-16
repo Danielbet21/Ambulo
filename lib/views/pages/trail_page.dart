@@ -127,9 +127,18 @@ class _TrailPageState extends State<TrailPage> {
                     borderRadius: BorderRadius.circular(12),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        return MapPage(
-                          routePoints: routePoints,
-                          waypoints: const [],
+                        // Create a key to force rebuild of MapPage when constraints are available
+                        final mapKey = GlobalKey();
+                        return SizedBox(
+                          width: constraints.maxWidth,
+                          height: 300,
+                          key: mapKey,
+                          child: MapPage(
+                            routePoints: routePoints,
+                            waypoints: const [],
+                            // Add triggerRender parameter to force map to render immediately
+                            triggerRender: true,
+                          ),
                         );
                       },
                     ),
