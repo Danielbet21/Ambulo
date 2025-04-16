@@ -1,6 +1,7 @@
 // NavigationPage with styled save/discard dialog
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:ambulo/views/widgets/AlertFormWidget.dart';
 import 'package:ambulo/models/trail_alert.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +130,10 @@ class _NavigationPageState extends State<NavigationPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Report an Alert"),
-        content: AlertFormWidget(currentLocation: selectedLocation),
+        content: SizedBox(
+          width: 400, // Set a fixed width
+          child: AlertFormWidget(currentLocation: selectedLocation),
+        ),
       ),
     );
 
