@@ -150,6 +150,34 @@ class _NavigationPageState extends State<NavigationPage> {
     }
   }
 
+  void _confirmDeleteAlert(LatLng pos) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Delete Alert"),
+        content: const Text("Do you want to delete this alert for all users?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancel")),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Delete")),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() {
+      _waypoints.removeWhere((w) => w['position'] == pos);
+    });
+
+    if (widget.trailId != null) {
+      await Trail.removeWaypoint(widget.user.db, widget.trailId!, pos);
+    }
+  }
+
   void _startNavigation() {
     setState(() => _isNavigating = true);
     _recordOps.startSession();
@@ -289,6 +317,7 @@ class _NavigationPageState extends State<NavigationPage> {
             triggerRender: true,
             onTapToAddPoint:
                 _isSelectingAlertLocation ? _handleAlertLocationSelected : null,
+            onAlertTapped: _confirmDeleteAlert,
           ),
           Positioned(
             top: 100,

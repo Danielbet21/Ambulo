@@ -2,6 +2,7 @@
 
 import 'package:ambulo/models/trail_alert.dart';
 import 'package:gpx/gpx.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../data/database/data_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -141,6 +142,36 @@ class Trail {
       print("✅ GPX updated successfully with new alert.");
     } catch (e) {
       print("❌ Failed to append waypoint to trail: $e");
+    }
+  }
+
+  static Future<void> removeWaypoint(
+    DataManager db,
+    String trailId,
+    LatLng location,
+  ) async {
+    try {
+      final snapshot = await db.databaseService.getDocument('trails', trailId);
+      final gpxRaw = snapshot?['gpx'] as String?;
+      if (gpxRaw == null) return;
+
+      final gpx = GpxReader().fromString(gpxRaw);
+
+      gpx.wpts.removeWhere((wpt) =>
+          wpt.lat != null &&
+          wpt.lon != null &&
+          wpt.lat == location.latitude &&
+          wpt.lon == location.longitude);
+
+      final updatedGpx = GpxWriter().asString(gpx, pretty: true);
+
+      await db.databaseService.updateDocument('trails', trailId, {
+        'gpx': updatedGpx,
+      });
+
+      print("✅ Waypoint removed from GPX.");
+    } catch (e) {
+      print("❌ Failed to remove waypoint: $e");
     }
   }
 }

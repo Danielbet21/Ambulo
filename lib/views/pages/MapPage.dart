@@ -14,6 +14,7 @@ class MapPage extends StatefulWidget {
   final bool triggerRender;
   final bool shouldAutoCenter; // Add this parameter
   final void Function(LatLng)? onTapToAddPoint;
+  final void Function(LatLng)? onAlertTapped;
 
   const MapPage({
     super.key,
@@ -22,6 +23,7 @@ class MapPage extends StatefulWidget {
     this.triggerRender = false,
     this.shouldAutoCenter = true, // Default to true for backward compatibility
     this.onTapToAddPoint,
+    this.onAlertTapped,
   });
 
   @override
@@ -207,15 +209,23 @@ class _MapPageState extends State<MapPage> {
                         'Stream',
                         'Spring'
                       ].contains(name);
+
                       return Marker(
                         point: poi['position'],
                         width: 40,
                         height: 40,
-                        child: Tooltip(
-                          message: name,
-                          child: Icon(
-                            isAlert ? Icons.warning_amber : Icons.place,
-                            color: isAlert ? Colors.orange : Colors.red,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (isAlert) {
+                              widget.onAlertTapped?.call(poi['position']);
+                            }
+                          },
+                          child: Tooltip(
+                            message: name,
+                            child: Icon(
+                              isAlert ? Icons.warning_amber : Icons.place,
+                              color: isAlert ? Colors.orange : Colors.red,
+                            ),
                           ),
                         ),
                       );
