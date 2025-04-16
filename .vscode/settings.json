@@ -2,6 +2,7 @@
   "dart.flutterSdkPath": ".fvm/versions/3.29.0",
   "cSpell.words": [
     "Holon",
+    "latlng",
     "latlong",
     "trksegs",
     "wpts",

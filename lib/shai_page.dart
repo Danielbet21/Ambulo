@@ -1,7 +1,10 @@
 import 'package:ambulo/main.dart';
+import 'package:ambulo/manualTest/TrailPageTest.dart';
 import 'package:ambulo/manualTest/WeatherTest.dart';
+import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
+import 'package:ambulo/views/pages/MyTrailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'manualTest/usertTests.dart';
@@ -97,7 +100,7 @@ class ShaiPage extends StatelessWidget {
                   onPressed: () {
                     // const String trailId =
                     //     '1744711733881'; // Holon
-                    const String trailId = '1744711992952'; // yavniel
+                    const String trailId = '1744731419543'; // yavniel
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -109,6 +112,43 @@ class ShaiPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Start Navigation from Trail'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TrailSuggesterTestPage()),
+                    );
+                  },
+                  child: const Text('Go To Trail Suggester Test'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    const trailId = '1744731419543';
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TrailPageTest(
+                          trailId: trailId,
+                          testUser: testUser,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Go To Trail Page Test'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MyTrailsPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go To Trail My Trails Page'),
                 ),
               ],
             ),

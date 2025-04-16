@@ -1,7 +1,12 @@
 // ignore_for_file: avoid_print
 
+import 'package:ambulo/models/trail_alert.dart';
+import 'package:gpx/gpx.dart';
+import 'package:latlong2/latlong.dart';
+
 import '../data/database/data_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'trail_keys.dart';
 
 class Trail {
   static Future<String> create({
@@ -12,11 +17,38 @@ class Trail {
   }) async {
     final trailId = DateTime.now().millisecondsSinceEpoch.toString();
     try {
-      final trailDetails = {'name': name, ...additionalDetails};
+      final trailDetails = {
+        TrailKeys.name: name,
+        TrailKeys.description: additionalDetails[TrailKeys.description] ?? '',
+        TrailKeys.distance: additionalDetails[TrailKeys.distance] ?? 0.0,
+        TrailKeys.region: additionalDetails[TrailKeys.region] ?? '',
+        TrailKeys.loop: additionalDetails[TrailKeys.loop] ?? false,
+        TrailKeys.hasWaterSections:
+            additionalDetails[TrailKeys.hasWaterSections] ?? false,
+        TrailKeys.nights: additionalDetails[TrailKeys.nights] ?? 0,
+        TrailKeys.trailType: additionalDetails[TrailKeys.trailType] ?? '',
+        TrailKeys.difficulty: additionalDetails[TrailKeys.difficulty] ?? '',
+        TrailKeys.startingPoint:
+            additionalDetails[TrailKeys.startingPoint] ?? '',
+        TrailKeys.endingPoint: additionalDetails[TrailKeys.endingPoint] ?? '',
+        TrailKeys.requiresPayment:
+            additionalDetails[TrailKeys.requiresPayment] ?? false,
+        TrailKeys.recommendedSeason:
+            additionalDetails[TrailKeys.recommendedSeason] ?? '',
+        TrailKeys.surfaceType: additionalDetails[TrailKeys.surfaceType] ?? '',
+        TrailKeys.estimatedTime:
+            additionalDetails[TrailKeys.estimatedTime] ?? 0,
+        TrailKeys.official: additionalDetails[TrailKeys.official] ?? false,
+        TrailKeys.userUid: additionalDetails[TrailKeys.userUid] ?? '',
+        TrailKeys.createdAt: additionalDetails[TrailKeys.createdAt] ??
+            FieldValue.serverTimestamp(),
+      };
+
       final data = {
         'trailDetails': trailDetails,
         'gpx': gpx,
       };
+
       await db.createTrail(trailId, data);
       return trailId;
     } catch (e) {
@@ -84,6 +116,62 @@ class Trail {
       await db.deleteTrail(trailId);
     } catch (e) {
       print('Error deleting trail: $e');
+    }
+  }
+
+  static Future<void> appendWaypoint(
+    DataManager db,
+    String trailId,
+    TrailAlert alert,
+  ) async {
+    try {
+      final snapshot = await db.databaseService.getDocument('trails', trailId);
+      final gpxRaw = snapshot?['gpx'] as String?;
+
+      if (gpxRaw == null) return;
+
+      final gpx = GpxReader().fromString(gpxRaw);
+      gpx.wpts.add(alert.toWaypoint());
+
+      final updatedGpx = GpxWriter().asString(gpx, pretty: true);
+
+      await db.databaseService.updateDocument('trails', trailId, {
+        'gpx': updatedGpx,
+      });
+
+      print("✅ GPX updated successfully with new alert.");
+    } catch (e) {
+      print("❌ Failed to append waypoint to trail: $e");
+    }
+  }
+
+  static Future<void> removeWaypoint(
+    DataManager db,
+    String trailId,
+    LatLng location,
+  ) async {
+    try {
+      final snapshot = await db.databaseService.getDocument('trails', trailId);
+      final gpxRaw = snapshot?['gpx'] as String?;
+      if (gpxRaw == null) return;
+
+      final gpx = GpxReader().fromString(gpxRaw);
+
+      gpx.wpts.removeWhere((wpt) =>
+          wpt.lat != null &&
+          wpt.lon != null &&
+          wpt.lat == location.latitude &&
+          wpt.lon == location.longitude);
+
+      final updatedGpx = GpxWriter().asString(gpx, pretty: true);
+
+      await db.databaseService.updateDocument('trails', trailId, {
+        'gpx': updatedGpx,
+      });
+
+      print("✅ Waypoint removed from GPX.");
+    } catch (e) {
+      print("❌ Failed to remove waypoint: $e");
     }
   }
 }

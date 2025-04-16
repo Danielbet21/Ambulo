@@ -1,6 +1,9 @@
 // NavigationPage with styled save/discard dialog
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:ambulo/views/pages/CreateTrailPage.dart';
+import 'package:ambulo/views/widgets/AlertFormWidget.dart';
+import 'package:ambulo/models/trail_alert.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/data/styles/constant.dart';
@@ -11,6 +14,9 @@ import 'package:ambulo/models/trail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gpx/gpx.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:async';
+
+bool _isSelectingAlertLocation = false;
 
 class NavigationPage extends StatefulWidget {
   final String? trailId;
@@ -25,10 +31,13 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   final NavigationRecordOps _recordOps = NavigationRecordOps();
   bool _isNavigating = false;
+  bool _isGpxBasedTrail =
+      false; // Flag to track if we're using a GPX-based trail
   double _distance = 0;
   String _elapsedTime = "00:00:00";
   double _elevationGain = 0;
   double _progress = 0;
+  Timer? _timer;
 
   List<LatLng> _routePoints = [];
   List<Map<String, dynamic>> _waypoints = [];
@@ -40,7 +49,6 @@ class _NavigationPageState extends State<NavigationPage> {
     _recordOps.onMetricsUpdated = () {
       setState(() {
         _distance = _recordOps.showNumOfKM();
-        _elapsedTime = _recordOps.showElapsedTime();
         _elevationGain = _recordOps.showElevationGain();
         _progress = _recordOps.showProgressPercentage();
       });
@@ -52,6 +60,7 @@ class _NavigationPageState extends State<NavigationPage> {
       _recordOps.startSession();
       _startNavigation();
       _isLoading = false;
+      // For free navigation, we don't set _isGpxBasedTrail to true
     }
   }
 
@@ -92,6 +101,7 @@ class _NavigationPageState extends State<NavigationPage> {
         _routePoints = points;
         _waypoints = pois;
         _isLoading = false;
+        _isGpxBasedTrail = true; // Set to true since we loaded from GPX
       });
 
       _startNavigation();
@@ -103,13 +113,97 @@ class _NavigationPageState extends State<NavigationPage> {
     }
   }
 
+  void _reportAlert() {
+    setState(() {
+      _isSelectingAlertLocation = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Tap the map to select alert location'),
+        duration: Duration(seconds: 5),
+      ),
+    );
+  }
+
+  void _handleAlertLocationSelected(LatLng selectedLocation) async {
+    setState(() {
+      _isSelectingAlertLocation = false;
+    });
+
+    final alert = await showDialog<TrailAlert>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Report an Alert"),
+        content: SizedBox(
+          width: 400, // Set a fixed width
+          child: AlertFormWidget(currentLocation: selectedLocation),
+        ),
+      ),
+    );
+
+    if (alert != null) {
+      // Add to local display
+      setState(() {
+        _waypoints.add({
+          'position': alert.location,
+          'name': alert.type,
+          'description': alert.description,
+        });
+      });
+
+      // Update the original trail in Firebase if we're navigating an existing trail
+      if (widget.trailId != null) {
+        await Trail.appendWaypoint(widget.user.db, widget.trailId!, alert);
+      }
+    }
+  }
+
+  void _confirmDeleteAlert(LatLng pos) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Delete Alert"),
+        content: const Text("Do you want to delete this alert for all users?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancel")),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Delete")),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() {
+      _waypoints.removeWhere((w) => w['position'] == pos);
+    });
+
+    if (widget.trailId != null) {
+      await Trail.removeWaypoint(widget.user.db, widget.trailId!, pos);
+    }
+  }
+
   void _startNavigation() {
     setState(() => _isNavigating = true);
     _recordOps.startSession();
+
+    // Start a timer that updates the time display every second
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted && _isNavigating) {
+        setState(() {
+          _elapsedTime = _recordOps.showElapsedTime();
+        });
+      }
+    });
   }
 
   void _stopNavigation() async {
     _recordOps.endSession();
+    _timer?.cancel();
     setState(() => _isNavigating = false);
 
     final shouldSave = await showDialog<bool>(
@@ -140,7 +234,10 @@ class _NavigationPageState extends State<NavigationPage> {
       ),
     );
 
-    if (shouldSave != true) return;
+    if (shouldSave != true) {
+      Navigator.pop(context); // Close the NavigationPage
+      return;
+    }
 
     final session = _recordOps.getSessionData();
     final gpx = Gpx();
@@ -164,24 +261,47 @@ class _NavigationPageState extends State<NavigationPage> {
 
     final gpxString = GpxWriter().asString(gpx, pretty: true);
 
-    final newTrailId = await Trail.create(
-      db: widget.user.db,
-      name: 'Recorded Trail',
-      gpx: gpxString,
-      additionalDetails: {
-        'userUid': widget.user.userUid,
-        'official': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      },
-    );
+    if (widget.trailId != null) {
+      try {
+        final snapshot =
+            await Trail.stream(widget.user.db, widget.trailId!).first;
+        final data = snapshot.data() as Map<String, dynamic>?;
+        final gpxRaw = data?['gpx'] as String?;
 
-    await widget.user.completeTrail(newTrailId);
+        if (gpxRaw != null) {
+          final originalGpx = GpxReader().fromString(gpxRaw);
 
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Trail saved successfully!")),
-      );
+          for (final w in session['waypoints'] as List<Map<String, dynamic>>) {
+            final alert = TrailAlert(
+              type: w['name'],
+              description: w['description'],
+              location: w['position'],
+              timestamp: DateTime.now(),
+            );
+            originalGpx.wpts.add(alert.toWaypoint());
+          }
+
+          final updatedGpx = GpxWriter().asString(originalGpx, pretty: true);
+          await Trail.editDetails(
+              widget.user.db, widget.trailId!, 'gpx', updatedGpx);
+          print("✅ Original trail updated with alerts.");
+        }
+      } catch (e) {
+        print("❌ Failed to update original trail with alerts: $e");
+      }
     }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateTrailPage(
+          gpxString: gpxString,
+          routePoints: session['routePoints'],
+          waypoints: session['waypoints'],
+          user: widget.user,
+        ),
+      ),
+    );
   }
 
   @override
@@ -198,7 +318,25 @@ class _NavigationPageState extends State<NavigationPage> {
           MapPage(
             routePoints: _routePoints,
             waypoints: _waypoints,
+            shouldAutoCenter: true,
+            triggerRender: true,
+            onTapToAddPoint:
+                _isSelectingAlertLocation ? _handleAlertLocationSelected : null,
+            onAlertTapped: _confirmDeleteAlert,
           ),
+          // Only show the Report button if this is a GPX-based trail
+          if (_isGpxBasedTrail)
+            Positioned(
+              top: 100,
+              right: 16,
+              child: FloatingActionButton(
+                mini: true,
+                heroTag: 'report_alert',
+                tooltip: "Report an issue",
+                onPressed: _reportAlert,
+                child: const Icon(Icons.report_problem),
+              ),
+            ),
           Positioned(
             left: 0,
             right: 0,
@@ -295,6 +433,7 @@ class _NavigationPageState extends State<NavigationPage> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _recordOps.dispose();
     super.dispose();
   }

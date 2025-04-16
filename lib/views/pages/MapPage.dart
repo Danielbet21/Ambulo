@@ -2,6 +2,7 @@
 
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
+import 'package:ambulo/models/AlertTypes.dart';
 import 'package:ambulo/utils/maps_ops.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -11,11 +12,19 @@ import 'package:ambulo/services/weather_api.dart';
 class MapPage extends StatefulWidget {
   final List<LatLng> routePoints;
   final List<Map<String, dynamic>> waypoints;
+  final bool triggerRender;
+  final bool shouldAutoCenter; // Add this parameter
+  final void Function(LatLng)? onTapToAddPoint;
+  final void Function(LatLng)? onAlertTapped;
 
   const MapPage({
     super.key,
     this.routePoints = const [],
     this.waypoints = const [],
+    this.triggerRender = false,
+    this.shouldAutoCenter = true, // Default to true for backward compatibility
+    this.onTapToAddPoint,
+    this.onAlertTapped,
   });
 
   @override
@@ -24,17 +33,19 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   final MapController _mapController = MapController();
-  final LatLng _currentPosition = LatLng(31.7683, 35.2137);
+  final LatLng _defaultPosition = LatLng(31.7683, 35.2137);
   String _currentMapLayer = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
   String _weatherInfo = 'Loading weather...';
   bool _isWeatherVisible = true;
   String _currentScale = '1:10000';
+  bool _hasInitiallyCentered = false; // Track if we've centered initially
 
   @override
   void initState() {
     super.initState();
-    _initializeMap();
+    // Use a shorter delay to initialize the map quickly after frame is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeMap();
       _fetchWeather();
     });
   }
@@ -42,27 +53,71 @@ class _MapPageState extends State<MapPage> {
   @override
   void didUpdateWidget(covariant MapPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.routePoints.length > 1) {
-      final bounds = LatLngBounds.fromPoints(widget.routePoints);
-      _mapController.fitCamera(CameraFit.bounds(
-        bounds: bounds,
-        padding: const EdgeInsets.all(50),
-      ));
+    // Only auto-center if explicitly requested via triggerRender
+    if (widget.triggerRender &&
+        !oldWidget.triggerRender &&
+        widget.shouldAutoCenter) {
+      // Add small delay to ensure controller is ready
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          _fitToRouteBounds();
+          // Force redraw of the map
+          setState(() {});
+        }
+      });
     }
   }
 
   Future<void> _initializeMap() async {
     try {
-      await MapsOps.centerToMyLocation(_mapController);
+      if (widget.routePoints.length > 1 &&
+          widget.shouldAutoCenter &&
+          !_hasInitiallyCentered) {
+        // Add small delay to ensure controller is ready
+        await Future.delayed(const Duration(milliseconds: 50));
+        _fitToRouteBounds();
+        _hasInitiallyCentered =
+            true; // Mark that we've done the initial centering
+      } else if (widget.routePoints.isEmpty) {
+        await MapsOps.centerToMyLocation(_mapController);
+      }
+
       _mapController.mapEventStream.listen((event) {
         if (event is MapEventMove) {
           _updateScale();
         }
       });
+
+      // Force a rebuild after map is initialized
+      if (mounted) {
+        setState(() {});
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to access location: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unable to access location: $e')),
+        );
+      }
+    }
+  }
+
+  void _fitToRouteBounds() {
+    if (widget.routePoints.length > 1) {
+      try {
+        final bounds = LatLngBounds.fromPoints(widget.routePoints);
+        _mapController.fitCamera(CameraFit.bounds(
+          bounds: bounds,
+          padding: const EdgeInsets.all(50),
+        ));
+
+        // Force a rebuild after fitting bounds
+        if (mounted && widget.triggerRender) {
+          setState(() {});
+        }
+      } catch (e) {
+        // Handle any potential errors during fitting bounds
+        print('Error fitting bounds: $e');
+      }
     }
   }
 
@@ -92,46 +147,22 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Map', style: context.textTheme.titleLarge),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.wb_sunny),
-            onPressed: () {
-              setState(() {
-                _isWeatherVisible = !_isWeatherVisible;
-              });
-            },
-            tooltip: 'Toggle weather information',
-          ),
-          IconButton(
-            icon: const Icon(Icons.layers),
-            onPressed: () => _showMapLayersDialog(),
-            tooltip: 'Change map layer',
-          ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () => MapsOps.showLegend(context),
-            tooltip: 'Show map legend',
-          ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => _showSearchDialog(),
-            tooltip: 'Search location',
-          ),
-        ],
-      ),
       body: Stack(
         children: [
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: _currentPosition,
+              initialCenter: _defaultPosition,
               initialZoom: 13.0,
               maxZoom: 18.0,
               minZoom: 3.0,
               interactionOptions:
                   InteractionOptions(flags: InteractiveFlag.all),
+              onTap: (tapPosition, latlng) {
+                if (widget.onTapToAddPoint != null) {
+                  widget.onTapToAddPoint!(latlng);
+                }
+              },
             ),
             children: [
               TileLayer(
@@ -170,13 +201,32 @@ class _MapPageState extends State<MapPage> {
                       ),
                     ),
                     ...widget.waypoints.map((poi) {
+                      final String name = poi['name'] ?? '';
+                      final LatLng position = poi['position'];
+
+                      final alertType = AlertTypes.all.firstWhere(
+                        (item) => item['type'] == name,
+                        orElse: () => {},
+                      );
+
+                      final isAlert = alertType.isNotEmpty;
+                      final icon = alertType['icon'] ?? Icons.place;
+                      final color = alertType['color'] ?? Colors.red;
+
                       return Marker(
-                        point: poi['position'],
+                        point: position,
                         width: 40,
                         height: 40,
-                        child: Tooltip(
-                          message: poi['name'] ?? '',
-                          child: const Icon(Icons.place, color: Colors.red),
+                        child: GestureDetector(
+                          onTap: () {
+                            if (isAlert) {
+                              widget.onAlertTapped?.call(position);
+                            }
+                          },
+                          child: Tooltip(
+                            message: name,
+                            child: Icon(icon, color: color),
+                          ),
                         ),
                       );
                     }).toList(),
@@ -200,13 +250,37 @@ class _MapPageState extends State<MapPage> {
             left: 16,
             child: _buildScaleBar(),
           ),
-          if (_isWeatherVisible)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: _buildWeatherInfo(),
+          Positioned(
+            top: 16,
+            right: 16,
+            child: Row(
+              children: [
+                _buildWeatherInfo(),
+                const SizedBox(width: 8),
+                _buildFAB(Icons.layers, _showMapLayersDialog, 'layers_btn',
+                    'Change map layer'),
+                _buildFAB(Icons.info_outline, () => MapsOps.showLegend(context),
+                    'legend_btn', 'Show map legend'),
+                _buildFAB(Icons.search, _showSearchDialog, 'search_btn',
+                    'Search location'),
+              ],
             ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFAB(
+      IconData icon, VoidCallback onTap, String tag, String tooltip) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FloatingActionButton(
+        mini: true,
+        heroTag: tag,
+        onPressed: onTap,
+        tooltip: tooltip,
+        child: Icon(icon),
       ),
     );
   }

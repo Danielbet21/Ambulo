@@ -1,3 +1,6 @@
+// ignore_for_file: avoid_print
+
+import 'package:ambulo/models/trail_keys.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
@@ -230,7 +233,7 @@ class DataManager {
   Future<void> createTrail(
       String trailId, Map<String, dynamic> trailData) async {
     await databaseService.setData('trails', trailId, {
-      'official': false,
+      'official': trailData['trailDetails']?[TrailKeys.official] ?? false,
       'trailDetails': trailData['trailDetails'] ?? {},
       'photosURL': [],
       'gpx': trailData['gpx'] ?? '',
@@ -265,8 +268,6 @@ class DataManager {
   // Edit trail map - placeholder function that would be implemented
   // with actual map editing functionality in the UI
   Future<void> editTrailMap(String trailId) async {
-    // This method would typically open a map editor interface
-    // or process GPX file updates
     print("Opening map editor for trail $trailId");
   }
 
@@ -274,7 +275,7 @@ class DataManager {
   Future<bool> writeDescription(String trailId, String description) async {
     try {
       await databaseService.updateDocument('trails', trailId, {
-        'trailDetails.description': description,
+        'trailDetails.${TrailKeys.description}': description,
       });
       return true;
     } catch (e) {
@@ -290,16 +291,13 @@ class DataManager {
 
   // Update trail rating
   Future<void> updateTrailRating(String trailId, double rating) async {
-    // Get current rating data
     final trailData = await databaseService.getDocument('trails', trailId);
     int currentRatings = trailData?['ratingCount'] ?? 0;
     double currentRating = trailData?['rating'] ?? 0.0;
 
-    // Calculate new average rating
     double newRating =
         ((currentRating * currentRatings) + rating) / (currentRatings + 1);
 
-    // Update rating data
     await databaseService.updateDocument('trails', trailId, {
       'rating': newRating,
       'ratingCount': currentRatings + 1,
@@ -311,7 +309,6 @@ class DataManager {
     if (rating < 0 || rating > 5) {
       throw Exception("Rating must be between 0 and 5");
     }
-    // Similar to trail rating, but for mosquito presence
     final trailData = await databaseService.getDocument('trails', trailId);
     int currentRatings = trailData?['mosquitoRatings'] ?? 0;
     double currentRate = trailData?['mosquitoRate'] ?? 0.0;
