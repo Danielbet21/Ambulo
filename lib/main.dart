@@ -10,8 +10,6 @@ import 'daniel_page.dart';
 import 'dataManagerManualTests.dart'; // Import the new page
 import 'package:flutter/services.dart';
 
-// REMOVE just for the commit
-
 // Global DataManager instance for easy access throughout the app
 late DataManager dataManager;
 
