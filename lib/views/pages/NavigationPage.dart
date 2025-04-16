@@ -134,6 +134,7 @@ class _NavigationPageState extends State<NavigationPage> {
     );
 
     if (alert != null) {
+      // Add to local display
       setState(() {
         _waypoints.add({
           'position': alert.location,
@@ -141,6 +142,11 @@ class _NavigationPageState extends State<NavigationPage> {
           'description': alert.description,
         });
       });
+
+      // Update the original trail in Firebase if we're navigating an existing trail
+      if (widget.trailId != null) {
+        await Trail.appendWaypoint(widget.user.db, widget.trailId!, alert);
+      }
     }
   }
 

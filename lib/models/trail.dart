@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_print
 
+import 'package:ambulo/models/trail_alert.dart';
+import 'package:gpx/gpx.dart';
+
 import '../data/database/data_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'trail_keys.dart';
@@ -112,6 +115,32 @@ class Trail {
       await db.deleteTrail(trailId);
     } catch (e) {
       print('Error deleting trail: $e');
+    }
+  }
+
+  static Future<void> appendWaypoint(
+    DataManager db,
+    String trailId,
+    TrailAlert alert,
+  ) async {
+    try {
+      final snapshot = await db.databaseService.getDocument('trails', trailId);
+      final gpxRaw = snapshot?['gpx'] as String?;
+
+      if (gpxRaw == null) return;
+
+      final gpx = GpxReader().fromString(gpxRaw);
+      gpx.wpts.add(alert.toWaypoint());
+
+      final updatedGpx = GpxWriter().asString(gpx, pretty: true);
+
+      await db.databaseService.updateDocument('trails', trailId, {
+        'gpx': updatedGpx,
+      });
+
+      print("✅ GPX updated successfully with new alert.");
+    } catch (e) {
+      print("❌ Failed to append waypoint to trail: $e");
     }
   }
 }
