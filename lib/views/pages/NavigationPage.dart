@@ -1,6 +1,7 @@
 // NavigationPage with styled save/discard dialog
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:ambulo/models/trail_alert.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/data/styles/constant.dart';
@@ -12,6 +13,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gpx/gpx.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
+
+bool _isSelectingAlertLocation = false;
 
 class NavigationPage extends StatefulWidget {
   final String? trailId;
@@ -104,6 +107,43 @@ class _NavigationPageState extends State<NavigationPage> {
     }
   }
 
+  void _reportAlert() {
+    setState(() {
+      _isSelectingAlertLocation = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Tap the map to select alert location'),
+        duration: Duration(seconds: 5),
+      ),
+    );
+  }
+
+  void _handleAlertLocationSelected(LatLng selectedLocation) async {
+    setState(() {
+      _isSelectingAlertLocation = false;
+    });
+
+    final alert = await showDialog<TrailAlert>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Report an Alert"),
+        content: AlertFormWidget(currentLocation: selectedLocation),
+      ),
+    );
+
+    if (alert != null) {
+      setState(() {
+        _waypoints.add({
+          'position': alert.location,
+          'name': alert.type,
+          'description': alert.description,
+        });
+      });
+    }
+  }
+
   void _startNavigation() {
     setState(() => _isNavigating = true);
     _recordOps.startSession();
@@ -175,6 +215,36 @@ class _NavigationPageState extends State<NavigationPage> {
 
     final gpxString = GpxWriter().asString(gpx, pretty: true);
 
+    if (widget.trailId != null) {
+      try {
+        final snapshot =
+            await Trail.stream(widget.user.db, widget.trailId!).first;
+        final data = snapshot.data() as Map<String, dynamic>?;
+        final gpxRaw = data?['gpx'] as String?;
+
+        if (gpxRaw != null) {
+          final originalGpx = GpxReader().fromString(gpxRaw);
+
+          for (final w in session['waypoints'] as List<Map<String, dynamic>>) {
+            final alert = TrailAlert(
+              type: w['name'],
+              description: w['description'],
+              location: w['position'],
+              timestamp: DateTime.now(),
+            );
+            originalGpx.wpts.add(alert.toWaypoint());
+          }
+
+          final updatedGpx = GpxWriter().asString(originalGpx, pretty: true);
+          await Trail.editDetails(
+              widget.user.db, widget.trailId!, 'gpx', updatedGpx);
+          print("✅ Original trail updated with alerts.");
+        }
+      } catch (e) {
+        print("❌ Failed to update original trail with alerts: $e");
+      }
+    }
+
     final newTrailId = await Trail.create(
       db: widget.user.db,
       name: 'Recorded Trail',
@@ -209,8 +279,21 @@ class _NavigationPageState extends State<NavigationPage> {
           MapPage(
             routePoints: _routePoints,
             waypoints: _waypoints,
-            shouldAutoCenter: true, // Enable initial centering
-            triggerRender: true, // Force render to ensure centering works
+            shouldAutoCenter: true,
+            triggerRender: true,
+            onTapToAddPoint:
+                _isSelectingAlertLocation ? _handleAlertLocationSelected : null,
+          ),
+          Positioned(
+            top: 100,
+            right: 16,
+            child: FloatingActionButton(
+              mini: true,
+              heroTag: 'report_alert',
+              tooltip: "Report an issue",
+              onPressed: _reportAlert,
+              child: const Icon(Icons.report_problem),
+            ),
           ),
           Positioned(
             left: 0,

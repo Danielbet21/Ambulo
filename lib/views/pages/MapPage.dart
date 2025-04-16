@@ -13,6 +13,7 @@ class MapPage extends StatefulWidget {
   final List<Map<String, dynamic>> waypoints;
   final bool triggerRender;
   final bool shouldAutoCenter; // Add this parameter
+  final void Function(LatLng)? onTapToAddPoint;
 
   const MapPage({
     super.key,
@@ -20,6 +21,7 @@ class MapPage extends StatefulWidget {
     this.waypoints = const [],
     this.triggerRender = false,
     this.shouldAutoCenter = true, // Default to true for backward compatibility
+    this.onTapToAddPoint,
   });
 
   @override
@@ -153,6 +155,11 @@ class _MapPageState extends State<MapPage> {
               minZoom: 3.0,
               interactionOptions:
                   InteractionOptions(flags: InteractiveFlag.all),
+              onTap: (tapPosition, latlng) {
+                if (widget.onTapToAddPoint != null) {
+                  widget.onTapToAddPoint!(latlng);
+                }
+              },
             ),
             children: [
               TileLayer(
@@ -191,13 +198,25 @@ class _MapPageState extends State<MapPage> {
                       ),
                     ),
                     ...widget.waypoints.map((poi) {
+                      final String name = poi['name'] ?? '';
+                      final isAlert = [
+                        'Blocked Trail',
+                        'Flooded Path',
+                        'Stray Dog',
+                        'Scenic View',
+                        'Stream',
+                        'Spring'
+                      ].contains(name);
                       return Marker(
                         point: poi['position'],
                         width: 40,
                         height: 40,
                         child: Tooltip(
-                          message: poi['name'] ?? '',
-                          child: const Icon(Icons.place, color: Colors.red),
+                          message: name,
+                          child: Icon(
+                            isAlert ? Icons.warning_amber : Icons.place,
+                            color: isAlert ? Colors.orange : Colors.red,
+                          ),
                         ),
                       );
                     }).toList(),
