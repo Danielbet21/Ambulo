@@ -4,6 +4,7 @@ import 'package:ambulo/manualTest/WeatherTest.dart';
 import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
+import 'package:ambulo/views/pages/MyTrailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'manualTest/usertTests.dart';
@@ -136,6 +137,18 @@ class ShaiPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Go To Trail Page Test'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MyTrailsPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go To Trail My Trails Page'),
                 ),
               ],
             ),

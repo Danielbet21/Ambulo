@@ -1,6 +1,7 @@
 // NavigationPage with styled save/discard dialog
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:ambulo/views/pages/CreateTrailPage.dart';
 import 'package:ambulo/views/widgets/AlertFormWidget.dart';
 import 'package:ambulo/models/trail_alert.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
@@ -286,24 +287,17 @@ class _NavigationPageState extends State<NavigationPage> {
       }
     }
 
-    final newTrailId = await Trail.create(
-      db: widget.user.db,
-      name: 'Recorded Trail',
-      gpx: gpxString,
-      additionalDetails: {
-        'userUid': widget.user.userUid,
-        'official': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateTrailPage(
+          gpxString: gpxString,
+          routePoints: session['routePoints'],
+          waypoints: session['waypoints'],
+          user: widget.user,
+        ),
+      ),
     );
-
-    await widget.user.completeTrail(newTrailId);
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Trail saved successfully!")),
-      );
-    }
   }
 
   @override
