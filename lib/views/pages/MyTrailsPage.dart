@@ -1,3 +1,4 @@
+import 'package:ambulo/views/pages/trail_page.dart';
 import 'package:ambulo/views/widgets/trail_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,11 +41,15 @@ class MyTrailsPage extends StatelessWidget {
               return TrailCard(
                 fullTrailData: trail,
                 onTap: () {
-                  Navigator.pushNamed(context, '/trail', arguments: {
-                    'trailData': trail,
-                    'user': user,
-                    'isEditable': true,
-                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TrailPage(
+                        trailId: trail['id'],
+                        user: user,
+                      ),
+                    ),
+                  );
                 },
               );
             },

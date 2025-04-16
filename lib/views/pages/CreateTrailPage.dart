@@ -170,12 +170,16 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Starting Point'),
                 onChanged: (val) => startingPoint = val,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 12),
 
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Ending Point'),
                 onChanged: (val) => endingPoint = val,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 12),
 
