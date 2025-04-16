@@ -11,13 +11,15 @@ import 'package:ambulo/services/weather_api.dart';
 class MapPage extends StatefulWidget {
   final List<LatLng> routePoints;
   final List<Map<String, dynamic>> waypoints;
-  final bool triggerRender; // Add this parameter
+  final bool triggerRender;
+  final bool shouldAutoCenter; // Add this parameter
 
   const MapPage({
     super.key,
     this.routePoints = const [],
     this.waypoints = const [],
-    this.triggerRender = false, // Default to false
+    this.triggerRender = false,
+    this.shouldAutoCenter = true, // Default to true for backward compatibility
   });
 
   @override
@@ -31,6 +33,7 @@ class _MapPageState extends State<MapPage> {
   String _weatherInfo = 'Loading weather...';
   bool _isWeatherVisible = true;
   String _currentScale = '1:10000';
+  bool _hasInitiallyCentered = false; // Track if we've centered initially
 
   @override
   void initState() {
@@ -45,8 +48,10 @@ class _MapPageState extends State<MapPage> {
   @override
   void didUpdateWidget(covariant MapPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Ensure map is updated when widget is updated
-    if (widget.triggerRender && !oldWidget.triggerRender) {
+    // Only auto-center if explicitly requested via triggerRender
+    if (widget.triggerRender &&
+        !oldWidget.triggerRender &&
+        widget.shouldAutoCenter) {
       // Add small delay to ensure controller is ready
       Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) {
@@ -55,20 +60,23 @@ class _MapPageState extends State<MapPage> {
           setState(() {});
         }
       });
-    } else {
-      _fitToRouteBounds();
     }
   }
 
   Future<void> _initializeMap() async {
     try {
-      if (widget.routePoints.length > 1) {
+      if (widget.routePoints.length > 1 &&
+          widget.shouldAutoCenter &&
+          !_hasInitiallyCentered) {
         // Add small delay to ensure controller is ready
         await Future.delayed(const Duration(milliseconds: 50));
         _fitToRouteBounds();
-      } else {
+        _hasInitiallyCentered =
+            true; // Mark that we've done the initial centering
+      } else if (widget.routePoints.isEmpty) {
         await MapsOps.centerToMyLocation(_mapController);
       }
+
       _mapController.mapEventStream.listen((event) {
         if (event is MapEventMove) {
           _updateScale();

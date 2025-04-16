@@ -198,6 +198,8 @@ class _NavigationPageState extends State<NavigationPage> {
           MapPage(
             routePoints: _routePoints,
             waypoints: _waypoints,
+            shouldAutoCenter: true, // Enable initial centering
+            triggerRender: true, // Force render to ensure centering works
           ),
           Positioned(
             left: 0,
