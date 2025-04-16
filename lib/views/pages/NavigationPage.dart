@@ -11,6 +11,7 @@ import 'package:ambulo/models/trail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gpx/gpx.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:async';
 
 class NavigationPage extends StatefulWidget {
   final String? trailId;
@@ -29,6 +30,7 @@ class _NavigationPageState extends State<NavigationPage> {
   String _elapsedTime = "00:00:00";
   double _elevationGain = 0;
   double _progress = 0;
+  Timer? _timer;
 
   List<LatLng> _routePoints = [];
   List<Map<String, dynamic>> _waypoints = [];
@@ -40,7 +42,6 @@ class _NavigationPageState extends State<NavigationPage> {
     _recordOps.onMetricsUpdated = () {
       setState(() {
         _distance = _recordOps.showNumOfKM();
-        _elapsedTime = _recordOps.showElapsedTime();
         _elevationGain = _recordOps.showElevationGain();
         _progress = _recordOps.showProgressPercentage();
       });
@@ -106,10 +107,20 @@ class _NavigationPageState extends State<NavigationPage> {
   void _startNavigation() {
     setState(() => _isNavigating = true);
     _recordOps.startSession();
+
+    // Start a timer that updates the time display every second
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted && _isNavigating) {
+        setState(() {
+          _elapsedTime = _recordOps.showElapsedTime();
+        });
+      }
+    });
   }
 
   void _stopNavigation() async {
     _recordOps.endSession();
+    _timer?.cancel();
     setState(() => _isNavigating = false);
 
     final shouldSave = await showDialog<bool>(
@@ -297,6 +308,7 @@ class _NavigationPageState extends State<NavigationPage> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _recordOps.dispose();
     super.dispose();
   }
