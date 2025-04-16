@@ -31,6 +31,8 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   final NavigationRecordOps _recordOps = NavigationRecordOps();
   bool _isNavigating = false;
+  bool _isGpxBasedTrail =
+      false; // Flag to track if we're using a GPX-based trail
   double _distance = 0;
   String _elapsedTime = "00:00:00";
   double _elevationGain = 0;
@@ -58,6 +60,7 @@ class _NavigationPageState extends State<NavigationPage> {
       _recordOps.startSession();
       _startNavigation();
       _isLoading = false;
+      // For free navigation, we don't set _isGpxBasedTrail to true
     }
   }
 
@@ -98,6 +101,7 @@ class _NavigationPageState extends State<NavigationPage> {
         _routePoints = points;
         _waypoints = pois;
         _isLoading = false;
+        _isGpxBasedTrail = true; // Set to true since we loaded from GPX
       });
 
       _startNavigation();
@@ -320,17 +324,19 @@ class _NavigationPageState extends State<NavigationPage> {
                 _isSelectingAlertLocation ? _handleAlertLocationSelected : null,
             onAlertTapped: _confirmDeleteAlert,
           ),
-          Positioned(
-            top: 100,
-            right: 16,
-            child: FloatingActionButton(
-              mini: true,
-              heroTag: 'report_alert',
-              tooltip: "Report an issue",
-              onPressed: _reportAlert,
-              child: const Icon(Icons.report_problem),
+          // Only show the Report button if this is a GPX-based trail
+          if (_isGpxBasedTrail)
+            Positioned(
+              top: 100,
+              right: 16,
+              child: FloatingActionButton(
+                mini: true,
+                heroTag: 'report_alert',
+                tooltip: "Report an issue",
+                onPressed: _reportAlert,
+                child: const Icon(Icons.report_problem),
+              ),
             ),
-          ),
           Positioned(
             left: 0,
             right: 0,
