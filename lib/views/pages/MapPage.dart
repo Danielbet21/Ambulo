@@ -2,6 +2,7 @@
 
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
+import 'package:ambulo/models/AlertTypes.dart';
 import 'package:ambulo/utils/maps_ops.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -201,31 +202,30 @@ class _MapPageState extends State<MapPage> {
                     ),
                     ...widget.waypoints.map((poi) {
                       final String name = poi['name'] ?? '';
-                      final isAlert = [
-                        'Blocked Trail',
-                        'Flooded Path',
-                        'Stray Dog',
-                        'Scenic View',
-                        'Stream',
-                        'Spring'
-                      ].contains(name);
+                      final LatLng position = poi['position'];
+
+                      final alertType = AlertTypes.all.firstWhere(
+                        (item) => item['type'] == name,
+                        orElse: () => {},
+                      );
+
+                      final isAlert = alertType.isNotEmpty;
+                      final icon = alertType['icon'] ?? Icons.place;
+                      final color = alertType['color'] ?? Colors.red;
 
                       return Marker(
-                        point: poi['position'],
+                        point: position,
                         width: 40,
                         height: 40,
                         child: GestureDetector(
                           onTap: () {
                             if (isAlert) {
-                              widget.onAlertTapped?.call(poi['position']);
+                              widget.onAlertTapped?.call(position);
                             }
                           },
                           child: Tooltip(
                             message: name,
-                            child: Icon(
-                              isAlert ? Icons.warning_amber : Icons.place,
-                              color: isAlert ? Colors.orange : Colors.red,
-                            ),
+                            child: Icon(icon, color: color),
                           ),
                         ),
                       );

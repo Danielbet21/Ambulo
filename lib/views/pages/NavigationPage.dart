@@ -229,7 +229,10 @@ class _NavigationPageState extends State<NavigationPage> {
       ),
     );
 
-    if (shouldSave != true) return;
+    if (shouldSave != true) {
+      Navigator.pop(context); // Close the NavigationPage
+      return;
+    }
 
     final session = _recordOps.getSessionData();
     final gpx = Gpx();
