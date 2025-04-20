@@ -1,11 +1,14 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'dart:async';
+
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
 import 'package:ambulo/models/AlertTypes.dart';
 import 'package:ambulo/utils/maps_ops.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ambulo/services/weather_api.dart';
 
@@ -39,6 +42,8 @@ class _MapPageState extends State<MapPage> {
   bool _isWeatherVisible = true;
   String _currentScale = '1:10000';
   bool _hasInitiallyCentered = false; // Track if we've centered initially
+  LatLng? _myLocation;
+  StreamSubscription<Position>? _locationStream;
 
   @override
   void initState() {
@@ -47,6 +52,16 @@ class _MapPageState extends State<MapPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeMap();
       _fetchWeather();
+    });
+    _locationStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5,
+      ),
+    ).listen((position) {
+      setState(() {
+        _myLocation = LatLng(position.latitude, position.longitude);
+      });
     });
   }
 
@@ -232,6 +247,18 @@ class _MapPageState extends State<MapPage> {
                     }).toList(),
                   ],
                 ),
+              if (_myLocation != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _myLocation!,
+                      width: 40,
+                      height: 40,
+                      child: const Icon(Icons.navigation,
+                          color: Colors.green, size: 36),
+                    ),
+                  ],
+                ),
             ],
           ),
           Positioned(
@@ -413,6 +440,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   void dispose() {
+    _locationStream?.cancel(); // stop tracking when map closes
     _mapController.dispose();
     super.dispose();
   }
