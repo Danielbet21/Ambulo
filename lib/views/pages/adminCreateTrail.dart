@@ -63,6 +63,8 @@ class _AdminCreateTrailPageState extends State<AdminCreateTrailPage> {
           const SnackBar(content: Text('Trail created successfully')),
         );
         _formKey.currentState!.reset();
+        Navigator.pop(context); // First pop
+        Navigator.pop(context); // Second pop
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to create trail: $e')),
