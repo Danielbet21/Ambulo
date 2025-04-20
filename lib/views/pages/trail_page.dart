@@ -1,6 +1,7 @@
 // trail_page.dart
 
 import 'package:ambulo/services/weather_api.dart';
+import 'package:ambulo/views/pages/EditTrailPage.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail_keys.dart';
@@ -84,7 +85,26 @@ class _TrailPageState extends State<TrailPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(trailDetails![TrailKeys.name] ?? 'Trail')),
+      appBar: AppBar(
+        title: Text(trailDetails![TrailKeys.name] ?? 'Trail'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Edit Trail',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditTrailPage(
+                    trailId: widget.trailId,
+                    user: widget.user,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
