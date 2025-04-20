@@ -1,5 +1,6 @@
 // trail_page.dart
 
+import 'package:ambulo/services/weather_api.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail_keys.dart';
@@ -149,6 +150,19 @@ class _TrailPageState extends State<TrailPage> {
             trailDetails![TrailKeys.description] ?? '',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
+          const SizedBox(height: 24),
+          Text("5-Day Weather Forecast",
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          if (routePoints.isNotEmpty)
+            WeatherService.forecastWidget(
+              lat: routePoints.first.latitude,
+              lon: routePoints.first.longitude,
+            )
+          else
+            Text("⚠️ Weather forecast unavailable for this trail.",
+                style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 24),
           const SizedBox(height: 24),
           GridView.count(
             shrinkWrap: true,
