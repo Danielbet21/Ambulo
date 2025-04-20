@@ -40,10 +40,13 @@ class _EditTrailPageState extends State<EditTrailPage> {
   String surfaceType = '';
   int estimatedTime = 0;
 
+  List<String> trailPhotoUrls = [];
+
   @override
   void initState() {
     super.initState();
     _loadTrail();
+    _loadTrailImages();
   }
 
   Future<void> _loadTrail() async {
@@ -70,6 +73,31 @@ class _EditTrailPageState extends State<EditTrailPage> {
       estimatedTime = details[TrailKeys.estimatedTime] ?? 0;
       isLoading = false;
     });
+  }
+
+  Future<void> _loadTrailImages() async {
+    final photos = await widget.user.db.loadTrailPhotos(widget.trailId);
+    setState(() {
+      trailPhotoUrls = photos;
+    });
+  }
+
+  Future<void> _uploadTrailImage() async {
+    final imageUrl =
+        await widget.user.db.uploadTrailImageManual(widget.trailId);
+    if (imageUrl != null) {
+      final photos = await widget.user.db.loadTrailPhotos(widget.trailId);
+      setState(() {
+        trailPhotoUrls = photos;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image uploaded successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to upload image')),
+      );
+    }
   }
 
   Future<void> _saveChanges() async {
@@ -253,6 +281,48 @@ class _EditTrailPageState extends State<EditTrailPage> {
                     const InputDecoration(labelText: 'Number of Nights'),
                 keyboardType: TextInputType.number,
                 onChanged: (val) => nights = int.tryParse(val) ?? 0,
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "Trail Photos",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              trailPhotoUrls.isNotEmpty
+                  ? SizedBox(
+                      height: 120,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: trailPhotoUrls.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: AspectRatio(
+                              aspectRatio: 4 / 3,
+                              child: Image.network(
+                                trailPhotoUrls[index],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.broken_image),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : Container(
+                      height: 120,
+                      color: Colors.grey[300],
+                      alignment: Alignment.center,
+                      child: const Text("No images available"),
+                    ),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.upload),
+                label: const Text("Upload Image"),
+                onPressed: _uploadTrailImage,
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
