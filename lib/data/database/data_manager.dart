@@ -1,3 +1,6 @@
+// ignore_for_file: avoid_print
+
+import 'package:ambulo/models/trail_keys.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
@@ -98,31 +101,30 @@ class DataManager {
 
   // Add a trail to the user's hiking history
   Future<void> addTrailToHistory(String uid, String trailId) async {
-    final trailData = await databaseService.getDocument('trails', trailId);
-    if (trailData != null) {
-      await databaseService.arrayUnion('users', uid, 'hikingHistory', {
-        'trailId': trailId,
-        'date': DateTime.now().millisecondsSinceEpoch,
-        'trailDetails': trailData['trailDetails'] ?? {},
-      });
-    } else {
-      throw Exception("Trail not found");
-    }
+    await databaseService.arrayUnion('users', uid, 'hikingHistory', trailId);
   }
 
-  // Get a user's hiking history
+  // Remove a hike from the user's history
+  Future<void> deleteHikeFromHistory(String uid, String trailId) async {
+    await databaseService.arrayRemove('users', uid, 'hikingHistory', trailId);
+  }
+
+  // Get the count of trails in a user's hiking history
+  Future<int> getHikingHistoryCount(String userId) async {
+    final doc = await databaseService.getDocument('users', userId);
+    if (doc != null && doc['hikingHistory'] != null) {
+      return List.from(doc['hikingHistory']).length;
+    }
+    return 0;
+  }
+
+  // Get the user's hiking history
   Future<List<Map<String, dynamic>>> showHikingHistory(String userId) async {
     final doc = await databaseService.getDocument('users', userId);
     if (doc != null && doc['hikingHistory'] != null) {
       return List<Map<String, dynamic>>.from(doc['hikingHistory']);
     }
     return [];
-  }
-
-  // Remove a hike from the user's history
-  Future<void> deleteHikeFromHistory(
-      String userId, Map<String, dynamic> hike) async {
-    await databaseService.arrayRemove('users', userId, 'hikingHistory', hike);
   }
 
   // Add a trail to the user's saved hikes
@@ -219,7 +221,6 @@ class DataManager {
   }
 
   Future<void> deleteUserAccount(String email) async {
-    if (!isAdmin()) throw Exception("Only an admin can delete accounts");
     final docSnap =
         await databaseService.getDocumentByField("users", "email", email);
     if (docSnap == null) throw Exception("User not found");
@@ -232,7 +233,7 @@ class DataManager {
   Future<void> createTrail(
       String trailId, Map<String, dynamic> trailData) async {
     await databaseService.setData('trails', trailId, {
-      'trackId': trailData['trackId'],
+      'official': trailData['trailDetails']?[TrailKeys.official] ?? false,
       'trailDetails': trailData['trailDetails'] ?? {},
       'photosURL': [],
       'gpx': trailData['gpx'] ?? '',
@@ -267,8 +268,6 @@ class DataManager {
   // Edit trail map - placeholder function that would be implemented
   // with actual map editing functionality in the UI
   Future<void> editTrailMap(String trailId) async {
-    // This method would typically open a map editor interface
-    // or process GPX file updates
     print("Opening map editor for trail $trailId");
   }
 
@@ -276,7 +275,7 @@ class DataManager {
   Future<bool> writeDescription(String trailId, String description) async {
     try {
       await databaseService.updateDocument('trails', trailId, {
-        'trailDetails.description': description,
+        'trailDetails.${TrailKeys.description}': description,
       });
       return true;
     } catch (e) {
@@ -292,16 +291,13 @@ class DataManager {
 
   // Update trail rating
   Future<void> updateTrailRating(String trailId, double rating) async {
-    // Get current rating data
     final trailData = await databaseService.getDocument('trails', trailId);
     int currentRatings = trailData?['ratingCount'] ?? 0;
-    double currentRating = trailData?['Rating'] ?? 0.0;
+    double currentRating = trailData?['rating'] ?? 0.0;
 
-    // Calculate new average rating
     double newRating =
         ((currentRating * currentRatings) + rating) / (currentRatings + 1);
 
-    // Update rating data
     await databaseService.updateDocument('trails', trailId, {
       'rating': newRating,
       'ratingCount': currentRatings + 1,
@@ -310,7 +306,9 @@ class DataManager {
 
   // Update mosquito rating
   Future<void> updateMosquitoRating(String trailId, double rating) async {
-    // Similar to trail rating, but for mosquito presence
+    if (rating < 0 || rating > 5) {
+      throw Exception("Rating must be between 0 and 5");
+    }
     final trailData = await databaseService.getDocument('trails', trailId);
     int currentRatings = trailData?['mosquitoRatings'] ?? 0;
     double currentRate = trailData?['mosquitoRate'] ?? 0.0;

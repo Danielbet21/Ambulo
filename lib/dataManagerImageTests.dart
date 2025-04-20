@@ -29,15 +29,9 @@ class _DataManagerImageTestsState extends State<DataManagerImageTests> {
 
     dataManager.signIn(userEmail, userPassword).then((userCredential) {
       if (userCredential != null) {
-        debugPrint(
-            "✅ User signed in successfully: ${userCredential.user?.uid}");
         _loadImages(); // Load images after successful sign-in
-      } else {
-        debugPrint("❌ Error: User sign-in failed.");
-      }
-    }).catchError((error) {
-      debugPrint("❌ Error signing in: $error");
-    });
+      } else {}
+    }).catchError((error) {});
   }
 
   Future<void> _loadImages() async {
