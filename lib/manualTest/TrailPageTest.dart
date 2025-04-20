@@ -5,6 +5,7 @@ import 'package:ambulo/views/pages/trail_page.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/main.dart';
 
+// just for testing purposes
 class TrailPageTest extends StatelessWidget {
   final String trailId;
   final User testUser;
