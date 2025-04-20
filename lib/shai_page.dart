@@ -5,6 +5,7 @@ import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:ambulo/views/pages/MyTrailsPage.dart';
+import 'package:ambulo/views/pages/adminCreateTrail.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'manualTest/usertTests.dart';
@@ -149,6 +150,17 @@ class ShaiPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Go To Trail My Trails Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AdminCreateTrailPage(dataManager: dataManager)),
+                    );
+                  },
+                  child: const Text('Go To Admin Create Trail Page'),
                 ),
               ],
             ),
