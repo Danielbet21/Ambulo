@@ -264,12 +264,20 @@ class _MapPageState extends State<MapPage> {
           Positioned(
             top: 16,
             left: 16,
-            child: FloatingActionButton(
-              mini: true,
-              heroTag: 'center_btn',
-              onPressed: () => MapsOps.centerToMyLocation(_mapController),
-              tooltip: 'Center to my location',
-              child: const Icon(Icons.my_location),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                _buildWeatherInfo(),
+                const SizedBox(height: 12),
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'center_btn',
+                  onPressed: () => MapsOps.centerToMyLocation(_mapController),
+                  tooltip: 'Center to my location',
+                  child: const Icon(Icons.my_location),
+                ),
+              ],
             ),
           ),
           Positioned(
@@ -282,8 +290,6 @@ class _MapPageState extends State<MapPage> {
             right: 16,
             child: Row(
               children: [
-                _buildWeatherInfo(),
-                const SizedBox(width: 8),
                 _buildFAB(Icons.layers, _showMapLayersDialog, 'layers_btn',
                     'Change map layer'),
                 _buildFAB(Icons.info_outline, () => MapsOps.showLegend(context),
