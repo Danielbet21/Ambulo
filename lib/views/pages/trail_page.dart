@@ -187,10 +187,10 @@ class _TrailPageState extends State<TrailPage> {
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+            crossAxisCount: (MediaQuery.of(context).size.width / 200).floor(),
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 3,
+            childAspectRatio: MediaQuery.of(context).size.width > 600 ? 3 : 2.5,
             children: [
               _infoCard(Icons.map, "Region", trailDetails![TrailKeys.region]),
               _infoCard(Icons.straighten, "Distance",
