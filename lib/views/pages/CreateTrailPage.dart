@@ -92,6 +92,8 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
                   decoration: const InputDecoration(labelText: 'Description'),
                   onChanged: (val) => description = val,
                   maxLines: 3,
+                  validator: (val) =>
+                      val == null || val.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 12),
 
@@ -213,10 +215,12 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
                 const SizedBox(height: 12),
 
                 TextFormField(
-                  decoration: const InputDecoration(
-                      labelText: 'Number of Nights (for multi-day trails)'),
+                  decoration:
+                      const InputDecoration(labelText: 'Number of Nights'),
                   keyboardType: TextInputType.number,
                   onChanged: (val) => nights = int.tryParse(val) ?? 0,
+                  validator: (val) =>
+                      val == null || val.isEmpty ? 'Required' : null,
                 ),
 
                 const SizedBox(height: 24),
