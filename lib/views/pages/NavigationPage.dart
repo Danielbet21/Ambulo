@@ -220,20 +220,52 @@ class _NavigationPageState extends State<NavigationPage> {
         content: const Text("Do you want to save this hike to your trails?"),
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         actions: [
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context, 'discard'),
-            icon: const Icon(Icons.delete_forever, color: Colors.red),
-            label: const Text("Discard"),
-          ),
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context, 'resume'),
-            icon: const Icon(Icons.play_arrow, color: Colors.blue),
-            label: const Text("Resume"),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.pop(context, 'save'),
-            icon: const Icon(Icons.save_alt),
-            label: const Text("Save"),
+          Builder(
+            builder: (context) {
+              final isAndroid =
+                  Theme.of(context).platform == TargetPlatform.android;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (isAndroid)
+                    IconButton(
+                      onPressed: () => Navigator.pop(context, 'discard'),
+                      icon: const Icon(Icons.delete_forever, color: Colors.red),
+                      tooltip: "Discard",
+                    )
+                  else
+                    TextButton.icon(
+                      onPressed: () => Navigator.pop(context, 'discard'),
+                      icon: const Icon(Icons.delete_forever, color: Colors.red),
+                      label: const Text("Discard"),
+                    ),
+                  if (isAndroid)
+                    IconButton(
+                      onPressed: () => Navigator.pop(context, 'resume'),
+                      icon: const Icon(Icons.play_arrow, color: Colors.blue),
+                      tooltip: "Resume",
+                    )
+                  else
+                    TextButton.icon(
+                      onPressed: () => Navigator.pop(context, 'resume'),
+                      icon: const Icon(Icons.play_arrow, color: Colors.blue),
+                      label: const Text("Resume"),
+                    ),
+                  if (isAndroid)
+                    IconButton(
+                      onPressed: () => Navigator.pop(context, 'save'),
+                      icon: const Icon(Icons.save_alt, color: Colors.green),
+                      tooltip: "Save",
+                    )
+                  else
+                    ElevatedButton.icon(
+                      onPressed: () => Navigator.pop(context, 'save'),
+                      icon: const Icon(Icons.save_alt),
+                      label: const Text("Save"),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
