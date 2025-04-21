@@ -4,8 +4,10 @@ import 'package:ambulo/manualTest/WeatherTest.dart';
 import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:ambulo/manualTest/show_all_trail_test.dart';
+import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:ambulo/views/pages/MyTrailsPage.dart';
+import 'package:ambulo/views/pages/SavedRoutesPage.dart';
 import 'package:ambulo/views/pages/adminCreateTrail.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -173,6 +175,30 @@ class ShaiPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Show All Trails'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SavedRoutesPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go to Saved Routes Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CompletedRoutesPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go to Completed Routes Page'),
                 ),
               ],
             ),

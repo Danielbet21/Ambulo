@@ -127,6 +127,26 @@ class DataManager {
     return [];
   }
 
+  // Get trails from the user's hiking history
+  Future<List<Map<String, dynamic>>> getTrailsFromHikingHistory(
+      String userId) async {
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc == null || userDoc['hikingHistory'] == null) {
+      return [];
+    }
+
+    final hikingHistory = List<String>.from(userDoc['hikingHistory']);
+    final trails = await Future.wait(hikingHistory.map((trailId) async {
+      final trailDoc = await databaseService.getDocument('trails', trailId);
+      if (trailDoc != null) {
+        return {'id': trailId, ...trailDoc};
+      }
+      return null;
+    }));
+
+    return trails.whereType<Map<String, dynamic>>().toList();
+  }
+
   // Add a trail to the user's saved hikes
   Future<void> addToSaves(String userId, Map<String, dynamic> trail) async {
     await databaseService.arrayUnion('users', userId, 'savedHikes', trail);
@@ -136,6 +156,27 @@ class DataManager {
   Future<void> removeTrailSaves(
       String userId, Map<String, dynamic> trail) async {
     await databaseService.arrayRemove('users', userId, 'savedHikes', trail);
+  }
+
+  // Get trails from the user's saved hikes
+  Future<List<Map<String, dynamic>>> getTrailsFromSavedHikes(
+      String userId) async {
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc == null || userDoc['savedHikes'] == null) {
+      return [];
+    }
+
+    final savedHikes = List<Map<String, dynamic>>.from(userDoc['savedHikes']);
+    final trails = await Future.wait(savedHikes.map((savedHike) async {
+      final trailId = savedHike['id'];
+      final trailDoc = await databaseService.getDocument('trails', trailId);
+      if (trailDoc != null) {
+        return {'id': trailId, ...trailDoc};
+      }
+      return null;
+    }));
+
+    return trails.whereType<Map<String, dynamic>>().toList();
   }
 
   // Upload a user profile image manually
