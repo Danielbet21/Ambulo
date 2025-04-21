@@ -158,6 +158,22 @@ class DataManager {
     await databaseService.arrayRemove('users', userId, 'savedHikes', trail);
   }
 
+  // Remove a trail from the user's saved hikes by ID
+  Future<void> removeTrailFromSavedHikes(String userId, String trailId) async {
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc == null || userDoc['savedHikes'] == null) {
+      return;
+    }
+
+    final savedHikes = List<Map<String, dynamic>>.from(userDoc['savedHikes']);
+    final updatedSavedHikes =
+        savedHikes.where((hike) => hike['id'] != trailId).toList();
+
+    await databaseService.updateDocument('users', userId, {
+      'savedHikes': updatedSavedHikes,
+    });
+  }
+
   // Get trails from the user's saved hikes
   Future<List<Map<String, dynamic>>> getTrailsFromSavedHikes(
       String userId) async {
