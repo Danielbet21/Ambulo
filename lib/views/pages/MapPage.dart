@@ -268,8 +268,6 @@ class _MapPageState extends State<MapPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 12),
-                _buildWeatherInfo(),
-                const SizedBox(height: 12),
                 FloatingActionButton(
                   mini: true,
                   heroTag: 'center_btn',
@@ -277,6 +275,8 @@ class _MapPageState extends State<MapPage> {
                   tooltip: 'Center to my location',
                   child: const Icon(Icons.my_location),
                 ),
+                const SizedBox(height: 12),
+                _buildWeatherInfo(),
               ],
             ),
           ),
