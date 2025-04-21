@@ -157,8 +157,9 @@ class ShaiPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              AdminCreateTrailPage(dataManager: dataManager)),
+                          builder: (context) => AdminCreateTrailPage(
+                                user: testUser,
+                              )),
                     );
                   },
                   child: const Text('Go To Admin Create Trail Page'),

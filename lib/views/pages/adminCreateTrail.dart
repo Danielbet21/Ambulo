@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:ambulo/models/user.dart';
+import 'package:ambulo/models/trail.dart';
 import 'package:ambulo/models/trail_keys.dart';
-import 'package:ambulo/data/database/data_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminCreateTrailPage extends StatefulWidget {
-  final DataManager dataManager;
+  final User user;
 
-  const AdminCreateTrailPage({super.key, required this.dataManager});
+  const AdminCreateTrailPage({
+    super.key,
+    required this.user,
+  });
 
   @override
   State<AdminCreateTrailPage> createState() => _AdminCreateTrailPageState();
@@ -13,62 +18,73 @@ class AdminCreateTrailPage extends StatefulWidget {
 
 class _AdminCreateTrailPageState extends State<AdminCreateTrailPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _gpxController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _distanceController = TextEditingController();
-  final TextEditingController _estimatedTimeController =
-      TextEditingController();
-  final TextEditingController _startingPointController =
-      TextEditingController();
-  final TextEditingController _endingPointController = TextEditingController();
-  final TextEditingController _nightsController = TextEditingController();
 
-  String? selectedRegion;
-  String? selectedDifficulty;
-  String? selectedTrailType;
-  String? selectedSeason;
-  String? selectedSurface;
+  // Basic details
+  String name = '';
+  String description = '';
+  double distance = 0;
+  String difficulty = '';
+  String region = '';
   bool loop = false;
-  bool hasWater = false;
+
+  // Additional details
+  String gpx = ''; // GPX content entered by the user
+  bool hasWaterSections = false;
+  int nights = 0;
+  String trailType = '';
+  String startingPoint = '';
+  String endingPoint = '';
   bool requiresPayment = false;
+  String recommendedSeason = '';
+  String surfaceType = '';
+  int estimatedTime = 0;
+  bool isSaving = false;
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      setState(() => isSaving = true);
+
       try {
-        await widget.dataManager.createTrail(
-          DateTime.now().millisecondsSinceEpoch.toString(), // Unique trail ID
-          {
-            TrailKeys.name: _nameController.text,
-            'gpx': _gpxController.text, // Adjusted to match TrailPageTest.dart
-            TrailKeys.description: _descriptionController.text,
-            TrailKeys.distance:
-                double.tryParse(_distanceController.text) ?? 0.0,
-            TrailKeys.estimatedTime:
-                int.tryParse(_estimatedTimeController.text) ?? 0,
-            TrailKeys.startingPoint: _startingPointController.text,
-            TrailKeys.endingPoint: _endingPointController.text,
-            TrailKeys.nights: int.tryParse(_nightsController.text) ?? 0,
+        final newTrailId = await Trail.create(
+          db: widget.user.db,
+          name: name,
+          gpx: gpx, // Use the GPX content entered by the user
+          additionalDetails: {
+            TrailKeys.userUid: widget.user.userUid,
+            TrailKeys.official: true,
+            TrailKeys.createdAt: FieldValue.serverTimestamp(),
+            TrailKeys.distance: distance,
+            TrailKeys.difficulty: difficulty,
+            TrailKeys.region: region,
             TrailKeys.loop: loop,
-            TrailKeys.hasWaterSections: hasWater,
+            TrailKeys.description: description,
+            TrailKeys.hasWaterSections: hasWaterSections,
+            TrailKeys.nights: nights,
+            TrailKeys.trailType: trailType,
+            TrailKeys.startingPoint: startingPoint,
+            TrailKeys.endingPoint: endingPoint,
             TrailKeys.requiresPayment: requiresPayment,
-            TrailKeys.region: selectedRegion ?? '',
-            TrailKeys.difficulty: selectedDifficulty ?? '',
-            TrailKeys.trailType: selectedTrailType ?? '',
-            TrailKeys.recommendedSeason: selectedSeason ?? '',
-            TrailKeys.surfaceType: selectedSurface ?? '',
+            TrailKeys.recommendedSeason: recommendedSeason,
+            TrailKeys.surfaceType: surfaceType,
+            TrailKeys.estimatedTime: estimatedTime,
           },
         );
+
+        await widget.user.completeTrail(newTrailId);
+
+        if (!mounted) return;
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Trail created successfully')),
+          const SnackBar(content: Text("Trail saved successfully!")),
         );
-        _formKey.currentState!.reset();
-        Navigator.pop(context); // First pop
-        Navigator.pop(context); // Second pop
+
+        Navigator.of(context).popUntil((route) => route.isFirst);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create trail: $e')),
+          SnackBar(content: Text("Failed to save trail: $e")),
         );
+      } finally {
+        setState(() => isSaving = false);
       }
     }
   }
@@ -83,107 +99,183 @@ class _AdminCreateTrailPageState extends State<AdminCreateTrailPage> {
           key: _formKey,
           child: ListView(
             children: [
+              // Basic Info Section
+              _buildSectionHeader('Basic Information'),
+
               TextFormField(
-                controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Trail Name'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                onChanged: (val) => name = val,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
+              const SizedBox(height: 12),
+
               TextFormField(
-                controller: _gpxController,
-                decoration: const InputDecoration(labelText: 'GPX Content'),
-                maxLines: 3,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-              ),
-              TextFormField(
-                controller: _descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
+                onChanged: (val) => description = val,
+                maxLines: 3,
               ),
+              const SizedBox(height: 12),
+
               TextFormField(
-                controller: _distanceController,
                 decoration: const InputDecoration(labelText: 'Distance (km)'),
                 keyboardType: TextInputType.number,
+                onChanged: (val) => distance = double.tryParse(val) ?? 0,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
-              TextFormField(
-                controller: _estimatedTimeController,
-                decoration: const InputDecoration(
-                    labelText: 'Estimated Time (minutes)'),
-                keyboardType: TextInputType.number,
-              ),
-              TextFormField(
-                controller: _startingPointController,
-                decoration: const InputDecoration(labelText: 'Starting Point'),
-              ),
-              TextFormField(
-                controller: _endingPointController,
-                decoration: const InputDecoration(labelText: 'Ending Point'),
-              ),
-              TextFormField(
-                controller: _nightsController,
-                decoration: const InputDecoration(labelText: 'Nights'),
-                keyboardType: TextInputType.number,
-              ),
-              SwitchListTile(
-                title: const Text('Loop'),
-                value: loop,
-                onChanged: (val) => setState(() => loop = val),
-              ),
-              SwitchListTile(
-                title: const Text('Includes Water Sections'),
-                value: hasWater,
-                onChanged: (val) => setState(() => hasWater = val),
-              ),
-              SwitchListTile(
-                title: const Text('Requires Payment'),
-                value: requiresPayment,
-                onChanged: (val) => setState(() => requiresPayment = val),
-              ),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Region'),
-                items: TrailRegion.values
-                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
-                    .toList(),
-                value: selectedRegion,
-                onChanged: (val) => setState(() => selectedRegion = val),
-              ),
+              const SizedBox(height: 12),
+
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Difficulty'),
                 items: TrailDifficulty.values
-                    .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                    .map((diff) => DropdownMenuItem(
+                          value: diff,
+                          child: Text(diff),
+                        ))
                     .toList(),
-                value: selectedDifficulty,
-                onChanged: (val) => setState(() => selectedDifficulty = val),
+                onChanged: (val) => difficulty = val ?? '',
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
+              const SizedBox(height: 12),
+
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Region'),
+                items: TrailRegion.values
+                    .map((region) => DropdownMenuItem(
+                          value: region,
+                          child: Text(region),
+                        ))
+                    .toList(),
+                onChanged: (val) => region = val ?? '',
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+
+              // GPX Field
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'GPX Content'),
+                onChanged: (val) => gpx = val,
+                maxLines: 3,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+
+              // Trail Characteristics Section
+              _buildSectionHeader('Trail Characteristics'),
+
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Trail Type'),
                 items: TrailType.values
-                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                    .map((type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(type),
+                        ))
                     .toList(),
-                value: selectedTrailType,
-                onChanged: (val) => setState(() => selectedTrailType = val),
+                onChanged: (val) => trailType = val ?? '',
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
+              const SizedBox(height: 12),
+
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(labelText: 'Surface Type'),
+                items: TrailSurface.values
+                    .map((surface) => DropdownMenuItem(
+                          value: surface,
+                          child: Text(surface),
+                        ))
+                    .toList(),
+                onChanged: (val) => surfaceType = val ?? '',
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+
+              TextFormField(
+                decoration: const InputDecoration(
+                    labelText: 'Estimated Time (minutes)'),
+                keyboardType: TextInputType.number,
+                onChanged: (val) => estimatedTime = int.tryParse(val) ?? 0,
+              ),
+              const SizedBox(height: 12),
+
               DropdownButtonFormField<String>(
                 decoration:
                     const InputDecoration(labelText: 'Recommended Season'),
                 items: TrailSeason.values
-                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .map((season) => DropdownMenuItem(
+                          value: season,
+                          child: Text(season),
+                        ))
                     .toList(),
-                value: selectedSeason,
-                onChanged: (val) => setState(() => selectedSeason = val),
+                onChanged: (val) => recommendedSeason = val ?? '',
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Surface Type'),
-                items: TrailSurface.values
-                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                    .toList(),
-                value: selectedSurface,
-                onChanged: (val) => setState(() => selectedSurface = val),
+              const SizedBox(height: 12),
+
+              // Location Details
+              _buildSectionHeader('Location Details'),
+
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Starting Point'),
+                onChanged: (val) => startingPoint = val,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
+              const SizedBox(height: 12),
+
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Ending Point'),
+                onChanged: (val) => endingPoint = val,
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+
+              // Additional Options
+              _buildSectionHeader('Additional Options'),
+
+              SwitchListTile(
+                value: loop,
+                onChanged: (val) => setState(() => loop = val),
+                title: const Text('Loop Trail'),
+              ),
+
+              SwitchListTile(
+                value: hasWaterSections,
+                onChanged: (val) => setState(() => hasWaterSections = val),
+                title: const Text('Has Water Sections'),
+              ),
+
+              SwitchListTile(
+                value: requiresPayment,
+                onChanged: (val) => setState(() => requiresPayment = val),
+                title: const Text('Requires Payment'),
+              ),
+
+              const SizedBox(height: 12),
+
+              TextFormField(
+                decoration: const InputDecoration(
+                    labelText: 'Number of Nights (for multi-day trails)'),
+                keyboardType: TextInputType.number,
+                onChanged: (val) => nights = int.tryParse(val) ?? 0,
+              ),
+
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: const Text('Create Trail'),
+
+              // Save Button
+              ElevatedButton.icon(
+                icon: const Icon(Icons.save),
+                label: isSaving
+                    ? const Text("Saving...")
+                    : const Text("Save Trail"),
+                onPressed: isSaving ? null : _submitForm,
               ),
             ],
           ),
@@ -192,16 +284,22 @@ class _AdminCreateTrailPageState extends State<AdminCreateTrailPage> {
     );
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _gpxController.dispose();
-    _descriptionController.dispose();
-    _distanceController.dispose();
-    _estimatedTimeController.dispose();
-    _startingPointController.dispose();
-    _endingPointController.dispose();
-    _nightsController.dispose();
-    super.dispose();
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Divider(),
+        ],
+      ),
+    );
   }
 }
