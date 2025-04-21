@@ -40,6 +40,7 @@ class _NavigationPageState extends State<NavigationPage> {
   Timer? _timer;
 
   List<LatLng> _routePoints = [];
+  List<LatLng> _walkedPath = []; // Track the actual path walked
   List<Map<String, dynamic>> _waypoints = [];
   bool _isLoading = true;
 
@@ -51,6 +52,7 @@ class _NavigationPageState extends State<NavigationPage> {
         _distance = _recordOps.showNumOfKM();
         _elevationGain = _recordOps.showElevationGain();
         _progress = _recordOps.showProgressPercentage();
+        _walkedPath = _recordOps.getCurrentRoute(); // Update walked path
       });
     };
 
@@ -377,6 +379,7 @@ class _NavigationPageState extends State<NavigationPage> {
             onTapToAddPoint:
                 _isSelectingAlertLocation ? _handleAlertLocationSelected : null,
             onAlertTapped: _confirmDeleteAlert,
+            walkedPath: _walkedPath, // Pass the walked path to MapPage
           ),
           // Only show the Report button if this is a GPX-based trail
           if (_isGpxBasedTrail)

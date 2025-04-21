@@ -19,6 +19,7 @@ class MapPage extends StatefulWidget {
   final bool shouldAutoCenter; // Add this parameter
   final void Function(LatLng)? onTapToAddPoint;
   final void Function(LatLng)? onAlertTapped;
+  final List<LatLng> walkedPath; // New parameter for the walked path
 
   const MapPage({
     super.key,
@@ -28,6 +29,7 @@ class MapPage extends StatefulWidget {
     this.shouldAutoCenter = true, // Default to true for backward compatibility
     this.onTapToAddPoint,
     this.onAlertTapped,
+    this.walkedPath = const [], // Default to empty list
   });
 
   @override
@@ -191,6 +193,16 @@ class _MapPageState extends State<MapPage> {
                       points: widget.routePoints,
                       strokeWidth: 4,
                       color: Colors.blue,
+                    ),
+                  ],
+                ),
+              if (widget.walkedPath.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: widget.walkedPath,
+                      color: Colors.red,
+                      strokeWidth: 4.0,
                     ),
                   ],
                 ),
