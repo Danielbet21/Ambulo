@@ -9,6 +9,8 @@ class CreateTrailPage extends StatefulWidget {
   final List<dynamic> routePoints;
   final List<dynamic> waypoints;
   final User user;
+  final String elapsedTime; // Add elapsed time
+  final double distance; // Add distance
 
   const CreateTrailPage({
     super.key,
@@ -16,6 +18,8 @@ class CreateTrailPage extends StatefulWidget {
     required this.routePoints,
     required this.waypoints,
     required this.user,
+    required this.elapsedTime, // Initialize elapsed time
+    required this.distance, // Initialize distance
   });
 
   @override
@@ -28,7 +32,6 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
   // Basic details
   String name = '';
   String description = '';
-  double distance = 0;
   String difficulty = '';
   String region = '';
   bool loop = false;
@@ -42,8 +45,13 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
   bool requiresPayment = false;
   String recommendedSeason = '';
   String surfaceType = '';
-  int estimatedTime = 0;
   bool isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // distance and estimatedTime are pre-filled and hidden from the user
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,15 +92,6 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
                   decoration: const InputDecoration(labelText: 'Description'),
                   onChanged: (val) => description = val,
                   maxLines: 3,
-                ),
-                const SizedBox(height: 12),
-
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Distance (km)'),
-                  keyboardType: TextInputType.number,
-                  onChanged: (val) => distance = double.tryParse(val) ?? 0,
-                  validator: (val) =>
-                      val == null || val.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 12),
 
@@ -152,14 +151,6 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
                   onChanged: (val) => surfaceType = val ?? '',
                   validator: (val) =>
                       val == null || val.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-
-                TextFormField(
-                  decoration: const InputDecoration(
-                      labelText: 'Estimated Time (minutes)'),
-                  keyboardType: TextInputType.number,
-                  onChanged: (val) => estimatedTime = int.tryParse(val) ?? 0,
                 ),
                 const SizedBox(height: 12),
 
@@ -251,7 +242,8 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
                                 TrailKeys.official: false,
                                 TrailKeys.createdAt:
                                     FieldValue.serverTimestamp(),
-                                TrailKeys.distance: distance,
+                                TrailKeys.distance:
+                                    widget.distance, // Use pre-filled distance
                                 TrailKeys.difficulty: difficulty,
                                 TrailKeys.region: region,
                                 TrailKeys.loop: loop,
@@ -264,7 +256,8 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
                                 TrailKeys.requiresPayment: requiresPayment,
                                 TrailKeys.recommendedSeason: recommendedSeason,
                                 TrailKeys.surfaceType: surfaceType,
-                                TrailKeys.estimatedTime: estimatedTime,
+                                TrailKeys.estimatedTime: _convertTimeToMinutes(
+                                    widget.elapsedTime), // Use pre-filled time
                               },
                             );
 
@@ -291,6 +284,13 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
         ),
       ),
     );
+  }
+
+  int _convertTimeToMinutes(String elapsedTime) {
+    final parts = elapsedTime.split(':');
+    final hours = int.parse(parts[0]);
+    final minutes = int.parse(parts[1]);
+    return (hours * 60) + minutes;
   }
 
   Widget _buildSectionHeader(String title) {

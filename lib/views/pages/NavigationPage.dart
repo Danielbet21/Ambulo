@@ -355,6 +355,8 @@ class _NavigationPageState extends State<NavigationPage> {
           routePoints: session['routePoints'],
           waypoints: session['waypoints'],
           user: widget.user,
+          elapsedTime: _elapsedTime, // Pass elapsed time
+          distance: _distance, // Pass distance
         ),
       ),
     );
