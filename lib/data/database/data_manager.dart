@@ -381,7 +381,36 @@ class DataManager {
 
   // Delete a trail
   Future<void> deleteTrail(String trailId) async {
-    await databaseService.deleteDocument('trails', trailId);
+    try {
+      // 1. Remove trail images
+      final trailDoc = await databaseService.getDocument('trails', trailId);
+      if (trailDoc != null && trailDoc['photosURL'] != null) {
+        final photos = List<String>.from(trailDoc['photosURL']);
+        for (final photo in photos) {
+          await deleteTrailImage(trailId, photo);
+        }
+      }
+
+      // 2. Remove trail references from all users
+      final usersQuerySnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
+      for (final userDoc in usersQuerySnapshot.docs) {
+        final userId = userDoc.id;
+
+        // Remove from savedHikes
+        await removeTrailFromSavedHikes(userId, trailId);
+
+        // Remove from hikingHistory
+        await deleteHikeFromHistory(userId, trailId);
+      }
+
+      // 3. Delete the trail document
+      await databaseService.deleteDocument('trails', trailId);
+      print("Trail $trailId successfully deleted with all references.");
+    } catch (e) {
+      print("Error deleting trail: $e");
+      throw Exception("Failed to delete trail: $e");
+    }
   }
 
   // Upload a trail image manually

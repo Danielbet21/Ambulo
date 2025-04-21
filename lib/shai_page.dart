@@ -9,6 +9,7 @@ import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:ambulo/views/pages/MyTrailsPage.dart';
 import 'package:ambulo/views/pages/SavedRoutesPage.dart';
 import 'package:ambulo/views/pages/adminCreateTrail.dart';
+import 'package:ambulo/views/pages/deleteTrailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'manualTest/usertTests.dart';
@@ -199,6 +200,18 @@ class ShaiPage extends StatelessWidget {
                     );
                   },
                   child: const Text('Go to Completed Routes Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DeleteTrailsPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go to Delete Trails Page'),
                 ),
               ],
             ),
