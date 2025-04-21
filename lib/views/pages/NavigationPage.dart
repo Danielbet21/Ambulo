@@ -202,11 +202,11 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   void _stopNavigation() async {
-    _recordOps.endSession();
+    // Pause the timer without ending the session completely
     _timer?.cancel();
     setState(() => _isNavigating = false);
 
-    final shouldSave = await showDialog<bool>(
+    final dialogResult = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -221,12 +221,17 @@ class _NavigationPageState extends State<NavigationPage> {
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         actions: [
           TextButton.icon(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(context, 'discard'),
             icon: const Icon(Icons.delete_forever, color: Colors.red),
             label: const Text("Discard"),
           ),
+          TextButton.icon(
+            onPressed: () => Navigator.pop(context, 'resume'),
+            icon: const Icon(Icons.play_arrow, color: Colors.blue),
+            label: const Text("Resume"),
+          ),
           ElevatedButton.icon(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(context, 'save'),
             icon: const Icon(Icons.save_alt),
             label: const Text("Save"),
           ),
@@ -234,7 +239,24 @@ class _NavigationPageState extends State<NavigationPage> {
       ),
     );
 
-    if (shouldSave != true) {
+    if (dialogResult == 'resume') {
+      // Just restart the timer without resetting the session
+      setState(() => _isNavigating = true);
+      // Restart timer to continue updating elapsed time
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (mounted && _isNavigating) {
+          setState(() {
+            _elapsedTime = _recordOps.showElapsedTime();
+          });
+        }
+      });
+      return;
+    }
+
+    // Only end the session if not resuming
+    _recordOps.endSession();
+
+    if (dialogResult != 'save') {
       Navigator.pop(context); // Close the NavigationPage
       return;
     }
