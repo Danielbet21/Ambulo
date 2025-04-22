@@ -40,6 +40,7 @@ class _NavigationPageState extends State<NavigationPage> {
   Timer? _timer;
 
   List<LatLng> _routePoints = [];
+  List<LatLng> _walkedPath = []; // Track the actual path walked
   List<Map<String, dynamic>> _waypoints = [];
   bool _isLoading = true;
 
@@ -51,6 +52,7 @@ class _NavigationPageState extends State<NavigationPage> {
         _distance = _recordOps.showNumOfKM();
         _elevationGain = _recordOps.showElevationGain();
         _progress = _recordOps.showProgressPercentage();
+        _walkedPath = _recordOps.getCurrentRoute(); // Update walked path
       });
     };
 
@@ -202,11 +204,11 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   void _stopNavigation() async {
-    _recordOps.endSession();
+    // Pause the timer without ending the session completely
     _timer?.cancel();
     setState(() => _isNavigating = false);
 
-    final shouldSave = await showDialog<bool>(
+    final dialogResult = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -220,21 +222,75 @@ class _NavigationPageState extends State<NavigationPage> {
         content: const Text("Do you want to save this hike to your trails?"),
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         actions: [
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context, false),
-            icon: const Icon(Icons.delete_forever, color: Colors.red),
-            label: const Text("Discard"),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.pop(context, true),
-            icon: const Icon(Icons.save_alt),
-            label: const Text("Save"),
+          Builder(
+            builder: (context) {
+              final isAndroid =
+                  Theme.of(context).platform == TargetPlatform.android;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (isAndroid)
+                    IconButton(
+                      onPressed: () => Navigator.pop(context, 'discard'),
+                      icon: const Icon(Icons.delete_forever, color: Colors.red),
+                      tooltip: "Discard",
+                    )
+                  else
+                    TextButton.icon(
+                      onPressed: () => Navigator.pop(context, 'discard'),
+                      icon: const Icon(Icons.delete_forever, color: Colors.red),
+                      label: const Text("Discard"),
+                    ),
+                  if (isAndroid)
+                    IconButton(
+                      onPressed: () => Navigator.pop(context, 'resume'),
+                      icon: const Icon(Icons.play_arrow, color: Colors.blue),
+                      tooltip: "Resume",
+                    )
+                  else
+                    TextButton.icon(
+                      onPressed: () => Navigator.pop(context, 'resume'),
+                      icon: const Icon(Icons.play_arrow, color: Colors.blue),
+                      label: const Text("Resume"),
+                    ),
+                  if (isAndroid)
+                    IconButton(
+                      onPressed: () => Navigator.pop(context, 'save'),
+                      icon: const Icon(Icons.save_alt, color: Colors.green),
+                      tooltip: "Save",
+                    )
+                  else
+                    ElevatedButton.icon(
+                      onPressed: () => Navigator.pop(context, 'save'),
+                      icon: const Icon(Icons.save_alt),
+                      label: const Text("Save"),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),
     );
 
-    if (shouldSave != true) {
+    if (dialogResult == 'resume') {
+      // Just restart the timer without resetting the session
+      setState(() => _isNavigating = true);
+      // Restart timer to continue updating elapsed time
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (mounted && _isNavigating) {
+          setState(() {
+            _elapsedTime = _recordOps.showElapsedTime();
+          });
+        }
+      });
+      return;
+    }
+
+    // Only end the session if not resuming
+    _recordOps.endSession();
+
+    if (dialogResult != 'save') {
       Navigator.pop(context); // Close the NavigationPage
       return;
     }
@@ -299,6 +355,8 @@ class _NavigationPageState extends State<NavigationPage> {
           routePoints: session['routePoints'],
           waypoints: session['waypoints'],
           user: widget.user,
+          elapsedTime: _elapsedTime, // Pass elapsed time
+          distance: _distance, // Pass distance
         ),
       ),
     );
@@ -323,6 +381,7 @@ class _NavigationPageState extends State<NavigationPage> {
             onTapToAddPoint:
                 _isSelectingAlertLocation ? _handleAlertLocationSelected : null,
             onAlertTapped: _confirmDeleteAlert,
+            walkedPath: _walkedPath, // Pass the walked path to MapPage
           ),
           // Only show the Report button if this is a GPX-based trail
           if (_isGpxBasedTrail)

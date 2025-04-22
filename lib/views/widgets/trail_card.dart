@@ -1,7 +1,6 @@
-// trail_card.dart
-
 import 'package:ambulo/models/trail_keys.dart';
 import 'package:flutter/material.dart';
+import 'package:ambulo/data/styles/theme_extentions.dart'; // Make sure this is the right path
 
 class TrailCard extends StatelessWidget {
   final Map<String, dynamic> fullTrailData;
@@ -21,9 +20,17 @@ class TrailCard extends StatelessWidget {
     final List<String> images =
         List<String>.from(fullTrailData['photosURL'] ?? []);
     final hasImage = images.isNotEmpty;
+    final colorScheme = context.colorScheme;
+    final textTheme = context.textTheme;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
+      color: colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: colorScheme.outline),
+      ),
+      elevation: 2,
       child: ListTile(
         onTap: onTap,
         contentPadding: const EdgeInsets.all(12),
@@ -36,26 +43,36 @@ class TrailCard extends StatelessWidget {
                   height: 60,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.broken_image);
+                    return Icon(Icons.broken_image, color: colorScheme.error);
                   },
                 )
               : Container(
                   width: 60,
                   height: 60,
-                  color: Colors.grey[300],
+                  color: colorScheme.surfaceVariant,
                   alignment: Alignment.center,
-                  child: const Icon(Icons.landscape, color: Colors.grey),
+                  child: Icon(Icons.landscape,
+                      color: colorScheme.onSurfaceVariant),
                 ),
         ),
-        title: Text(details[TrailKeys.name] ?? "Unnamed Trail"),
+        title: Text(
+          details[TrailKeys.name] ?? "Unnamed Trail",
+          style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                "${details[TrailKeys.region] ?? 'Unknown Region'} · ${details[TrailKeys.distance]?.toStringAsFixed(1) ?? '?'} km"),
+              "${details[TrailKeys.region] ?? 'Unknown Region'} · ${details[TrailKeys.distance]?.toStringAsFixed(1) ?? '?'} km",
+              style: textTheme.bodyMedium
+                  ?.copyWith(color: colorScheme.onSurfaceVariant),
+            ),
             if (details[TrailKeys.difficulty] != null)
-              Text("Difficulty: ${details[TrailKeys.difficulty]}",
-                  style: const TextStyle(fontSize: 12)),
+              Text(
+                "Difficulty: ${details[TrailKeys.difficulty]}",
+                style:
+                    textTheme.bodySmall?.copyWith(color: colorScheme.primary),
+              ),
           ],
         ),
         trailing: trailing,

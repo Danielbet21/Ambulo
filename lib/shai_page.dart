@@ -3,8 +3,13 @@ import 'package:ambulo/manualTest/TrailPageTest.dart';
 import 'package:ambulo/manualTest/WeatherTest.dart';
 import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
+import 'package:ambulo/manualTest/show_all_trail_test.dart';
+import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:ambulo/views/pages/MyTrailsPage.dart';
+import 'package:ambulo/views/pages/SavedRoutesPage.dart';
+import 'package:ambulo/views/pages/adminCreateTrail.dart';
+import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'manualTest/usertTests.dart';
@@ -28,13 +33,34 @@ class ShaiPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError || !snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Shai Page'),
-            ),
-            body: const Center(
-              child: Text('Failed to load user.'),
-            ),
+          return FutureBuilder<User?>(
+            future: createAndWrapUser(
+                dataManager, testEmail, testPassword, testName),
+            builder: (context, retrySnapshot) {
+              if (retrySnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (retrySnapshot.hasError || !retrySnapshot.hasData) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: const Text('Shai Page'),
+                  ),
+                  body: const Center(
+                    child: Text('Failed to load or register user.'),
+                  ),
+                );
+              }
+
+              final User retryUser = retrySnapshot.data!;
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Shai Page'),
+                ),
+                body: Center(
+                  child: Text(
+                      'User registered successfully (refresh the page): ${retryUser.name}'),
+                ),
+              );
+            },
           );
         }
 
@@ -148,7 +174,65 @@ class ShaiPage extends StatelessWidget {
                               )),
                     );
                   },
-                  child: const Text('Go To Trail My Trails Page'),
+                  child: const Text('Go To My Trails Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AdminCreateTrailPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go To Admin Create Trail Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ShowAllTrailTest()),
+                    );
+                  },
+                  child: const Text('Show All Trails'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SavedRoutesPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go to Saved Routes Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CompletedRoutesPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go to Completed Routes Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DeleteTrailsPage(
+                                user: testUser,
+                              )),
+                    );
+                  },
+                  child: const Text('Go to Delete Trails Page'),
                 ),
               ],
             ),
