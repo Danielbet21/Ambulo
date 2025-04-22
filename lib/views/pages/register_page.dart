@@ -152,8 +152,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         await user.load();
                         globalUser = user;
                       } //TODO: debug printing
-                      debugPrint('Email: $_emailController.text, Password: $_passwordController.text');
-                    },
+                    debugPrint('Email: ${_emailController.text}, Password: ${_passwordController.text}');                    },
                     child: const Text('Already have an account? Login here')
                   ), 
                 // Placeholder for 3rd-party comment or sign-in

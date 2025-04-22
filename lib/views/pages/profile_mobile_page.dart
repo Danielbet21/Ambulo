@@ -1,3 +1,5 @@
+import 'package:ambulo/views/pages/register_page.dart';
+import 'package:ambulo/views/pages/settings_page.dart';
 import 'package:ambulo/views/widgets/profile_category.dart';
 import 'package:flutter/material.dart';
 
@@ -14,11 +16,22 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
-        actions: [IconButton(icon: Icon(Icons.settings), onPressed: () {})],
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+          Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterPage()),
+                );
+        }),
+        actions: [IconButton(icon: Icon(Icons.settings), onPressed: () {
+          Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+        })],
         elevation: 0,
         foregroundColor: Colors.black,
       ),
+      
       body: SingleChildScrollView(
         child: Column(
           children: [

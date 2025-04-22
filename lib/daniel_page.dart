@@ -9,7 +9,9 @@ class DanielPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: kIsWeb ? ProfileWebPage() : ProfileMobilePage(),
+      // body: kIsWeb ? ProfileWebPage() : ProfileMobilePage(),
+      body: ProfileMobilePage(),
+
     );
   }
 }
