@@ -1,4 +1,6 @@
 import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/main.dart';
+import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
@@ -118,10 +120,14 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                     ),
-                    onPressed: () {
-                      final email = _emailController.text;
-                      final password = _passwordController.text;
-                      debugPrint('Email: $email, Password: $password');
+                    onPressed: () async { //TODO: make sure it works
+                      final user = await loginAndWrapUser(
+                    dataManager, _emailController.text, _passwordController.text);
+                      if (user != null) {
+                        await user.load();
+                        globalUser = user;
+                      } //TODO: debug printing
+                      debugPrint('Email: $_emailController.text, Password: $_passwordController.text');
                     },
                     child: const Text('Login'),
                   ),
