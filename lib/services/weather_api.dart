@@ -134,18 +134,62 @@ class WeatherService {
       future: getForecastRaw(lat, lon),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const CircularProgressIndicator();
-        final items = snapshot.data!.map(fromForecast).toList();
-        return Column(
-          children: items.map((day) {
-            return ListTile(
-              leading: Image.network(day.iconUrl),
-              title: Text(day.description),
-              subtitle:
-                  Text('🌡️ ${day.temp.toStringAsFixed(1)}°C • ${day.time}'),
-            );
-          }).toList(),
+
+        final items = snapshot.data!
+            .map(fromForecast)
+            .toList()
+            .take(5)
+            .toList(); // First 5 days
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: List.generate(items.length, (index) {
+              final day = items[index];
+              final date = DateTime.parse(day.time);
+              final weekday = _weekdayShort(date.weekday);
+
+              return Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceVariant,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        weekday,
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Image.network(day.iconUrl, width: 36, height: 36),
+                      Text(
+                        "${day.temp.toStringAsFixed(0)}°",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
         );
       },
     );
+  }
+
+  /// Return short weekday name from number
+  static String _weekdayShort(int weekday) {
+    const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return names[(weekday - 1) % 7];
   }
 }

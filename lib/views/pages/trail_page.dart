@@ -1,5 +1,7 @@
 // trail_page.dart
 
+import 'package:ambulo/services/weather_api.dart';
+import 'package:ambulo/views/pages/EditTrailPage.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail_keys.dart';
@@ -83,7 +85,26 @@ class _TrailPageState extends State<TrailPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(trailDetails![TrailKeys.name] ?? 'Trail')),
+      appBar: AppBar(
+        title: Text(trailDetails![TrailKeys.name] ?? 'Trail'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Edit Trail',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditTrailPage(
+                    trailId: widget.trailId,
+                    user: widget.user,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -150,13 +171,26 @@ class _TrailPageState extends State<TrailPage> {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 24),
+          Text("5-Day Weather Forecast",
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          if (routePoints.isNotEmpty)
+            WeatherService.forecastWidget(
+              lat: routePoints.first.latitude,
+              lon: routePoints.first.longitude,
+            )
+          else
+            Text("⚠️ Weather forecast unavailable for this trail.",
+                style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 24),
+          const SizedBox(height: 24),
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 3,
+            childAspectRatio: MediaQuery.of(context).size.width > 600 ? 3 : 2,
             children: [
               _infoCard(Icons.map, "Region", trailDetails![TrailKeys.region]),
               _infoCard(Icons.straighten, "Distance",
@@ -230,21 +264,32 @@ class _TrailPageState extends State<TrailPage> {
         color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
         border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 22),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: Theme.of(context).textTheme.labelSmall),
-                const SizedBox(height: 2),
-                Text(value ?? "-",
-                    style: Theme.of(context).textTheme.bodyMedium),
-              ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(icon, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelSmall,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Flexible(
+            child: Text(
+              value ?? "-",
+              style: Theme.of(context).textTheme.bodyMedium,
+              overflow: TextOverflow.visible, // Allow text to wrap
+              softWrap: true, // Enable wrapping for long text
             ),
           ),
         ],

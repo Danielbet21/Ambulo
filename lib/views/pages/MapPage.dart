@@ -1,11 +1,14 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'dart:async';
+
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
 import 'package:ambulo/models/AlertTypes.dart';
 import 'package:ambulo/utils/maps_ops.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ambulo/services/weather_api.dart';
 
@@ -16,6 +19,7 @@ class MapPage extends StatefulWidget {
   final bool shouldAutoCenter; // Add this parameter
   final void Function(LatLng)? onTapToAddPoint;
   final void Function(LatLng)? onAlertTapped;
+  final List<LatLng> walkedPath; // New parameter for the walked path
 
   const MapPage({
     super.key,
@@ -25,6 +29,7 @@ class MapPage extends StatefulWidget {
     this.shouldAutoCenter = true, // Default to true for backward compatibility
     this.onTapToAddPoint,
     this.onAlertTapped,
+    this.walkedPath = const [], // Default to empty list
   });
 
   @override
@@ -39,6 +44,8 @@ class _MapPageState extends State<MapPage> {
   bool _isWeatherVisible = true;
   String _currentScale = '1:10000';
   bool _hasInitiallyCentered = false; // Track if we've centered initially
+  LatLng? _myLocation;
+  StreamSubscription<Position>? _locationStream;
 
   @override
   void initState() {
@@ -47,6 +54,16 @@ class _MapPageState extends State<MapPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeMap();
       _fetchWeather();
+    });
+    _locationStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5,
+      ),
+    ).listen((position) {
+      setState(() {
+        _myLocation = LatLng(position.latitude, position.longitude);
+      });
     });
   }
 
@@ -179,6 +196,16 @@ class _MapPageState extends State<MapPage> {
                     ),
                   ],
                 ),
+              if (widget.walkedPath.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: widget.walkedPath,
+                      color: Colors.red,
+                      strokeWidth: 4.0,
+                    ),
+                  ],
+                ),
               if (widget.routePoints.isNotEmpty)
                 MarkerLayer(
                   markers: [
@@ -232,17 +259,37 @@ class _MapPageState extends State<MapPage> {
                     }).toList(),
                   ],
                 ),
+              if (_myLocation != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _myLocation!,
+                      width: 40,
+                      height: 40,
+                      child: const Icon(Icons.navigation,
+                          color: Colors.green, size: 36),
+                    ),
+                  ],
+                ),
             ],
           ),
           Positioned(
             top: 16,
             left: 16,
-            child: FloatingActionButton(
-              mini: true,
-              heroTag: 'center_btn',
-              onPressed: () => MapsOps.centerToMyLocation(_mapController),
-              tooltip: 'Center to my location',
-              child: const Icon(Icons.my_location),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'center_btn',
+                  onPressed: () => MapsOps.centerToMyLocation(_mapController),
+                  tooltip: 'Center to my location',
+                  child: const Icon(Icons.my_location),
+                ),
+                const SizedBox(height: 12),
+                _buildWeatherInfo(),
+              ],
             ),
           ),
           Positioned(
@@ -255,8 +302,6 @@ class _MapPageState extends State<MapPage> {
             right: 16,
             child: Row(
               children: [
-                _buildWeatherInfo(),
-                const SizedBox(width: 8),
                 _buildFAB(Icons.layers, _showMapLayersDialog, 'layers_btn',
                     'Change map layer'),
                 _buildFAB(Icons.info_outline, () => MapsOps.showLegend(context),
@@ -413,6 +458,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   void dispose() {
+    _locationStream?.cancel(); // stop tracking when map closes
     _mapController.dispose();
     super.dispose();
   }

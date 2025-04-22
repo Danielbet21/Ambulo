@@ -1,6 +1,8 @@
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/utils/user_utils.dart';
+import 'package:ambulo/views/pages/login_page.dart';
+import 'package:ambulo/views/pages/profile_mobile_page.dart';
 // import 'package:ambulo/views/pages/login_page.dart'; //TODO: make sure it works without this import
 import 'package:flutter/material.dart';
 
@@ -19,6 +21,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
    Widget build(BuildContext context) {
+    const TextStyle defaultTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: AppConstants.kFontSizeLarge,
+    fontFamily: 'monospace',
+  );
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -51,16 +59,19 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
-                    Text(
-                      'Welcome to Ambulo!\n Let\'s get you started.',
+                    Text('Welcome to', style: defaultTextStyle),
+                      Text('Ambulo!\n ', 
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: AppConstants.kFontSizeLarge,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'MyCustomFont',
+                        style: TextStyle(
+                          color: Colors.amber,
+                          fontWeight: FontWeight.bold,
+                          fontSize: AppConstants.kFontSizeLarge,
+                          fontFamily: 'monospace',
+                        ),
                       ),
-                  ),
+                      Text('Let\'s get you started.',
+                      style: defaultTextStyle,
+                      ),
                   AppConstants.kSizedBoxLarge,
                 // Email field
                 Row(
@@ -135,25 +146,30 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                     ),
-                    onPressed: () {
-                      final email = _emailController.text;
-                      final password = _passwordController.text;
-                      debugPrint('Email: $email, Password: $password');
-                    },
-                    child: const Text('Sign Up'),
-                  ),
-                AppConstants.kSizedBoxMedium,
-                  TextButton(
-                    onPressed: () async { //TODO: make sure it works
+                    onPressed: () async {
                       final user = await createAndWrapUser(
                         dataManager, _emailController.text, _passwordController.text,
                          _firstNameController.text + " " + _lastNameController.text);
                       if (user != null) {
                         await user.load();
                         globalUser = user;
-                      } //TODO: debug printing
-                    debugPrint('Email: ${_emailController.text}, Password: ${_passwordController.text}');                    },
-                    child: const Text('Already have an account? Login here')
+                         Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ProfileMobilePage()),
+                        );
+                      }
+                    },
+                    child: const Text('Sign Up'),
+                  ),
+                  AppConstants.kSizedBoxMedium,
+                  TextButton(
+                    child: Text('Already have an account? Login here'),
+                      onPressed: () { 
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                          );
+                      },
                   ), 
                 // Placeholder for 3rd-party comment or sign-in
                 Row(
