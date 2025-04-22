@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class AnalyticsCard extends StatelessWidget {
   final String title;
   final String value;
+  final String? mersure;
 
   const AnalyticsCard({
     super.key,
     required this.title,
     required this.value,
+    this.mersure,
   });
 
   @override
@@ -21,11 +23,20 @@ class AnalyticsCard extends StatelessWidget {
           children: [
             Text(title, textAlign: TextAlign.center, 
                 style: context.textTheme.titleMedium),
-            Text(
-              value,
-              style: context.textTheme.titleLarge,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Text(
+                value,
+                style: context.textTheme.titleLarge,
+              ),
+              if (mersure != null)
+                Text(
+                  ' $mersure',
+                  style: context.textTheme.titleSmall,
+                ),
+              ]
             ),
-           
           ],
         ),
       ),

@@ -14,14 +14,17 @@ class ProfileWebPage extends StatelessWidget {
       appBar: AppBar(
         actions: [
           // Settings button
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsPage()),
-              );
-            },
-            icon: const Icon(Icons.settings),
+         Padding(
+          padding: const EdgeInsets.only(right: 10.0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              },
+              icon: const Icon(Icons.settings, size: 30),
+            ),
           ),
         ],
       ),
@@ -51,7 +54,7 @@ class ProfileWebPage extends StatelessWidget {
                             spacing: 5,
                             children: const [
                               AnalyticsCard(title: 'Trips', value: '12'),
-                              AnalyticsCard(title: 'Elevation', value: '2,400'),
+                              AnalyticsCard(title: 'Elevation', value: '2,400', mersure: 'm'),
                               AnalyticsCard(title: 'Total KM', value: '150'),
                             ],
                           ),
