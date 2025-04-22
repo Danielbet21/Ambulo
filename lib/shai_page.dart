@@ -9,7 +9,7 @@ import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:ambulo/views/pages/MyTrailsPage.dart';
 import 'package:ambulo/views/pages/SavedRoutesPage.dart';
 import 'package:ambulo/views/pages/adminCreateTrail.dart';
-import 'package:ambulo/views/pages/deleteTrailsPage.dart';
+import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'manualTest/usertTests.dart';
