@@ -33,13 +33,34 @@ class ShaiPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError || !snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Shai Page'),
-            ),
-            body: const Center(
-              child: Text('Failed to load user.'),
-            ),
+          return FutureBuilder<User?>(
+            future: createAndWrapUser(
+                dataManager, testEmail, testPassword, testName),
+            builder: (context, retrySnapshot) {
+              if (retrySnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (retrySnapshot.hasError || !retrySnapshot.hasData) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: const Text('Shai Page'),
+                  ),
+                  body: const Center(
+                    child: Text('Failed to load or register user.'),
+                  ),
+                );
+              }
+
+              final User retryUser = retrySnapshot.data!;
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Shai Page'),
+                ),
+                body: Center(
+                  child: Text(
+                      'User registered successfully (refresh the page): ${retryUser.name}'),
+                ),
+              );
+            },
           );
         }
 

@@ -49,6 +49,19 @@ class DataManager {
     await authService.deleteUser();
   }
 
+  Future<void> deleteUserFromDB(String userId) async {
+    // delete user profile image if exists
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc != null && userDoc['userPhotoPath'] != null) {
+      final imageUrl = userDoc['userPhotoPath'];
+      await databaseService.deleteUserProfileImage(imageUrl);
+    }
+    // delete user document from Firestore
+    await databaseService.deleteDocument("users", userId);
+    // delete user authentication account
+    await deleteUser();
+  }
+
   // ----------- User Part -----------
 
   // Create a new user profile in Firestore
