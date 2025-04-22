@@ -1,5 +1,7 @@
 import 'package:ambulo/data/styles/constant.dart';
-import 'package:ambulo/views/pages/login_page.dart';
+import 'package:ambulo/main.dart';
+import 'package:ambulo/utils/user_utils.dart';
+// import 'package:ambulo/views/pages/login_page.dart'; //TODO: make sure it works without this import
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -12,7 +14,6 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  // final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController(); 
 
@@ -143,12 +144,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 AppConstants.kSizedBoxMedium,
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()),
-                      );
-                    }, 
+                    onPressed: () async { //TODO: make sure it works
+                      final user = await createAndWrapUser(
+                        dataManager, _emailController.text, _passwordController.text,
+                         _firstNameController.text + " " + _lastNameController.text);
+                      if (user != null) {
+                        await user.load();
+                        globalUser = user;
+                      } //TODO: debug printing
+                      debugPrint('Email: $_emailController.text, Password: $_passwordController.text');
+                    },
                     child: const Text('Already have an account? Login here')
                   ), 
                 // Placeholder for 3rd-party comment or sign-in

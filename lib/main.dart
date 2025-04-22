@@ -3,6 +3,7 @@ import 'package:ambulo/data/database/firebase_services.dart';
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/firebase_options.dart';
+import 'package:ambulo/models/user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'shai_page.dart';
@@ -10,8 +11,9 @@ import 'daniel_page.dart';
 import 'dataManagerManualTests.dart'; // Import the new page
 import 'package:flutter/services.dart';
 
-// Global DataManager instance for easy access throughout the app
+// Global DataManager & User instances for easy access throughout the app
 late DataManager dataManager;
+late User globalUser;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
