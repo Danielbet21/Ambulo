@@ -18,7 +18,10 @@ Future<User?> createAndWrapUser(
 
     await db.createUserProfile(uid, name, email);
     await db.signIn(email, password);
-
+    print("👤 User registered and signed in successfully.");
+    print("👤 User ID: $uid");
+    print("👤 User email: $email");
+    print("👤 User name: $name");
     return User(db);
   } catch (e) {
     print('❌ createAndWrapUser error: $e');
@@ -35,6 +38,9 @@ Future<User?> loginAndWrapUser(
     final cred = await db.signIn(email, password);
     if (cred == null) return null;
 
+    print("👤 User signed in successfully.");
+    print("👤 User ID: ${cred.user?.uid}");
+    print("👤 User email: $email");
     return User(db);
   } catch (e) {
     print('❌ loginAndWrapUser error: $e');
