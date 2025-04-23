@@ -6,12 +6,14 @@ class ProfileCategory extends StatelessWidget {
   final IconData? icon;
 // icon color , will be default to grey[700] if not provided by the user
   final Color? iconColor;
+  final Widget? pageToNavigateTo;
 
-  const ProfileCategory({
+  ProfileCategory({
     super.key,
     required this.nameOfCategory,
     this.icon,
     this.iconColor = const Color(0xFF616161),
+    this.pageToNavigateTo, // Accept a Widget for navigation
   });
 
   @override
@@ -27,25 +29,28 @@ class ProfileCategory extends StatelessWidget {
               color: Color.fromARGB(255, 214, 211, 211),
               width: 1,
             ),
-            padding: EdgeInsets.zero, // Remove default padding to control it with Container
+            padding: EdgeInsets.zero,
           ),
           onPressed: () {
-            // Handle button press
-            // Consider using actual route names if they differ from nameOfCategory
-            Navigator.pushNamed(context, '/$nameOfCategory');
+            if (pageToNavigateTo != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => pageToNavigateTo!),
+              );
+            }
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10), // Apply padding here
-            width: MediaQuery.of(context).size.width * 0.8, // Set width to 80% of screen width
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            width: MediaQuery.of(context).size.width * 0.8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row( // Group icon and text together
-                  mainAxisSize: MainAxisSize.min, // Take minimum space needed
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (icon != null) // Conditionally display icon
+                    if (icon != null)
                       Icon(icon, size: 20, color: iconColor),
-                    if (icon != null) // Add spacing only if icon exists
+                    if (icon != null)
                       const SizedBox(width: 12),
                     Text(
                       nameOfCategory,
@@ -62,7 +67,7 @@ class ProfileCategory extends StatelessWidget {
             ),
           ),
         ),
-        AppConstants.kSizedBoxMedium,
+        const SizedBox(height: 16),
       ],
     );
   }

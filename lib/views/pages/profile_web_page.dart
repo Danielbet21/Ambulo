@@ -61,13 +61,13 @@ class ProfileWebPage extends StatelessWidget {
                           AppConstants.kSizedBoxXXL,
                           
                           // Categories directly below analytics
-                          const ProfileCategory(
+                          ProfileCategory(
                             nameOfCategory: 'Saved Routes',
                           ),
-                          const ProfileCategory(
+                          ProfileCategory(
                             nameOfCategory: 'Completed Routes',
                           ),
-                          const ProfileCategory(
+                          ProfileCategory(
                             nameOfCategory: 'Saved Guides',
                           ),
                         ],
