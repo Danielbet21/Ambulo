@@ -55,13 +55,12 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
                     Text(
-                      'Good to see you again!\n Lets look at your next adventure.',
+                      "Good to see you again!\n Let's look at your next adventure.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: AppConstants.kFontSizeLarge,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'MyCustomFont',
+                        fontFamily: 'monospace',
                       ),
                   ),
                   AppConstants.kSizedBoxLarge,
@@ -115,14 +114,11 @@ class _LoginPageState extends State<LoginPage> {
                 ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(
-                        const Color.fromARGB(255, 5, 91, 35),
+                         Color.fromARGB(255, 5, 91, 35),
                       ),
                       foregroundColor: WidgetStateProperty.resolveWith<Color>(
                         (Set<WidgetState> states) {
-                          if (states.contains(WidgetState.hovered)) {
-                            return Colors.white;
-                          }
-                          return const Color.fromARGB(255, 17, 233, 92); 
+                          return const Color.fromARGB(255, 40, 255, 115); 
                         },
                       ),
                     ),
@@ -144,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                       }
                       debugPrint('Email: $_emailController.text, Password: $_passwordController.text');
                     },
-                    child: const Text('Login'),
+                    child: const Text('Login', style: TextStyle(color: Colors.white),),
                   ),
                 AppConstants.kSizedBoxMedium,
 
@@ -194,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(decoration: TextDecoration.underline),
                   ),
                 ),
-                Text("Forgot password?"),
+                Text("Forgot your password?"),
                 Text("Reset password", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
               ],
             ),

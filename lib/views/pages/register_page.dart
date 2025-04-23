@@ -60,16 +60,19 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
                     Text('Welcome to', style: defaultTextStyle),
-                      Text('Ambulo!\n ', 
+                      Text('Ambulo! ', 
                       textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.amber,
-                          fontWeight: FontWeight.bold,
-                          fontSize: AppConstants.kFontSizeLarge,
+                          fontSize: AppConstants.kFontSizeXXL,
                           fontFamily: 'monospace',
+                          fontWeight: FontWeight.bold,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 1.0 // Outline thickness
+                            ..color = Colors.amber, // Outline color
                         ),
                       ),
-                      Text('Let\'s get you started.',
+                      Text("Let's get you started.",
                       style: defaultTextStyle,
                       ),
                   AppConstants.kSizedBoxLarge,
@@ -139,10 +142,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       // Change text color based on state
                       foregroundColor: WidgetStateProperty.resolveWith<Color>(
                         (Set<WidgetState> states) {
-                          if (states.contains(WidgetState.hovered)) {
-                            return Colors.white;
-                          }
-                          return const Color.fromARGB(255, 17, 233, 92); // default
+                          return const Color.fromARGB(255, 40, 255, 115); // default
                         },
                       ),
                     ),
@@ -159,7 +159,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         );
                       }
                     },
-                    child: const Text('Sign Up'),
+                    child: const Text('Sign Up', style: TextStyle( color: Colors.white) ,),
                   ),
                   AppConstants.kSizedBoxMedium,
                   TextButton(
