@@ -1,6 +1,7 @@
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/utils/user_utils.dart';
+import 'package:ambulo/views/pages/profile_mobile_page.dart';
 import 'package:ambulo/views/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true; 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String? _errorMessage; 
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +55,12 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
                     Text(
-                      'Good to see you again!\n Lets look at your next adventure.',
+                      "Good to see you again!\n Let's look at your next adventure.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: AppConstants.kFontSizeLarge,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'MyCustomFont',
+                        fontFamily: 'monospace',
                       ),
                   ),
                   AppConstants.kSizedBoxLarge,
@@ -104,19 +105,20 @@ class _LoginPageState extends State<LoginPage> {
                   
                 
                 ),
+                if (_errorMessage != null)
+                      Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.red), // Display the error message in red
+                      ),
                 AppConstants.kSizedBoxMedium,
                 ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(
-                        const Color.fromARGB(255, 5, 91, 35),
+                         Color.fromARGB(255, 5, 91, 35),
                       ),
-                      // Change text color based on state
                       foregroundColor: WidgetStateProperty.resolveWith<Color>(
                         (Set<WidgetState> states) {
-                          if (states.contains(WidgetState.hovered)) {
-                            return Colors.white;
-                          }
-                          return const Color.fromARGB(255, 17, 233, 92); // default
+                          return const Color.fromARGB(255, 40, 255, 115); 
                         },
                       ),
                     ),
@@ -126,10 +128,19 @@ class _LoginPageState extends State<LoginPage> {
                       if (user != null) {
                         await user.load();
                         globalUser = user;
+                        Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProfileMobilePage()),
+                    );
                       } //TODO: debug printing
+                      else{
+                        setState(() {
+                        _errorMessage = 'Invalid email or password. Please try again.';
+                        });
+                      }
                       debugPrint('Email: $_emailController.text, Password: $_passwordController.text');
                     },
-                    child: const Text('Login'),
+                    child: const Text('Login', style: TextStyle(color: Colors.white),),
                   ),
                 AppConstants.kSizedBoxMedium,
 
@@ -179,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(decoration: TextDecoration.underline),
                   ),
                 ),
-                Text("Forgot password?"),
+                Text("Forgot your password?"),
                 Text("Reset password", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
               ],
             ),

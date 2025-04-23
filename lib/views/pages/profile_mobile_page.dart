@@ -1,3 +1,10 @@
+import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/main.dart';
+import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
+import 'package:ambulo/views/pages/MapPage.dart';
+import 'package:ambulo/views/pages/SavedRoutesPage.dart';
+import 'package:ambulo/views/pages/register_page.dart';
+import 'package:ambulo/views/pages/settings_page.dart';
 import 'package:ambulo/views/widgets/profile_category.dart';
 import 'package:flutter/material.dart';
 
@@ -14,11 +21,16 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
-        actions: [IconButton(icon: Icon(Icons.settings), onPressed: () {})],
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+          Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MapPage()),
+                );
+        }),
         elevation: 0,
         foregroundColor: Colors.black,
       ),
+      
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -47,9 +59,10 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                   SizedBox(width: 24), // a horozontal space between the avatar and text
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Ambulo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text('The title', style: TextStyle(color: Colors.grey[600])),
+                    children: [ //TODO: fix the title?
+                      AppConstants.kSizedBoxLarge,
+                      Text(globalUser.name ?? 'Guest', style: TextStyle(fontSize: AppConstants.kFontSizeLarge, fontWeight: FontWeight.bold)),
+                      Text(globalUser.selfTitle ?? 'Newbie', style: TextStyle(color: Colors.grey[600])),
                       SizedBox(height: 8),
                       
                     ],
@@ -60,14 +73,14 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
         
             Divider(),
             // Options List 
-            const ProfileCategory(nameOfCategory: 'Completed Routes', icon: Icons.check_circle_outline, iconColor: Colors.green),
-            const ProfileCategory(nameOfCategory: 'Saved Routes', icon: Icons.save_alt),
-            const ProfileCategory(nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
-            const ProfileCategory(nameOfCategory: 'Subscription', icon: Icons.star, iconColor: Colors.amber),
-            const ProfileCategory(nameOfCategory: 'Settings', icon: Icons.settings),
-            const ProfileCategory(nameOfCategory: 'Help', icon: Icons.help),  
-            const ProfileCategory(nameOfCategory: 'About', icon: Icons.info),
-            const ProfileCategory(nameOfCategory: 'Log Out', icon: Icons.logout, iconColor: Colors.red),
+            ProfileCategory(nameOfCategory: 'Completed Routes',pageToNavigateTo:CompletedRoutesPage(user: globalUser) , icon: Icons.check_circle_outline, iconColor: Colors.green),
+            ProfileCategory(nameOfCategory: 'Saved Routes',pageToNavigateTo: SavedRoutesPage(user: globalUser), icon: Icons.save_alt),
+            ProfileCategory(nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
+            ProfileCategory(nameOfCategory: 'Subscription', icon: Icons.star, iconColor: Colors.amber),
+            ProfileCategory(nameOfCategory: 'Settings',pageToNavigateTo: SettingsPage(), icon: Icons.settings),
+            ProfileCategory(nameOfCategory: 'Help', icon: Icons.help),  
+            ProfileCategory(nameOfCategory: 'About', icon: Icons.info),
+            ProfileCategory(nameOfCategory: 'Log Out', icon: Icons.logout, iconColor: Colors.red),
             // Bottom Navigation
           ],
         ),

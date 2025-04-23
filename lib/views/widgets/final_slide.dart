@@ -16,7 +16,7 @@ class _FinalSlideState extends BaseSlideState<FinalSlide> {
   @override
   AssetImage getBackgroundImage() {
     // Use the same image as slide four
-    return const AssetImage('assets/background/sunset_mountian.jpg');
+    return const AssetImage('assets/background/final.png');
   }
 
   @override
@@ -48,7 +48,7 @@ class _FinalSlideState extends BaseSlideState<FinalSlide> {
               SizedBox(height: 30),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  fixedSize: Size(180, 50),
+                  fixedSize: Size(180, 60),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),

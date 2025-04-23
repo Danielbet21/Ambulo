@@ -1,3 +1,4 @@
+import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/views/widgets/profile_category.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,7 @@ class SettingsPage extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
+            AppConstants.kSizedBoxMedium,
             ProfileCategory(nameOfCategory: "Account Settings", 
                 icon: Icons.account_circle_outlined),
             ProfileCategory(nameOfCategory: "Privacy & Security", 
