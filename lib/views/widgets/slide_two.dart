@@ -28,7 +28,7 @@ class _SlideTwoState extends BaseSlideState<SlideTwo> {
           right: 20,
           child: Container(
             // Dynamic height based on screen size
-            height: MediaQuery.of(context).size.height * 0.2,// 15% of screen height
+            height: MediaQuery.of(context).size.height * 0.16,// 15% of screen height
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.7), // More reliable opacity
               borderRadius: BorderRadius.circular(30),

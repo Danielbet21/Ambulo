@@ -66,7 +66,7 @@ class SlideThree extends BaseSlide {
 class _SlideThreeState extends BaseSlideState<SlideThree> {
   @override
   AssetImage getBackgroundImage() {
-    return const AssetImage('assets/background/mountain_rige_fog.jpg');
+    return const AssetImage('assets/background/demograph_notification.png');
   }
 
   @override
@@ -80,7 +80,7 @@ class _SlideThreeState extends BaseSlideState<SlideThree> {
           right: 20,
           child: Container(
             // Dynamic height based on screen size
-            height: MediaQuery.of(context).size.height * 0.2,// 15% of screen height
+            height: MediaQuery.of(context).size.height * 0.16,// 15% of screen height
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.7), // More reliable opacity
               borderRadius: BorderRadius.circular(30),
@@ -88,12 +88,13 @@ class _SlideThreeState extends BaseSlideState<SlideThree> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Demograph Alerts',
+                'Get real-time alerts about protests or disruptions to health centers or transit and more - right when it matters.',
                  textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: widget.sizeOfFont,
                     fontFamily: 'arial',
-                    fontWeight: FontWeight.bold,),
+                    color: Colors.black,
+                    ),
                 
               ),
             ),
