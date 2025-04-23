@@ -134,4 +134,18 @@ class User {
     final saved = List<Map<String, dynamic>>.from(doc?['savedHikes'] ?? []);
     return saved.map((t) => t['id'].toString()).toList();
   }
+
+  /// Add kilometers to the user's total and sync with Firestore
+  Future<void> addUserKM(double km) async {
+    _totalKm += km;
+    await db.databaseService
+        .updateDocument('users', uid, {'totalKm': _totalKm});
+  }
+
+  /// Add elevation to the user's total and sync with Firestore
+  Future<void> addUserElevation(double elevation) async {
+    _totalElevation += elevation;
+    await db.databaseService
+        .updateDocument('users', uid, {'totalElevation': _totalElevation});
+  }
 }

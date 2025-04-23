@@ -328,6 +328,11 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
 
                           await widget.user.completeTrail(newTrailId);
 
+                          // Update user stats
+                          await widget.user.addUserKM(widget.distance);
+                          await widget.user.addUserElevation(
+                              _calculateTotalElevation(widget.routePoints));
+
                           if (!mounted) return;
 
                           // Show success message
@@ -355,6 +360,18 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
     final hours = int.parse(parts[0]);
     final minutes = int.parse(parts[1]);
     return (hours * 60) + minutes;
+  }
+
+  double _calculateTotalElevation(List<dynamic> routePoints) {
+    double totalElevation = 0.0;
+    for (int i = 1; i < routePoints.length; i++) {
+      final elevationDiff =
+          routePoints[i]['elevation'] - routePoints[i - 1]['elevation'];
+      if (elevationDiff > 0) {
+        totalElevation += elevationDiff;
+      }
+    }
+    return totalElevation;
   }
 
   Widget _buildSectionHeader(String title) {
