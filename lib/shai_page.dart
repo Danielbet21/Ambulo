@@ -180,7 +180,7 @@ class ShaiPage extends StatelessWidget {
                                 )),
                       );
                     },
-                    child: const Text('Go To My Trails Page'),
+                    child: const Text('Go To My Trails Page---- REMOVE'),
                   ),
                   ElevatedButton(
                     onPressed: () {
