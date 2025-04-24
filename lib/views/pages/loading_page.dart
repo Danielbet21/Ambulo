@@ -2,6 +2,7 @@ import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/shai_page.dart';
 import 'package:ambulo/utils/user_utils.dart';
+import 'package:ambulo/views/pages/HomePage.dart';
 import 'package:ambulo/views/pages/login_page.dart';
 import 'package:ambulo/views/pages/profile_mobile_page.dart';
 import 'package:flutter/material.dart';
@@ -58,8 +59,7 @@ class _LoadingPageState extends State<LoadingPage> {
           // Navigate to home page (using ShaiPage for now)
           if (mounted) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                  builder: (context) => const ProfileMobilePage()),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           }
           return;

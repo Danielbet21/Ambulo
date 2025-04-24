@@ -1,6 +1,7 @@
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/utils/user_utils.dart';
+import 'package:ambulo/views/pages/HomePage.dart';
 import 'package:ambulo/views/pages/login_page.dart';
 import 'package:ambulo/views/pages/profile_mobile_page.dart';
 // import 'package:ambulo/views/pages/login_page.dart'; //TODO: make sure it works without this import
@@ -174,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ProfileMobilePage()),
+                            builder: (context) => const HomePage()),
                       );
                     }
                   },
