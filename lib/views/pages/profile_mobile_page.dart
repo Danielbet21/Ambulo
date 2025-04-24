@@ -1,7 +1,5 @@
 import 'package:ambulo/data/styles/constant.dart';
-import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/main.dart';
-import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
 import 'package:ambulo/views/pages/SavedRoutesPage.dart';
@@ -110,60 +108,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                   icon: Icons.logout,
                   iconColor: Colors.red),
               // Bottom Navigation
-
-              //TODO  DELETE THIS PART ------------------------------
-              // logout button
-              ElevatedButton(
-                onPressed: () async {
-                  // Show confirmation dialog
-                  bool confirm = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Log Out'),
-                            content:
-                                const Text('Are you sure you want to log out?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                                child: const Text('Log Out',
-                                    style: TextStyle(color: Colors.red)),
-                              ),
-                            ],
-                          );
-                        },
-                      ) ??
-                      false;
-
-                  if (confirm) {
-                    // Log out using the utility function
-                    await logoutUser(globalUser.db);
-
-                    // Navigate to the login/register page
-                    // ignore: use_build_context_synchronously
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const RegisterPage()),
-                    );
-                  }
-                },
-                child: const Text('Log Out'),
-              ),
-              // is admin
-              Text('Is Admin: ${isAdmin}',
-                  style: TextStyle(color: Colors.grey[600])),
-              //button only admin see
-              if (isAdmin)
-                Text("only admin can see this",
-                    style: TextStyle(color: Colors.red[600])),
-              //TODO  DELETE THIS PART ^^^^^^^^^^^^^^^^^^^^^^^
             ],
           ),
         ),
