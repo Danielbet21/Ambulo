@@ -169,7 +169,9 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                   icon: Icons.delete,
                   iconColor: Colors.red),
             // Bottom Navigation
+            // TODO delete ---------------- Below --------
             // toggle light and dark mode
+
             ElevatedButton(
                 onPressed: () async {
                   AppTheme.toggleAppTheme(context);
@@ -184,6 +186,7 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                     Text('Toggle Theme'),
                   ],
                 )),
+            // TODO delete ^^^^^^^^^^^^ Above ^^^^^^^^^^
           ],
         ),
       ),
