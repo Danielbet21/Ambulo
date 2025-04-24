@@ -1,4 +1,5 @@
 import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
@@ -167,6 +168,19 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                   icon: Icons.delete,
                   iconColor: Colors.red),
             // Bottom Navigation
+            // toggle light and dark mode
+            ElevatedButton(
+                onPressed: () => AppTheme.toggleAppTheme(context),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(globalUser.isLightTheme
+                        ? Icons.dark_mode
+                        : Icons.light_mode),
+                    SizedBox(width: 8),
+                    Text('Toggle Theme'),
+                  ],
+                )),
           ],
         ),
       ),
