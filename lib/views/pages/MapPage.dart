@@ -288,6 +288,16 @@ class _MapPageState extends State<MapPage> {
                   child: const Icon(Icons.my_location),
                 ),
                 const SizedBox(height: 12),
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'rotate_btn',
+                  onPressed: () {
+                    _mapController.rotate(0); // Reset rotation to 0 degrees
+                  },
+                  tooltip: 'Reset map rotation',
+                  child: const Icon(Icons.explore),
+                ),
+                const SizedBox(height: 12),
                 _buildWeatherInfo(),
               ],
             ),
