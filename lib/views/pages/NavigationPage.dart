@@ -2,6 +2,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:ambulo/views/pages/CreateTrailPage.dart';
+import 'package:ambulo/views/pages/HomePage.dart';
 import 'package:ambulo/views/widgets/AlertFormWidget.dart';
 import 'package:ambulo/models/trail_alert.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
@@ -287,7 +288,11 @@ class _NavigationPageState extends State<NavigationPage> {
     _recordOps.endSession();
 
     if (dialogResult != 'save') {
-      Navigator.pop(context); // Close the NavigationPage
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+        (route) => false, // Remove all previous routes
+      );
       return;
     }
 
