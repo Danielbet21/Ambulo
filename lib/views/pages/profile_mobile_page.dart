@@ -21,12 +21,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
-          Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MapPage()),
-                );
-        }),
         elevation: 0,
         foregroundColor: Colors.black,
       ),
@@ -85,14 +79,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
           ],
         ),
       ),
-    bottomNavigationBar:  BottomNavigationBar(
-              currentIndex: 2,
-              items: [
-                BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: ''),
-                BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), label: ''),
-                BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
-              ],
-            )
     );
   }
 }
