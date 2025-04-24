@@ -7,16 +7,17 @@ import 'package:ambulo/models/user.dart';
 import 'package:ambulo/views/pages/loading_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'shai_page.dart';
 import 'daniel_page.dart';
-import 'dataManagerManualTests.dart'; // Import the new page
+import 'dataManagerManualTests.dart';
 import 'package:flutter/services.dart';
 
 // Global DataManager & User instances for easy access throughout the app
 late DataManager dataManager;
 late User globalUser;
 late bool isAdmin = false; // Default value for isAdmin
-late ThemeData appTheme = AppTheme.lightTheme; // Default theme
+late ThemeData appTheme; // Will be initialized in main
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,17 @@ Future<void> main() async {
   SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.immersiveSticky,
   );
+
+  // Initialize theme from SharedPreferences
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final themeMode = prefs.getString('themeMode') ?? 'light';
+    print("Loading theme from SharedPreferences: $themeMode");
+    appTheme = themeMode == 'dark' ? AppTheme.darkTheme : AppTheme.lightTheme;
+  } catch (e) {
+    print("Error loading theme from SharedPreferences: $e");
+    appTheme = AppTheme.lightTheme; // Default to light theme on error
+  }
 
   try {
     await Firebase.initializeApp(

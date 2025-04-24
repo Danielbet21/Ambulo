@@ -3,6 +3,7 @@
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/main.dart'; // Add this import
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// AppTheme manages all theme-related styling for the application
 /// It provides both light and dark theme variants
@@ -154,6 +155,12 @@ class AppTheme {
 
       // Save user preference to database
       await globalUser.setLightTheme(newThemeValue);
+
+      // Save theme mode to SharedPreferences for persistence across app restarts
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('themeMode', newThemeValue ? 'light' : 'dark');
+      print(
+          "Theme saved to SharedPreferences: ${newThemeValue ? 'light' : 'dark'}");
 
       // Rebuild app with new theme
       if (context.mounted) {

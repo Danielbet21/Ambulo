@@ -2,6 +2,7 @@ import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
+import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:ambulo/views/pages/SavedRoutesPage.dart';
@@ -170,7 +171,9 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
             // Bottom Navigation
             // toggle light and dark mode
             ElevatedButton(
-                onPressed: () => AppTheme.toggleAppTheme(context),
+                onPressed: () async {
+                  AppTheme.toggleAppTheme(context);
+                },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
