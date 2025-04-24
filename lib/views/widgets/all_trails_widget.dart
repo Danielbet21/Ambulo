@@ -1,3 +1,5 @@
+import 'package:ambulo/main.dart';
+import 'package:ambulo/views/pages/trail_page.dart';
 import 'package:ambulo/views/widgets/trail_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,7 +33,16 @@ class AllTrailsWidget extends StatelessWidget {
               return TrailCard(
                 fullTrailData: trailData,
                 onTap: () {
-                  // TODO FIXED only when a global user will be
+                  final trailId = trails[index].id; // Get the trail ID
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TrailPage(
+                        trailId: trailId,
+                        user: globalUser, // Pass the global user
+                      ),
+                    ),
+                  );
                 },
               );
             },
