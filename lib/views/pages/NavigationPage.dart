@@ -11,7 +11,6 @@ import 'package:ambulo/data/styles/theme_extentions.dart';
 import 'package:ambulo/utils/navigation_record_ops.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gpx/gpx.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
@@ -59,10 +58,7 @@ class _NavigationPageState extends State<NavigationPage> {
     if (widget.trailId != null) {
       _loadTrailFromFirebase(widget.trailId!);
     } else {
-      _recordOps.startSession();
-      _startNavigation();
-      _isLoading = false;
-      // For free navigation, we don't set _isGpxBasedTrail to true
+      _isLoading = false; // Do not start navigation automatically
     }
   }
 
@@ -106,7 +102,7 @@ class _NavigationPageState extends State<NavigationPage> {
         _isGpxBasedTrail = true; // Set to true since we loaded from GPX
       });
 
-      _startNavigation();
+      // Do not start navigation automatically
     } catch (e) {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -446,8 +442,11 @@ class _NavigationPageState extends State<NavigationPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildAction(Icons.stop_circle, "Stop",
-                          _isNavigating ? _stopNavigation : null),
+                      _buildAction(
+                        _isNavigating ? Icons.stop_circle : Icons.play_arrow,
+                        _isNavigating ? "Stop" : "Start",
+                        _isNavigating ? _stopNavigation : _startNavigation,
+                      ),
                     ],
                   ),
                 ],
