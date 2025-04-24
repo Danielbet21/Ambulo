@@ -14,8 +14,8 @@ class ProfileWebPage extends StatelessWidget {
       appBar: AppBar(
         actions: [
           // Settings button
-         Padding(
-          padding: const EdgeInsets.only(right: 10.0),
+          Padding(
+            padding: const EdgeInsets.only(right: 10.0),
             child: IconButton(
               onPressed: () {
                 Navigator.push(
@@ -36,7 +36,7 @@ class ProfileWebPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 AppConstants.kSizedBoxMedium,
-          
+
                 // Main content row
                 Wrap(
                   spacing: 24,
@@ -54,12 +54,15 @@ class ProfileWebPage extends StatelessWidget {
                             spacing: 5,
                             children: const [
                               AnalyticsCard(title: 'Trips', value: '12'),
-                              AnalyticsCard(title: 'Elevation', value: '2,400', mersure: 'm'),
+                              AnalyticsCard(
+                                  title: 'Elevation',
+                                  value: '2,400',
+                                  mersure: 'm'),
                               AnalyticsCard(title: 'Total KM', value: '150'),
                             ],
                           ),
                           AppConstants.kSizedBoxXXL,
-                          
+
                           // Categories directly below analytics
                           ProfileCategory(
                             nameOfCategory: 'Saved Routes',
@@ -73,7 +76,7 @@ class ProfileWebPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     // Right section: Profile info card
                     const ProfileInfoCard(
                       name: 'Daniel',
