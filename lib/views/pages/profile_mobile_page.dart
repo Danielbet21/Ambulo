@@ -2,7 +2,9 @@ import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
+import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:ambulo/views/pages/SavedRoutesPage.dart';
+import 'package:ambulo/views/pages/adminCreateTrail.dart';
 import 'package:ambulo/views/pages/settings_page.dart';
 import 'package:ambulo/views/widgets/profile_category.dart';
 import 'package:flutter/material.dart';
@@ -144,6 +146,26 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                 nameOfCategory: 'Log Out',
                 icon: Icons.logout,
                 iconColor: Colors.red),
+            if (isAdmin) SizedBox(height: 30),
+            if (isAdmin)
+              Text(
+                'Admin Options',
+                style: TextStyle(
+                    fontSize: AppConstants.kFontSizeLarge,
+                    fontWeight: FontWeight.bold),
+              ),
+            if (isAdmin)
+              ProfileCategory(
+                  nameOfCategory: 'Create Trail Page Admin',
+                  pageToNavigateTo: AdminCreateTrailPage(user: globalUser),
+                  icon: Icons.add_circle_outline_outlined,
+                  iconColor: Colors.green),
+            if (isAdmin)
+              ProfileCategory(
+                  nameOfCategory: 'Delete Trails Admin',
+                  pageToNavigateTo: DeleteTrailsPage(user: globalUser),
+                  icon: Icons.delete,
+                  iconColor: Colors.red),
             // Bottom Navigation
           ],
         ),
