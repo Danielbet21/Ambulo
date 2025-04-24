@@ -1,6 +1,7 @@
 // import 'package:ambulo/main.dart';
+import 'package:ambulo/main.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
-// import 'package:ambulo/views/pages/NavigationPage.dart';
+import 'package:ambulo/views/pages/NavigationPage.dart';
 import 'package:ambulo/views/pages/profile_mobile_page.dart';
 import 'package:ambulo/views/widgets/all_trails_widget.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 2; // default is Explore
 
   final List<Widget> _pages = [
-    MapPage(), // NavigationPage()
+    NavigationPage(user: globalUser,),
     AllTrailsWidget(),
     MapPage(),
     ShopPage(),
