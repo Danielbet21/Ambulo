@@ -4,6 +4,7 @@ import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/firebase_options.dart';
 import 'package:ambulo/models/user.dart';
+import 'package:ambulo/views/pages/loading_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'shai_page.dart';
@@ -14,6 +15,8 @@ import 'package:flutter/services.dart';
 // Global DataManager & User instances for easy access throughout the app
 late DataManager dataManager;
 late User globalUser;
+late bool isAdmin = false; // Default value for isAdmin
+late ThemeData appTheme = AppTheme.lightTheme; // Default theme
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,8 +52,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ambulo',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: appTheme, // Use the global theme
+      home: const LoadingPage(), // Start with loading page
       routes: {
         '/shai': (context) => const ShaiPage(),
         '/daniel': (context) => const DanielPage(),

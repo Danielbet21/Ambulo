@@ -11,6 +11,7 @@ class WeatherTestsPage extends StatefulWidget {
   State<WeatherTestsPage> createState() => _WeatherTestsPageState();
 }
 
+// this is a test page for the weather API
 class _WeatherTestsPageState extends State<WeatherTestsPage> {
   double? lat;
   double? lon;

@@ -19,7 +19,8 @@ class DataManager {
   final List<String> adminEmails = [
     "adminautotest@example.com",
     "admin2@example.com",
-    "admin3@example.com"
+    "admin3@example.com",
+    "shai@gmail.com"
   ];
 
   // ----------- Auth Part -----------

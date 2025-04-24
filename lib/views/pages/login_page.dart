@@ -14,10 +14,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _obscureText = true; 
+  bool _obscureText = true;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? _errorMessage; 
+  String? _errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -55,16 +55,16 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
-                    Text(
-                      "Good to see you again!\n Let's look at your next adventure.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: AppConstants.kFontSizeLarge,
-                        fontFamily: 'monospace',
-                      ),
+                Text(
+                  "Good to see you again!\n Let's look at your next adventure.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: AppConstants.kFontSizeLarge,
+                    fontFamily: 'monospace',
                   ),
-                  AppConstants.kSizedBoxLarge,
+                ),
+                AppConstants.kSizedBoxLarge,
                 // Email field
                 TextField(
                   controller: _emailController,
@@ -73,7 +73,8 @@ class _LoginPageState extends State<LoginPage> {
                     labelStyle: TextStyle(),
                     border: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
+                      borderSide:
+                          BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
                     ),
                   ),
                 ),
@@ -86,63 +87,76 @@ class _LoginPageState extends State<LoginPage> {
                     labelText: 'Password',
                     border: const OutlineInputBorder(),
                     focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
+                      borderSide:
+                          BorderSide(color: Color.fromARGB(255, 0, 160, 5)),
                     ),
                     suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                  ),
                   ),
                   obscureText: _obscureText,
-                
-                  
-                
                 ),
                 if (_errorMessage != null)
-                      Text(
-                        _errorMessage!,
-                        style: const TextStyle(color: Colors.red), // Display the error message in red
-                      ),
+                  Text(
+                    _errorMessage!,
+                    style: const TextStyle(
+                        color: Colors.red), // Display the error message in red
+                  ),
                 AppConstants.kSizedBoxMedium,
                 ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(
-                         Color.fromARGB(255, 5, 91, 35),
-                      ),
-                      foregroundColor: WidgetStateProperty.resolveWith<Color>(
-                        (Set<WidgetState> states) {
-                          return const Color.fromARGB(255, 40, 255, 115); 
-                        },
-                      ),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(
+                      Color.fromARGB(255, 5, 91, 35),
                     ),
-                    onPressed: () async { //TODO: make sure it works
-                      final user = await loginAndWrapUser(
-                    dataManager, _emailController.text, _passwordController.text);
-                      if (user != null) {
-                        await user.load();
-                        globalUser = user;
-                        Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                      } //TODO: debug printing
-                      else{
-                        setState(() {
-                        _errorMessage = 'Invalid email or password. Please try again.';
-                        });
-                      }
-                      debugPrint('Email: $_emailController.text, Password: $_passwordController.text');
-                    },
-                    child: const Text('Login', style: TextStyle(color: Colors.white),),
+                    foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                      (Set<WidgetState> states) {
+                        return const Color.fromARGB(255, 40, 255, 115);
+                      },
+                    ),
                   ),
+                  onPressed: () async {
+                    //TODO: make sure it works
+                    final user = await loginAndWrapUser(dataManager,
+                        _emailController.text, _passwordController.text);
+                    if (user != null) {
+                      await user.load();
+                      globalUser = user;
+
+                      // Check if admin
+                      isAdmin = await dataManager.isAdmin();
+
+                      // Get theme preference from user
+                      final themePreference =
+                          globalUser.isLightTheme ? 'light' : 'dark';
+                      await saveThemePreference(themePreference);
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfileMobilePage()),
+                      );
+                    } //TODO: debug printing
+                    else {
+                      setState(() {
+                        _errorMessage =
+                            'Invalid email or password. Please try again.';
+                      });
+                    }
+                    debugPrint(
+                        'Email: $_emailController.text, Password: $_passwordController.text');
+                  },
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
                 AppConstants.kSizedBoxMedium,
 
                 // Placeholder for 3rd-party comment or sign-in
@@ -177,7 +191,8 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const RegisterPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterPage()),
                     );
                   },
                   style: TextButton.styleFrom(
@@ -192,7 +207,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Text("Forgot your password?"),
-                Text("Reset password", style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
+                Text("Reset password",
+                    style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline)),
               ],
             ),
           ),
