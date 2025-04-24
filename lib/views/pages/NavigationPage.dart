@@ -381,35 +381,40 @@ class _NavigationPageState extends State<NavigationPage> {
     }
 
     return Scaffold(
-      body: Stack(
+      body: Column(
         children: [
-          MapPage(
-            routePoints: _routePoints,
-            waypoints: _waypoints,
-            shouldAutoCenter: true,
-            triggerRender: true,
-            onTapToAddPoint:
-                _isSelectingAlertLocation ? _handleAlertLocationSelected : null,
-            onAlertTapped: _confirmDeleteAlert,
-            walkedPath: _walkedPath, // Pass the walked path to MapPage
-          ),
-          // Only show the Report button if this is a GPX-based trail
-          if (_isGpxBasedTrail)
-            Positioned(
-              top: 100,
-              right: 16,
-              child: FloatingActionButton(
-                mini: true,
-                heroTag: 'report_alert',
-                tooltip: "Report an issue",
-                onPressed: _reportAlert,
-                child: const Icon(Icons.report_problem),
-              ),
+          Expanded(
+            flex: 3, // MapPage takes 3/4 of the screen
+            child: Stack(
+              children: [
+                MapPage(
+                  routePoints: _routePoints,
+                  waypoints: _waypoints,
+                  shouldAutoCenter: true,
+                  triggerRender: true,
+                  onTapToAddPoint: _isSelectingAlertLocation
+                      ? _handleAlertLocationSelected
+                      : null,
+                  onAlertTapped: _confirmDeleteAlert,
+                  walkedPath: _walkedPath, // Pass the walked path to MapPage
+                ),
+                if (_isGpxBasedTrail)
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: FloatingActionButton(
+                      mini: true,
+                      heroTag: 'report_alert',
+                      tooltip: "Report an issue",
+                      onPressed: _reportAlert,
+                      child: const Icon(Icons.report_problem),
+                    ),
+                  ),
+              ],
             ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
+          ),
+          Expanded(
+            flex: 1, // Navigation controls take 1/4 of the screen
             child: Container(
               padding: AppConstants.kPaddingMedium,
               decoration: BoxDecoration(
@@ -425,45 +430,57 @@ class _NavigationPageState extends State<NavigationPage> {
                   ),
                 ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LinearProgressIndicator(
-                    value: _progress,
-                    minHeight: 6,
-                    backgroundColor: context.colorScheme.surfaceVariant,
-                    valueColor: AlwaysStoppedAnimation(
-                      context.colorScheme.primary,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Calculate appropriate sizes based on available height
+                  final availableHeight = constraints.maxHeight;
+                  // Use smaller spacing for smaller screens
+                  final verticalSpacing = availableHeight * 0.03;
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildMetric(
-                          "Distance",
-                          "${_distance.toStringAsFixed(2)} km",
-                          Icons.straighten),
-                      _buildMetric("Time", _elapsedTime, Icons.timer),
-                      _buildMetric(
-                          "Elevation",
-                          "${_elevationGain.toStringAsFixed(0)} m",
-                          Icons.terrain),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildAction(
-                        _isNavigating ? Icons.stop_circle : Icons.play_arrow,
-                        _isNavigating ? "Stop" : "Start",
-                        _isNavigating ? _stopNavigation : _startNavigation,
+                      LinearProgressIndicator(
+                        value: _progress,
+                        minHeight: 5, // Slightly larger height
+                        backgroundColor: context.colorScheme.surfaceVariant,
+                        valueColor: AlwaysStoppedAnimation(
+                          context.colorScheme.primary,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      SizedBox(height: verticalSpacing),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildMetric(
+                              "Distance",
+                              "${_distance.toStringAsFixed(2)} km",
+                              Icons.straighten),
+                          _buildMetric("Time", _elapsedTime, Icons.timer),
+                          _buildMetric(
+                              "Elevation",
+                              "${_elevationGain.toStringAsFixed(0)} m",
+                              Icons.terrain),
+                        ],
+                      ),
+                      SizedBox(height: verticalSpacing),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildAction(
+                            _isNavigating
+                                ? Icons.stop_circle
+                                : Icons.play_arrow,
+                            _isNavigating ? "Stop" : "Start",
+                            _isNavigating ? _stopNavigation : _startNavigation,
+                            availableHeight,
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           ),
@@ -473,31 +490,49 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   Widget _buildMetric(String label, String value, IconData icon) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final fontSize = screenHeight * 0.018; // Larger font size for metric values
+
     return Column(
       children: [
-        Icon(icon, color: context.colorScheme.primary),
-        const SizedBox(height: 4),
+        Icon(icon, color: context.colorScheme.primary, size: fontSize * 2.0),
+        SizedBox(height: fontSize * 0.3),
         Text(value,
-            style: context.textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold)),
-        Text(label, style: context.textTheme.bodySmall),
+            style: context.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.bold, fontSize: fontSize)),
+        Text(label,
+            style: context.textTheme.bodySmall
+                ?.copyWith(fontSize: fontSize * 0.85)),
       ],
     );
   }
 
-  Widget _buildAction(IconData icon, String label, VoidCallback? onPressed) {
+  Widget _buildAction(IconData icon, String label, VoidCallback? onPressed,
+      double availableHeight) {
+    // Scale button based on available height rather than screen height
+    final buttonSize =
+        availableHeight * 0.25; // Larger button relative to container
+    final iconSize = buttonSize * 0.45; // Larger icon
+    final fontSize = buttonSize * 0.3; // Larger text
+
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: buttonSize * 0.5,
+          vertical: buttonSize * 0.25,
+        ),
+        minimumSize:
+            Size(buttonSize * 1.2, buttonSize * 0.9), // Control minimum size
         backgroundColor:
             onPressed != null ? context.colorScheme.primary : Colors.grey,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 20),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 12)),
+          Icon(icon, size: iconSize),
+          SizedBox(height: fontSize * 0.4),
+          Text(label, style: TextStyle(fontSize: fontSize)),
         ],
       ),
     );
