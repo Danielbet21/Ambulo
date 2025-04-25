@@ -1,3 +1,4 @@
+import 'package:ambulo/main.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -12,11 +13,13 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
+      final colorOfChoise = globalUser.isLightTheme == true 
+          ? Colors.black 
+          : Colors.greenAccent[700];    return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.greenAccent[700],
+      selectedItemColor: colorOfChoise,
       unselectedItemColor: Colors.grey,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.stop_circle), label: 'Record'),

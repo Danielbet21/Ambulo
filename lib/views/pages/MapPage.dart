@@ -326,7 +326,6 @@ class _MapPageState extends State<MapPage> {
             child: FloatingActionButton(
                   mini: true,
                   heroTag: 'rotate_btn',
-                  backgroundColor: Colors.lightBlue[100],
                   onPressed: () {
                     _mapController.rotate(0); // Reset rotation to 0 degrees
                   },
@@ -338,7 +337,6 @@ class _MapPageState extends State<MapPage> {
             bottom: 16,
             right: 16,
             child: FloatingActionButton(
-              backgroundColor: Colors.white,
               mini: true,
               heroTag: 'center_btn',
               onPressed: () => MapsOps.centerToMyLocation(_mapController),
