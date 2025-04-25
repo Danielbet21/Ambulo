@@ -157,7 +157,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                 pageToNavigateTo: SettingsPage(),
                 icon: Icons.settings),
             ProfileCategory(nameOfCategory: 'Help', icon: Icons.help),
-            ProfileCategory(nameOfCategory: 'About', icon: Icons.info),
             ProfileCategory(
                 nameOfCategory: 'Log Out',
                 icon: Icons.logout,
