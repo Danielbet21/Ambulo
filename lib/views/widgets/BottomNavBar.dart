@@ -27,8 +27,6 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'Shop'),
         BottomNavigationBarItem(
             icon: Icon(Icons.person_outline_sharp), label: 'Profile'),
-        BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline_sharp), label: 'Profile Web'),
       ],
     );
   }
