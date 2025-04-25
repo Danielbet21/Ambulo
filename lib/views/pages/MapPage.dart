@@ -281,6 +281,16 @@ class _MapPageState extends State<MapPage> {
                     onPressed: _showMapLayersDialog,
                     child: const Icon(Icons.layers),
                   ),
+                  const SizedBox(height: 12),
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'rotate_btn',
+                  onPressed: () {
+                    _mapController.rotate(0); // Reset rotation to 0 degrees
+                  },
+                  tooltip: 'Reset map rotation',
+                  child: const Icon(Icons.explore),
+                ),
                   const SizedBox(height: 8),
                   FloatingActionButton(
                     backgroundColor: context.colorScheme.surface,
@@ -290,10 +300,9 @@ class _MapPageState extends State<MapPage> {
                     onPressed: () => MapsOps.showLegend(context),
                     child: const Icon(Icons.info_outline),
                   ),
-                ],
+                ],  
               ),
-            )
-          ],
+            ),
           Positioned(
             bottom: 16,
             right: 16,
@@ -306,6 +315,7 @@ class _MapPageState extends State<MapPage> {
               child: const Icon(Icons.my_location),
             ),
           ),
+          ],
         ],
       ),
     );

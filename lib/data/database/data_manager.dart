@@ -20,7 +20,8 @@ class DataManager {
     "adminautotest@example.com",
     "admin2@example.com",
     "admin3@example.com",
-    "shai@gmail.com"
+    "shai@gmail.com",
+    "daniel@gmail.com"
   ];
 
   // ----------- Auth Part -----------
