@@ -3,10 +3,17 @@ import 'package:flutter/material.dart';
 
 class ProfileCategory extends StatelessWidget {
   final String nameOfCategory;
+  final IconData? icon;
+// icon color , will be default to grey[700] if not provided by the user
+  final Color? iconColor;
+  final Widget? pageToNavigateTo;
 
-  const ProfileCategory({
+  ProfileCategory({
     super.key,
     required this.nameOfCategory,
+    this.icon,
+    this.iconColor = const Color(0xFF616161),
+    this.pageToNavigateTo, // Accept a Widget for navigation
   });
 
   @override
@@ -15,7 +22,6 @@ class ProfileCategory extends StatelessWidget {
       children: [
         OutlinedButton(
           style: OutlinedButton.styleFrom(
-            backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -23,25 +29,45 @@ class ProfileCategory extends StatelessWidget {
               color: Color.fromARGB(255, 214, 211, 211),
               width: 1,
             ),
+            padding: EdgeInsets.zero,
           ),
           onPressed: () {
-            // Handle button press
-            Navigator.pushNamed(context, '/$nameOfCategory');
+            if (pageToNavigateTo != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => pageToNavigateTo!),
+              );
+            }
           },
           child: Container(
-            padding: const EdgeInsets.all(16),
-            width: 400,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            width: MediaQuery.of(context).size.width * 0.8,
             child: Row(
-              // make the items be in as far as possible
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(nameOfCategory, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 111, 111, 111))),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null)
+                      Icon(icon, size: 20, color: iconColor),
+                    if (icon != null)
+                      const SizedBox(width: 12),
+                    Text(
+                      nameOfCategory,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 111, 111, 111),
+                      ),
+                    ),
+                  ],
+                ),
                 const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
               ],
             ),
           ),
         ),
-         AppConstants.kSizedBoxMedium,
+        const SizedBox(height: 16),
       ],
     );
   }

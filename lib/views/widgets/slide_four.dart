@@ -13,7 +13,7 @@ class SlideFour extends BaseSlide {
 class _SlideFourState extends BaseSlideState<SlideFour> {
   @override
   AssetImage getBackgroundImage() {
-    return const AssetImage('assets/background/sunset_mountian.jpg');
+    return const AssetImage('assets/background/tricky_part_notification.png');
   }
 
   @override
@@ -27,7 +27,7 @@ class _SlideFourState extends BaseSlideState<SlideFour> {
           right: 20,
           child: Container(
             // Dynamic height based on screen size
-            height: MediaQuery.of(context).size.height * 0.2,// 15% of screen height
+            height: MediaQuery.of(context).size.height * 0.16,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.7), // More reliable opacity
               borderRadius: BorderRadius.circular(30),
@@ -36,12 +36,13 @@ class _SlideFourState extends BaseSlideState<SlideFour> {
               padding: const EdgeInsets.all(12.0),
               
                 child: Text(
-                  'Tricky part alerts',
+                  'Stay ahead of surprises - offline maps & GPS alerts warn you near unmarked turns, hidden trail marks, or confusing forks on your way.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: widget.sizeOfFont,
                     fontFamily: 'arial',
-                    fontWeight: FontWeight.bold,
+                    // fontWeight: FontWeight.bold,
+                    color: Colors.black, // Text color
                   ),
                 ),
               ),

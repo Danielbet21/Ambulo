@@ -7,7 +7,7 @@ import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/main.dart';
 
 User? currentUser;
-String testEmail = "userAutoTest@gmail.com";
+String testEmail = "userAutoTest1@gmail.com";
 String testPassword = "userAutoTestPassword";
 String testName = "userAutoTestName";
 
@@ -240,6 +240,38 @@ class UserTestsPage extends StatelessWidget {
               },
               child: const Text("Get Saved Trail IDs"),
             ),
+            ElevatedButton(
+              onPressed: () async {
+                final km =
+                    await showInputDialog(context, "Add KM", "Enter KM to add");
+                if (km != null) {
+                  final kmValue = double.tryParse(km);
+                  if (kmValue != null) {
+                    await currentUser?.addUserKM(kmValue);
+                    print("✅ Added $kmValue KM");
+                  } else {
+                    print("❌ Invalid KM value");
+                  }
+                }
+              },
+              child: const Text("Add KM"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final elevation = await showInputDialog(
+                    context, "Add Elevation", "Enter elevation to add");
+                if (elevation != null) {
+                  final elevationValue = double.tryParse(elevation);
+                  if (elevationValue != null) {
+                    await currentUser?.addUserElevation(elevationValue);
+                    print("✅ Added $elevationValue elevation");
+                  } else {
+                    print("❌ Invalid elevation value");
+                  }
+                }
+              },
+              child: const Text("Add Elevation"),
+            ),
 
             ElevatedButton(
               onPressed: () async {
@@ -248,6 +280,18 @@ class UserTestsPage extends StatelessWidget {
                 print("👋 Logged out");
               },
               child: const Text("Logout"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await dataManager.deleteUserFromDB(currentUser!.uid);
+                  currentUser = null;
+                  print("✅ User deleted successfully");
+                } catch (e) {
+                  print("❌ Failed to delete user: $e");
+                }
+              },
+              child: const Text("Delete User"),
             ),
           ],
         ),

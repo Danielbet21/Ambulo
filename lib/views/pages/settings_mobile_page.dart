@@ -7,10 +7,18 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Settings", style: TextStyle(fontWeight: FontWeight.w500)),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+           Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfileMobilePage()),
+    ); 
+          },
+        ),
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -18,12 +26,17 @@ class SettingsPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
+          const SizedBox(height: 10),
+          const SearchBox(),
+          const SizedBox(height: 20),
+
           // --- Account Settings Section ---
           const SectionHeader(icon: Icons.person_outline, title: "Account Settings"),
           _buildSettingTile("Change Password", onTap: () {}),
 
           // --- Privacy & Security Section ---
           const SectionHeader(icon: Icons.lock_outline, title: "Privacy & Security"),
+          _buildSettingTile("Face ID", onTap: () {}),
           _buildSettingTile("App Permissions", onTap: () {}),
 
           // --- Units Section ---
@@ -48,7 +61,7 @@ class SettingsPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[100], // 👈 Light gray tile background
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
@@ -64,7 +77,7 @@ class SettingsPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[100], // 👈 Light gray tile background
+        color: Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
       ),
       child: StatefulBuilder(
@@ -84,6 +97,27 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
+class SearchBox extends StatelessWidget {
+  const SearchBox({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      decoration: InputDecoration(
+        hintText: "Search for a setting...",
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        filled: true,
+        fillColor: Colors.grey[200],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}
+
 class SectionHeader extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -96,14 +130,13 @@ class SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24.0, bottom: 8.0),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.grey[700]),
+          Icon(icon, size: 20, color: Colors.black),
           const SizedBox(width: 8),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
             ),
           ),
         ],

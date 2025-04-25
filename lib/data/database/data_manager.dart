@@ -19,7 +19,9 @@ class DataManager {
   final List<String> adminEmails = [
     "adminautotest@example.com",
     "admin2@example.com",
-    "admin3@example.com"
+    "admin3@example.com",
+    "shai@gmail.com",
+    "daniel@gmail.com"
   ];
 
   // ----------- Auth Part -----------
@@ -47,6 +49,19 @@ class DataManager {
   // Delete the currently authenticated user
   Future<void> deleteUser() async {
     await authService.deleteUser();
+  }
+
+  Future<void> deleteUserFromDB(String userId) async {
+    // delete user profile image if exists
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc != null && userDoc['userPhotoPath'] != null) {
+      final imageUrl = userDoc['userPhotoPath'];
+      await databaseService.deleteUserProfileImage(imageUrl);
+    }
+    // delete user document from Firestore
+    await databaseService.deleteDocument("users", userId);
+    // delete user authentication account
+    await deleteUser();
   }
 
   // ----------- User Part -----------
@@ -127,6 +142,26 @@ class DataManager {
     return [];
   }
 
+  // Get trails from the user's hiking history
+  Future<List<Map<String, dynamic>>> getTrailsFromHikingHistory(
+      String userId) async {
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc == null || userDoc['hikingHistory'] == null) {
+      return [];
+    }
+
+    final hikingHistory = List<String>.from(userDoc['hikingHistory']);
+    final trails = await Future.wait(hikingHistory.map((trailId) async {
+      final trailDoc = await databaseService.getDocument('trails', trailId);
+      if (trailDoc != null) {
+        return {'id': trailId, ...trailDoc};
+      }
+      return null;
+    }));
+
+    return trails.whereType<Map<String, dynamic>>().toList();
+  }
+
   // Add a trail to the user's saved hikes
   Future<void> addToSaves(String userId, Map<String, dynamic> trail) async {
     await databaseService.arrayUnion('users', userId, 'savedHikes', trail);
@@ -136,6 +171,43 @@ class DataManager {
   Future<void> removeTrailSaves(
       String userId, Map<String, dynamic> trail) async {
     await databaseService.arrayRemove('users', userId, 'savedHikes', trail);
+  }
+
+  // Remove a trail from the user's saved hikes by ID
+  Future<void> removeTrailFromSavedHikes(String userId, String trailId) async {
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc == null || userDoc['savedHikes'] == null) {
+      return;
+    }
+
+    final savedHikes = List<Map<String, dynamic>>.from(userDoc['savedHikes']);
+    final updatedSavedHikes =
+        savedHikes.where((hike) => hike['id'] != trailId).toList();
+
+    await databaseService.updateDocument('users', userId, {
+      'savedHikes': updatedSavedHikes,
+    });
+  }
+
+  // Get trails from the user's saved hikes
+  Future<List<Map<String, dynamic>>> getTrailsFromSavedHikes(
+      String userId) async {
+    final userDoc = await databaseService.getDocument('users', userId);
+    if (userDoc == null || userDoc['savedHikes'] == null) {
+      return [];
+    }
+
+    final savedHikes = List<Map<String, dynamic>>.from(userDoc['savedHikes']);
+    final trails = await Future.wait(savedHikes.map((savedHike) async {
+      final trailId = savedHike['id'];
+      final trailDoc = await databaseService.getDocument('trails', trailId);
+      if (trailDoc != null) {
+        return {'id': trailId, ...trailDoc};
+      }
+      return null;
+    }));
+
+    return trails.whereType<Map<String, dynamic>>().toList();
   }
 
   // Upload a user profile image manually
@@ -324,7 +396,36 @@ class DataManager {
 
   // Delete a trail
   Future<void> deleteTrail(String trailId) async {
-    await databaseService.deleteDocument('trails', trailId);
+    try {
+      // 1. Remove trail images
+      final trailDoc = await databaseService.getDocument('trails', trailId);
+      if (trailDoc != null && trailDoc['photosURL'] != null) {
+        final photos = List<String>.from(trailDoc['photosURL']);
+        for (final photo in photos) {
+          await deleteTrailImage(trailId, photo);
+        }
+      }
+
+      // 2. Remove trail references from all users
+      final usersQuerySnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
+      for (final userDoc in usersQuerySnapshot.docs) {
+        final userId = userDoc.id;
+
+        // Remove from savedHikes
+        await removeTrailFromSavedHikes(userId, trailId);
+
+        // Remove from hikingHistory
+        await deleteHikeFromHistory(userId, trailId);
+      }
+
+      // 3. Delete the trail document
+      await databaseService.deleteDocument('trails', trailId);
+      print("Trail $trailId successfully deleted with all references.");
+    } catch (e) {
+      print("Error deleting trail: $e");
+      throw Exception("Failed to delete trail: $e");
+    }
   }
 
   // Upload a trail image manually
