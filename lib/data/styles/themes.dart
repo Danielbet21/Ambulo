@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/main.dart'; // Add this import
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// AppTheme manages all theme-related styling for the application
 /// It provides both light and dark theme variants
@@ -18,7 +19,6 @@ class AppTheme {
     ),
     // Text styles for light theme
     textTheme: const TextTheme(
-
       //------------------------- Title text
       titleLarge: TextStyle(
         color: Colors.black,
@@ -55,7 +55,6 @@ class AppTheme {
         ),
       ),
     ),
-
 
     // Button theme
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -131,4 +130,47 @@ class AppTheme {
       ),
     ),
   );
+
+  /// Helper method to toggle between light and dark themes
+  /// Takes the current theme and returns the opposite
+  static ThemeData toggleTheme(ThemeData currentTheme) {
+    return currentTheme.brightness == Brightness.light ? darkTheme : lightTheme;
+  }
+
+  /// Get theme from boolean value
+  /// true = light theme, false = dark theme
+  static ThemeData getTheme(bool isLight) {
+    return isLight ? lightTheme : darkTheme;
+  }
+
+  /// Centralized method to toggle theme across the app
+  /// Updates global appTheme and persists user preference
+  static Future<void> toggleAppTheme(BuildContext context) async {
+    try {
+      // Toggle theme preference in user object
+      final newThemeValue = !globalUser.isLightTheme;
+
+      // Update global app theme immediately
+      appTheme = getTheme(newThemeValue);
+
+      // Save user preference to database
+      await globalUser.setLightTheme(newThemeValue);
+
+      // Save theme mode to SharedPreferences for persistence across app restarts
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('themeMode', newThemeValue ? 'light' : 'dark');
+      print(
+          "Theme saved to SharedPreferences: ${newThemeValue ? 'light' : 'dark'}");
+
+      // Rebuild app with new theme
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MyApp()),
+        );
+      }
+    } catch (e) {
+      print("Error changing theme: $e");
+    }
+  }
 }

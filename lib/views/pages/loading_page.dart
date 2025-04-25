@@ -2,6 +2,7 @@ import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/main.dart';
 import 'package:ambulo/shai_page.dart';
 import 'package:ambulo/utils/user_utils.dart';
+import 'package:ambulo/views/pages/HomePage.dart';
 import 'package:ambulo/views/pages/login_page.dart';
 import 'package:ambulo/views/pages/profile_mobile_page.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +39,9 @@ class _LoadingPageState extends State<LoadingPage> {
       final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
       final email = prefs.getString('userEmail');
       final password = prefs.getString('userPassword');
-      final themeMode = prefs.getString('themeMode') ?? 'light';
 
-      // Update app theme
-      appTheme = themeMode == 'dark' ? AppTheme.darkTheme : AppTheme.lightTheme;
+      // Theme is already set in main.dart from SharedPreferences
+      // We'll update it after user login if needed
 
       if (isLoggedIn && email != null && password != null) {
         // Try to log in with stored credentials
@@ -52,14 +52,27 @@ class _LoadingPageState extends State<LoadingPage> {
           await user.load();
           globalUser = user;
 
+          // Update theme based on user preferences if different from SharedPreferences
+          // This ensures the user's latest preference is always used
+          final userThemeMode = globalUser.isLightTheme ? 'light' : 'dark';
+          final savedThemeMode = prefs.getString('themeMode') ?? 'light';
+
+          if (userThemeMode != savedThemeMode) {
+            // User's preference differs from SharedPreferences, update both
+            prefs.setString('themeMode', userThemeMode);
+            appTheme = globalUser.isLightTheme
+                ? AppTheme.lightTheme
+                : AppTheme.darkTheme;
+            print("Updated theme from user preferences to: $userThemeMode");
+          }
+
           // Check if admin
           isAdmin = await dataManager.isAdmin();
 
-          // Navigate to home page (using ShaiPage for now)
+          // Navigate to home page
           if (mounted) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                  builder: (context) => const ProfileMobilePage()),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           }
           return;

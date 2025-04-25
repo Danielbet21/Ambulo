@@ -1,3 +1,4 @@
+import 'package:ambulo/views/pages/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail.dart';
@@ -88,8 +89,12 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () {
-                // Navigate to the first page without saving
-                Navigator.of(context).popUntil((route) => route.isFirst);
+                // Navigate to the HomePage without saving
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  (route) => false, // Remove all previous routes
+                );
               },
             ),
           ],
@@ -342,9 +347,13 @@ class _CreateTrailPageState extends State<CreateTrailPage> {
                             ),
                           );
 
-                          // Navigate to the first page
-                          Navigator.of(context)
-                              .popUntil((route) => route.isFirst);
+                          // Navigate to the HomePage
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomePage()),
+                            (route) => false, // Remove all previous routes
+                          );
                         },
                 ),
               ],
