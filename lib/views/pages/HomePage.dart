@@ -27,7 +27,6 @@ class _HomePageState extends State<HomePage> {
     MapPage(),
     ShopPage(),
     ProfileMobilePage(),
-    ProfileWebPage(),
   ];
 
   void _onTabTapped(int index) {

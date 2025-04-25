@@ -303,6 +303,7 @@ class _MapPageState extends State<MapPage> {
                 ],  
               ),
             ),
+          ],
           Positioned(
             bottom: 16,
             right: 16,
@@ -315,7 +316,6 @@ class _MapPageState extends State<MapPage> {
               child: const Icon(Icons.my_location),
             ),
           ),
-          ],
         ],
       ),
     );

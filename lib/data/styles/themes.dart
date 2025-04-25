@@ -14,7 +14,7 @@ class AppTheme {
     useMaterial3: true,
     // Base colors for the light theme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.deepPurple,
+      seedColor: Colors.lightGreenAccent,
       brightness: Brightness.light,
     ),
     // Text styles for light theme

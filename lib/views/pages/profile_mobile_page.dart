@@ -100,9 +100,7 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                      width:
-                          24), // a horozontal space between the avatar and text
+                  SizedBox( width: 24), // a horozontal space between the avatar and text
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -122,6 +120,23 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
             ),
 
             Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: ToggleButtons(
+                  borderRadius: BorderRadius.circular(12),
+                  isSelected: [globalUser.isLightTheme, !globalUser.isLightTheme],
+                  onPressed: (int index) async {
+                    await AppTheme.toggleAppTheme(context);
+                  },
+                  children: const [
+                    Icon(Icons.wb_sunny),
+                    Icon(Icons.dark_mode),
+                  ],
+                ),
+              ),
+            ),
             // Options List
             ProfileCategory(
                 nameOfCategory: 'Completed Routes',
@@ -135,7 +150,7 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
             ProfileCategory(
                 nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
             ProfileCategory(
-                nameOfCategory: 'Subscription',
+                nameOfCategory: 'PrimeBulo',
                 icon: Icons.star,
                 iconColor: Colors.amber),
             ProfileCategory(
@@ -172,20 +187,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
             // TODO delete ---------------- Below --------
             // toggle light and dark mode
 
-            ElevatedButton(
-                onPressed: () async {
-                  AppTheme.toggleAppTheme(context);
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(globalUser.isLightTheme
-                        ? Icons.dark_mode
-                        : Icons.light_mode),
-                    SizedBox(width: 8),
-                    Text('Toggle Theme'),
-                  ],
-                )),
             // TODO delete ^^^^^^^^^^^^ Above ^^^^^^^^^^
           ],
         ),

@@ -1,3 +1,4 @@
+import 'package:ambulo/views/pages/profile_mobile_page.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -9,7 +10,15 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Settings", style: TextStyle(fontWeight: FontWeight.w500)),
         centerTitle: true,
-        leading: const Icon(Icons.arrow_back),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+           Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfileMobilePage()),
+    ); 
+          },
+        ),
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -20,12 +29,69 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 10),
           const SearchBox(),
           const SizedBox(height: 20),
-          const SettingsTile(title: "Account Settings", icon: Icons.person_outline),
-          const SettingsTile(title: "Privacy & Security", icon: Icons.lock_outline),
-          const SettingsTile(title: "Units", icon: Icons.straighten),
-          const SettingsTile(title: "Appearance", icon: Icons.visibility_outlined),
-          const SettingsTile(title: "About", icon: Icons.info_outline),
+
+          // --- Account Settings Section ---
+          const SectionHeader(icon: Icons.person_outline, title: "Account Settings"),
+          _buildSettingTile("Change Password", onTap: () {}),
+
+          // --- Privacy & Security Section ---
+          const SectionHeader(icon: Icons.lock_outline, title: "Privacy & Security"),
+          _buildSettingTile("Face ID", onTap: () {}),
+          _buildSettingTile("App Permissions", onTap: () {}),
+
+          // --- Units Section ---
+          const SectionHeader(icon: Icons.straighten, title: "Units"),
+          _buildToggleTile("Use Metric Units", initialValue: true, onChanged: (value) {
+            // TODO: Handle unit change
+          }),
+
+          // --- Appearance Section ---
+          const SectionHeader(icon: Icons.visibility_outlined, title: "Appearance"),
+          _buildSettingTile("Theme", onTap: () {}),
+
+          // --- About Section ---
+          const SectionHeader(icon: Icons.info_outline, title: "About"),
+          _buildSettingTile("App Info", onTap: () {}),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSettingTile(String title, {required VoidCallback onTap}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        title: Text(title),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildToggleTile(String title,
+      {required bool initialValue, required ValueChanged<bool> onChanged}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          bool value = initialValue;
+          return SwitchListTile(
+            title: Text(title),
+            value: value,
+            onChanged: (val) {
+              setState(() => value = val);
+              onChanged(val);
+            },
+          );
+        },
       ),
     );
   }
@@ -52,26 +118,29 @@ class SearchBox extends StatelessWidget {
   }
 }
 
-class SettingsTile extends StatelessWidget {
-  final String title;
+class SectionHeader extends StatelessWidget {
   final IconData icon;
+  final String title;
 
-  const SettingsTile({
-    super.key,
-    required this.title,
-    required this.icon,
-  });
+  const SectionHeader({super.key, required this.icon, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(vertical: 4),
-      leading: Icon(icon, color: Colors.black),
-      title: Text(title, style: const TextStyle(fontSize: 16)),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {
-        // TODO: handle tap
-      },
+    return Padding(
+      padding: const EdgeInsets.only(top: 24.0, bottom: 8.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.black),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
