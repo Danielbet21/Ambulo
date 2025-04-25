@@ -65,7 +65,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
         title:
             Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
-        foregroundColor: Colors.black,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -132,7 +131,7 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                   },
                   children: const [
                     Icon(Icons.wb_sunny),
-                    Icon(Icons.dark_mode),
+                    Icon(Icons.nightlight_round_outlined),
                   ],
                 ),
               ),
@@ -183,11 +182,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                   pageToNavigateTo: DeleteTrailsPage(user: globalUser),
                   icon: Icons.delete,
                   iconColor: Colors.red),
-            // Bottom Navigation
-            // TODO delete ---------------- Below --------
-            // toggle light and dark mode
-
-            // TODO delete ^^^^^^^^^^^^ Above ^^^^^^^^^^
           ],
         ),
       ),

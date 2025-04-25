@@ -1,3 +1,6 @@
+import 'package:ambulo/data/styles/constant.dart';
+import 'package:ambulo/data/styles/themes.dart';
+import 'package:ambulo/main.dart';
 import 'package:flutter/material.dart';
 
 class ShopPage extends StatelessWidget {
@@ -13,11 +16,11 @@ class ShopPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildItemCard('Hiking Boots', 'Comfortable boots for long trails', '🥾'),
-          const SizedBox(height: 16),
-          _buildItemCard('Trail Map Pack', 'Set of offline topographic maps', '🗺️'),
-          const SizedBox(height: 16),
-          _buildItemCard('Water Bottle', 'Keeps water cool for 12 hours', '💧'),
+          _buildItemCard('Ambulo +', 'Wheather alerts', '✅'),
+          AppConstants.kSizedBoxMedium,
+          _buildItemCard('PrimeBulo', 'Wheather + maps', '🗺️'),
+          AppConstants.kSizedBoxMedium,
+          _buildItemCard('Ambulo premium +', 'Wheather, demograph alerts + maps', '⚜️'),
         ],
       ),
     );
@@ -26,6 +29,8 @@ class ShopPage extends StatelessWidget {
   Widget _buildItemCard(String title, String subtitle, String emoji) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: globalUser.isLightTheme ? AppTheme.lightTheme.cardColor : AppTheme.darkTheme.cardColor,
+      shadowColor: globalUser.isLightTheme ? AppTheme.lightTheme.shadowColor : AppTheme.darkTheme.shadowColor,
       elevation: 4,
       child: ListTile(
         leading: Text(emoji, style: const TextStyle(fontSize: 28)),
@@ -33,7 +38,7 @@ class ShopPage extends StatelessWidget {
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: () {
-          // TODO: handle item tap
+          //Demo action
         },
       ),
     );
