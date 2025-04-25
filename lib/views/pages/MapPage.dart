@@ -47,6 +47,31 @@ class _MapPageState extends State<MapPage> {
   StreamSubscription<Position>? _locationStream;
 
   @override
+  String _extractDegrees(String weatherText) {
+    final regex = RegExp(r'(\d{1,2}(?:\.\d)?)°C');
+    final match = regex.firstMatch(weatherText);
+    if (match != null) {
+      return '${match.group(1)}°C';
+    } else {
+      return '';
+    }
+  }
+
+
+  (IconData, Color) _getWeatherIconAndColor(String weather) {
+  weather = weather.toLowerCase();
+  
+    if (weather.contains('rain')) {
+      return (Icons.cloudy_snowing, Colors.blue);
+    } else if (weather.contains('cloud')) {
+      return (Icons.cloud, Colors.blueGrey);
+    } else if (weather.contains('clear') || weather.contains('sun')) {
+      return (Icons.wb_sunny, Colors.orangeAccent);
+    } else {
+      return (Icons.wb_sunny, Colors.yellow); // Default
+    }
+  }
+
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -253,7 +278,7 @@ class _MapPageState extends State<MapPage> {
           ),
           Positioned(top: 90, left: 16, child: _buildWeatherInfo()),
           Positioned(top: 36, left: 10, right: 16, child: _buildSearchBar()),
-          Positioned(bottom: 16, left: 16, child: _buildScaleBar()),
+          // Positioned(bottom: 16, left: 16, child: _buildScaleBar()), // Scale bar - not necassery 
           Positioned(
             top: 85,
             right: 16,
@@ -282,15 +307,6 @@ class _MapPageState extends State<MapPage> {
                     child: const Icon(Icons.layers),
                   ),
                   const SizedBox(height: 12),
-                FloatingActionButton(
-                  mini: true,
-                  heroTag: 'rotate_btn',
-                  onPressed: () {
-                    _mapController.rotate(0); // Reset rotation to 0 degrees
-                  },
-                  tooltip: 'Reset map rotation',
-                  child: const Icon(Icons.explore),
-                ),
                   const SizedBox(height: 8),
                   FloatingActionButton(
                     backgroundColor: context.colorScheme.surface,
@@ -305,10 +321,22 @@ class _MapPageState extends State<MapPage> {
             ),
           ],
           Positioned(
+            bottom: 60,
+            right: 16,
+            child: FloatingActionButton(
+                  mini: true,
+                  heroTag: 'rotate_btn',
+                  onPressed: () {
+                    _mapController.rotate(0); // Reset rotation to 0 degrees
+                  },
+                  tooltip: 'Reset map rotation',
+                  child: const Icon(Icons.explore),
+                ),
+          ),
+          Positioned(
             bottom: 16,
             right: 16,
             child: FloatingActionButton(
-              backgroundColor: Colors.white,
               mini: true,
               heroTag: 'center_btn',
               onPressed: () => MapsOps.centerToMyLocation(_mapController),
@@ -337,22 +365,34 @@ class _MapPageState extends State<MapPage> {
     ),
   );
 
-  Widget _buildWeatherInfo() => Container(
-    padding: AppConstants.kPaddingSmall,
-    decoration: BoxDecoration(
-      color: context.colorScheme.surface.withOpacity(0.8),
-      borderRadius: BorderRadius.circular(AppConstants.kRadiusMedium),
-      border: Border.all(color: context.colorScheme.outline),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(Icons.wb_sunny, size: 18),
-        const SizedBox(width: 4),
-        Text(_weatherInfo, style: context.textTheme.bodyMedium),
-      ],
-    ),
-  );
+  Widget _buildWeatherInfo() {
+    final (iconData, iconColor) = _getWeatherIconAndColor(_weatherInfo);
+    final temperature = _extractDegrees(_weatherInfo);
+
+    return Container(
+      padding: AppConstants.kPaddingSmall,
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(AppConstants.kRadiusMedium),
+        border: Border.all(color: context.colorScheme.outline),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(iconData, size: 20, color: iconColor),
+          const SizedBox(width: 4),
+          Text(
+            temperature.isNotEmpty ? temperature : 'N/A',
+            style: TextStyle(
+              fontSize: AppConstants.kFontSizeSmall,
+              fontWeight: FontWeight.bold,) 
+          ),
+        ],
+      ),
+    );
+  }
+
+
 
   void _showMapLayersDialog() {
     showDialog(
