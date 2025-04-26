@@ -10,14 +10,14 @@ import 'package:ambulo/models/user.dart';
 
 final testUser = User(dataManager);
 
-class TrailSuggesterTestPage extends StatefulWidget {
-  const TrailSuggesterTestPage({super.key});
+class TrailSuggesterPage extends StatefulWidget {
+  const TrailSuggesterPage({super.key});
 
   @override
-  State<TrailSuggesterTestPage> createState() => _TrailSuggesterTestPageState();
+  State<TrailSuggesterPage> createState() => _TrailSuggesterPageState();
 }
 
-class _TrailSuggesterTestPageState extends State<TrailSuggesterTestPage> {
+class _TrailSuggesterPageState extends State<TrailSuggesterPage> {
   String? selectedRegion;
   String? selectedDifficulty;
   String? selectedTrailType;
