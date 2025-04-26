@@ -7,6 +7,7 @@ import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:ambulo/views/pages/SavedRoutesPage.dart';
 import 'package:ambulo/views/pages/adminCreateTrail.dart';
+import 'package:ambulo/views/pages/login_page.dart';
 import 'package:ambulo/views/pages/settings_page.dart';
 import 'package:ambulo/views/widgets/profile_category.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,9 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                       ),
                     ],
                   ),
-                  SizedBox( width: 24), // a horozontal space between the avatar and text
+                  SizedBox(
+                      width:
+                          24), // a horozontal space between the avatar and text
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -120,12 +123,16 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
 
             Divider(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 40.0, vertical: 8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: ToggleButtons(
                   borderRadius: BorderRadius.circular(12),
-                  isSelected: [globalUser.isLightTheme, !globalUser.isLightTheme],
+                  isSelected: [
+                    globalUser.isLightTheme,
+                    !globalUser.isLightTheme
+                  ],
                   onPressed: (int index) async {
                     await AppTheme.toggleAppTheme(context);
                   },
@@ -160,7 +167,41 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
             ProfileCategory(
                 nameOfCategory: 'Log Out',
                 icon: Icons.logout,
-                iconColor: Colors.red),
+                iconColor: Colors.red,
+                onTap: () async {
+                  // Show confirmation dialog
+                  final shouldLogout = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Log Out'),
+                      content: Text('Are you sure you want to log out?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text('Log Out'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (shouldLogout == true) {
+                    // Call logout function from user_utils.dart
+                    await logoutUser(dataManager);
+
+                    // Navigate to login page
+                    if (!mounted) return;
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()),
+                      (route) => false, // Remove all previous routes
+                    );
+                  }
+                }),
             if (isAdmin) SizedBox(height: 30),
             if (isAdmin)
               Text(
