@@ -207,10 +207,42 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Text("Forgot your password?"),
-                Text("Reset password",
+                TextButton(
+                  onPressed: () async {
+                    if (_emailController.text.isEmpty) {
+                      setState(() {
+                        _errorMessage =
+                            'Please enter your email to reset password.';
+                      });
+                      return;
+                    }
+                    try {
+                      await dataManager.resetPassword(_emailController.text);
+                      setState(() {
+                        _errorMessage =
+                            'Password reset email sent. Check your inbox.';
+                      });
+                    } catch (e) {
+                      setState(() {
+                        _errorMessage =
+                            'Failed to send reset email. Please try again.';
+                      });
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.blue,
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text(
+                    "Reset password",
                     style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline)),
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

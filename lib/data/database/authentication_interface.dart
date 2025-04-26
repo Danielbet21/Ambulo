@@ -5,10 +5,12 @@ abstract class AuthenticationInterface {
   User? getCurrentUser();
 
   // Sign in with email and password
-  Future<UserCredential?> signInWithEmailAndPassword(String email, String password);
+  Future<UserCredential?> signInWithEmailAndPassword(
+      String email, String password);
 
   // Register a new user with email and password
-  Future<UserCredential?> createUserWithEmailAndPassword(String email, String password);
+  Future<UserCredential?> createUserWithEmailAndPassword(
+      String email, String password);
 
   // Sign out the current user
   Future<void> signOut();
@@ -21,4 +23,7 @@ abstract class AuthenticationInterface {
 
   // Check if the current user is an admin
   bool isAdmin();
+
+  // Reset password for a user
+  Future<void> resetPassword(String email);
 }
