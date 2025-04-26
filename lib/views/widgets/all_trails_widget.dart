@@ -12,6 +12,7 @@ class AllTrailsWidget extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('All Trails'),
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('trails').snapshots(),
