@@ -66,6 +66,7 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
       appBar: AppBar(
         title:
             Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
         elevation: 0,
       ),
       body: SingleChildScrollView(
