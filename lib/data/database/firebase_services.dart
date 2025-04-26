@@ -50,6 +50,16 @@ class FirebaseFirestoreServices
     await _auth.signOut();
   }
 
+  @override
+  Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      debugPrint('Error sending password reset email: $e');
+      rethrow;
+    }
+  }
+
   // DatabaseInterface implementation
   @override
   Future<void> setData(
