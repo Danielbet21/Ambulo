@@ -6,6 +6,8 @@ import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
 import 'package:ambulo/models/AlertTypes.dart';
 import 'package:ambulo/utils/maps_ops.dart';
+import 'package:ambulo/utils/trail_suggester.dart';
+import 'package:ambulo/views/pages/trailSuggesterPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -278,9 +280,21 @@ class _MapPageState extends State<MapPage> {
           ),
           Positioned(top: 90, left: 16, child: _buildWeatherInfo()),
           Positioned(top: 36, left: 10, right: 16, child: _buildSearchBar()),
-          // Positioned(bottom: 16, left: 16, child: _buildScaleBar()), // Scale bar - not necassery 
           Positioned(
-            top: 85,
+            top: 36,
+            right: 6,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 232, 231, 231).withOpacity(0.8),
+                shape: const CircleBorder()
+                
+              ),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TrailSuggesterPage())),
+              child: Icon(Icons.tune),
+            ),
+          ),
+          Positioned(
+            top: 95,
             right: 16,
             child: FloatingActionButton(
               // backgroundColor: const Color.fromARGB(255, 157, 210, 158),

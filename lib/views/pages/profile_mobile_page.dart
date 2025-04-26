@@ -2,7 +2,7 @@ import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
-import 'package:ambulo/manualTest/trailSuggesterTest.dart';
+import 'package:ambulo/views/pages/trailSuggesterPage.dart';
 import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
@@ -60,12 +60,45 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
     }
   }
 
+  String getUserTitle(double totalKm) {
+    if (totalKm < 50) {
+      return 'Newbie';
+    } else if (totalKm < 200) {
+      return 'Explorer';
+    } else if (totalKm < 500) {
+      return 'Adventurer';
+    } else if (totalKm < 1000) {
+      return 'Pathfinder';
+    } else if (totalKm < 2000) {
+      return 'Trailblazer';
+    } else {
+      return 'Legend';
+    }
+  }
+
+  Color getUserTitleColor(double totalKm) {
+    if (totalKm < 50) {
+      return Colors.pink;
+    } else if (totalKm < 200) {
+      return Colors.lightBlue;
+    } else if (totalKm < 500) {
+      return Colors.green;
+    } else if (totalKm < 1000) {
+      return Colors.orange;
+    } else if (totalKm < 2000) {
+      return Colors.red;
+    } else {
+      return Colors.purple;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title:
             Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -112,9 +145,12 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                       Text(globalUser.name ?? 'Guest',
                           style: TextStyle(
                               fontSize: AppConstants.kFontSizeLarge,
-                              fontWeight: FontWeight.bold)),
-                      Text(globalUser.selfTitle ?? 'Newbie',
-                          style: TextStyle(color: Colors.grey[600])),
+                              fontWeight: FontWeight.bold)
+                      ),
+                      Text( getUserTitle(globalUser.totalKm),
+                          style: TextStyle(color: getUserTitleColor(globalUser.totalKm), 
+                              fontWeight: FontWeight.bold),
+                          ),
                       SizedBox(height: 8),
                     ],
                   ),
@@ -146,11 +182,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
             ),
             // Options List
             ProfileCategory(
-                nameOfCategory: 'TEST Trail Suggester ',
-                pageToNavigateTo: TrailSuggesterTestPage(),
-                icon: Icons.check_circle_outline,
-                iconColor: Colors.red),
-            ProfileCategory(
                 nameOfCategory: 'Completed Routes',
                 pageToNavigateTo: CompletedRoutesPage(user: globalUser),
                 icon: Icons.check_circle_outline,
@@ -161,10 +192,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                 icon: Icons.save_alt),
             ProfileCategory(
                 nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
-            ProfileCategory(
-                nameOfCategory: 'PrimeBulo',
-                icon: Icons.star,
-                iconColor: Colors.amber),
             ProfileCategory(
                 nameOfCategory: 'Settings',
                 pageToNavigateTo: SettingsPage(),

@@ -1,7 +1,7 @@
 import 'package:ambulo/main.dart';
 import 'package:ambulo/manualTest/TrailPageTest.dart';
 import 'package:ambulo/manualTest/WeatherTest.dart';
-import 'package:ambulo/manualTest/trailSuggesterTest.dart';
+import 'package:ambulo/views/pages/trailSuggesterPage.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:ambulo/manualTest/show_all_trail_test.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
@@ -150,7 +150,7 @@ class ShaiPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TrailSuggesterTestPage()),
+                            builder: (context) => TrailSuggesterPage()),
                       );
                     },
                     child: const Text('Go To Trail Suggester Test'),
