@@ -60,6 +60,38 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
     }
   }
 
+  String getUserTitle(double totalKm) {
+    if (totalKm < 50) {
+      return 'Newbie';
+    } else if (totalKm < 200) {
+      return 'Explorer';
+    } else if (totalKm < 500) {
+      return 'Adventurer';
+    } else if (totalKm < 1000) {
+      return 'Pathfinder';
+    } else if (totalKm < 2000) {
+      return 'Trailblazer';
+    } else {
+      return 'Legend';
+    }
+  }
+
+  Color getUserTitleColor(double totalKm) {
+    if (totalKm < 50) {
+      return Colors.pink;
+    } else if (totalKm < 200) {
+      return Colors.lightBlue;
+    } else if (totalKm < 500) {
+      return Colors.green;
+    } else if (totalKm < 1000) {
+      return Colors.orange;
+    } else if (totalKm < 2000) {
+      return Colors.red;
+    } else {
+      return Colors.purple;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,9 +145,12 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                       Text(globalUser.name ?? 'Guest',
                           style: TextStyle(
                               fontSize: AppConstants.kFontSizeLarge,
-                              fontWeight: FontWeight.bold)),
-                      Text(globalUser.selfTitle ?? 'Newbie',
-                          style: TextStyle(color: Colors.grey[600])),
+                              fontWeight: FontWeight.bold)
+                      ),
+                      Text( getUserTitle(globalUser.totalKm),
+                          style: TextStyle(color: getUserTitleColor(globalUser.totalKm), 
+                              fontWeight: FontWeight.bold),
+                          ),
                       SizedBox(height: 8),
                     ],
                   ),
