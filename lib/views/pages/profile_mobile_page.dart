@@ -2,6 +2,7 @@ import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
+import 'package:ambulo/manualTest/trailSuggesterTest.dart';
 import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
@@ -144,6 +145,11 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
               ),
             ),
             // Options List
+            ProfileCategory(
+                nameOfCategory: 'TEST Trail Suggester ',
+                pageToNavigateTo: TrailSuggesterTestPage(),
+                icon: Icons.check_circle_outline,
+                iconColor: Colors.red),
             ProfileCategory(
                 nameOfCategory: 'Completed Routes',
                 pageToNavigateTo: CompletedRoutesPage(user: globalUser),
