@@ -60,7 +60,7 @@ class _TrailSuggesterPageState extends State<TrailSuggesterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Trail Suggester Test")),
+      appBar: AppBar(title: const Text("Search your Trails")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
