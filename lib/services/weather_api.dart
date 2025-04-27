@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ambulo/data/styles/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -59,6 +60,22 @@ class WeatherService {
       daily.add(Map<String, dynamic>.from(all[i]));
     }
     return daily;
+  }
+// ========== ICONS COLOR ==========
+  static Widget _buildWeatherIcon(String iconUrl, String description) {
+    final isSunny = description.toLowerCase().contains('clear') || description.toLowerCase().contains('sun');
+
+    if (isSunny) {
+      return ColorFiltered(
+        colorFilter: const ColorFilter.mode(
+          Colors.amber,
+          BlendMode.srcIn,
+        ),
+        child: Image.network(iconUrl, width: 42, height: 42),
+      );
+    } else {
+      return Image.network(iconUrl, width: 42, height: 42);
+    }
   }
 
   // ========== PARSERS ==========
@@ -130,62 +147,69 @@ class WeatherService {
 
   /// Widget to show 5-day forecast as a vertical list
   static Widget forecastWidget({required double lat, required double lon}) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: getForecastRaw(lat, lon),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const CircularProgressIndicator();
+  return FutureBuilder<List<Map<String, dynamic>>>(
+    future: getForecastRaw(lat, lon),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) return const CircularProgressIndicator();
 
-        final items = snapshot.data!
-            .map(fromForecast)
-            .toList()
-            .take(5)
-            .toList(); // First 5 days
+      final items = snapshot.data!
+          .map(fromForecast)
+          .toList()
+          .take(5)
+          .toList(); // Take 5 days only
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: List.generate(items.length, (index) {
-              final day = items[index];
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: List.generate(items.length * 2 - 1, (index) {
+            if (index.isOdd) {
+              // Divider between days
+              return Center(
+                child: Container(
+                  width: 1,
+                  height: 90,
+                  color: Colors.grey[400],
+                ),
+              );
+            } else {
+              // Weather day block
+              final day = items[index ~/ 2];
               final date = DateTime.parse(day.time);
               final weekday = _weekdayShort(date.weekday);
 
               return Expanded(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline,
-                      width: 1,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      weekday,
+                      style: TextStyle(
+                        fontSize: AppConstants.kFontSizeLarge,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        weekday,
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Image.network(day.iconUrl, width: 36, height: 36),
-                      Text(
-                        "${day.temp.toStringAsFixed(0)}°",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
+                    const SizedBox(height: 8),
+                    // Weather Icon
+                    _buildWeatherIcon(day.iconUrl, day.description),
+                    const SizedBox(height: 8),
+                    Text(
+                      "${day.temp.toStringAsFixed(0)}°",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
                 ),
               );
-            }),
-          ),
-        );
-      },
-    );
-  }
+            }
+          }),
+        ),
+      );
+    },
+  );
+}
+
 
   /// Return short weekday name from number
   static String _weekdayShort(int weekday) {
