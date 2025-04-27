@@ -64,7 +64,7 @@ class _SavedRoutesPageState extends State<SavedRoutesPage> {
                   );
                 },
                 trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete_outline_outlined, color: Colors.red),
                   onPressed: () async {
                     final confirm = await showDialog<bool>(
                       context: context,
