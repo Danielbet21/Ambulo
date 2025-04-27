@@ -28,6 +28,7 @@ class AllTrailsWidget extends StatelessWidget {
           final trails = snapshot.data!.docs;
 
           return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
             itemCount: trails.length,
             itemBuilder: (context, index) {
               final trailData = trails[index].data() as Map<String, dynamic>;
