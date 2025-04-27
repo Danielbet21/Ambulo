@@ -183,7 +183,12 @@ class _EditTrailPageState extends State<EditTrailPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Edit Trail'),
-          automaticallyImplyLeading: false, // Remove back button from AppBar
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Navigate back to the previous page
+            },
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
