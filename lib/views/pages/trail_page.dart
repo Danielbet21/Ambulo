@@ -108,6 +108,35 @@ class _TrailPageState extends State<TrailPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Container(
+            height: 300,
+            child: routePoints.isEmpty
+                ? const Center(child: Text("No route map available"))
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Create a key to force rebuild of MapPage when constraints are available
+                        final mapKey = GlobalKey();
+                        return SizedBox(
+                          width: constraints.maxWidth,
+                          height: 300,
+                          key: mapKey,
+                          child: MapPage(
+                            routePoints: routePoints,
+                            waypoints: const [],
+                            // Add triggerRender parameter to force map to render immediately
+                            triggerRender: true,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 8),
+          Divider(),
+          const SizedBox(height: 8),
+
           if (trailPhotos.isNotEmpty)
             SizedBox(
               height: 220,
@@ -140,37 +169,12 @@ class _TrailPageState extends State<TrailPage> {
               child: const Text("No images available"),
             ),
           const SizedBox(height: 16),
-          Container(
-            height: 300,
-            child: routePoints.isEmpty
-                ? const Center(child: Text("No route map available"))
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        // Create a key to force rebuild of MapPage when constraints are available
-                        final mapKey = GlobalKey();
-                        return SizedBox(
-                          width: constraints.maxWidth,
-                          height: 300,
-                          key: mapKey,
-                          child: MapPage(
-                            routePoints: routePoints,
-                            waypoints: const [],
-                            // Add triggerRender parameter to force map to render immediately
-                            triggerRender: true,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-          ),
-          const SizedBox(height: 16),
           Text(
             trailDetails![TrailKeys.description] ?? '',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 24),
+          const Divider(),
           Text("5-Day Weather Forecast",
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
@@ -192,30 +196,30 @@ class _TrailPageState extends State<TrailPage> {
             mainAxisSpacing: 12,
             childAspectRatio: MediaQuery.of(context).size.width > 600 ? 3 : 2,
             children: [
-              _infoCard(Icons.map, "Region", trailDetails![TrailKeys.region]),
+              _infoCard(Icons.map, "Region", Text(trailDetails![TrailKeys.region] ?? "-")),
               _infoCard(Icons.straighten, "Distance",
-                  "${trailDetails![TrailKeys.distance]} km"),
+                  Text("${trailDetails![TrailKeys.distance]} km")),
               _infoCard(Icons.timer, "Time",
-                  "${trailDetails![TrailKeys.estimatedTime]} min"),
+                  Text("${trailDetails![TrailKeys.estimatedTime]} min")),
               _infoCard(Icons.loop, "Loop",
-                  trailDetails![TrailKeys.loop] ? "Yes" : "No"),
+                  Icon(trailDetails![TrailKeys.loop] ? Icons.check : Icons.close,
+                  color: trailDetails![TrailKeys.loop] ? Colors.green : Colors.red,
+                  size: 28,)),
               _infoCard(Icons.trending_up, "Difficulty",
-                  trailDetails![TrailKeys.difficulty]),
+                  Text(trailDetails![TrailKeys.difficulty] ?? "-")),
               _infoCard(Icons.group, "Trail Type",
-                  trailDetails![TrailKeys.trailType]),
-              _infoCard(Icons.terrain, "Surface",
-                  trailDetails![TrailKeys.surfaceType]),
+                  Text(trailDetails![TrailKeys.trailType] ?? "-")),
+              _infoCard(Icons.terrain, "Surface Type",
+                  Text(trailDetails![TrailKeys.surfaceType] ?? "-")),
               _infoCard(Icons.wb_sunny, "Season",
-                  trailDetails![TrailKeys.recommendedSeason]),
-              _infoCard(Icons.water, "Water",
-                  trailDetails![TrailKeys.hasWaterSections] ? "Yes" : "No"),
-              _infoCard(
-                  Icons.attach_money,
-                  "Payment",
-                  trailDetails![TrailKeys.requiresPayment]
-                      ? "Required"
-                      : "Free"),
+                  Text(trailDetails![TrailKeys.recommendedSeason] ?? "-")),
+              _infoCard(Icons.water,"Water",Icon(trailDetails![TrailKeys.hasWaterSections] ? Icons.check : Icons.close,
+                  color: trailDetails![TrailKeys.hasWaterSections] ? Colors.green : Colors.red,
+                  size: 28,),
+              ),
+              _infoCard(Icons.attach_money,"Payment",Text(trailDetails![TrailKeys.requiresPayment] ? "Required" : "Free"),),
             ],
+
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
@@ -228,8 +232,12 @@ class _TrailPageState extends State<TrailPage> {
                 ),
               ),
             ),
-            icon: const Icon(Icons.directions_walk),
-            label: const Text("Start Hike"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 100, 186, 103),
+              foregroundColor: Colors.white, // Text/icon color
+            ),
+            label: const Text("Start Hike",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 12),
           ElevatedButton.icon(
@@ -239,8 +247,11 @@ class _TrailPageState extends State<TrailPage> {
                 const SnackBar(content: Text("Trail saved to favorites")),
               );
             },
-            icon: const Icon(Icons.bookmark_add),
-            label: const Text("Save Trail"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor:  const Color.fromARGB(255, 240, 193, 53),
+              foregroundColor: Colors.white, // Text/icon color
+            ),
+            label: const Text("Save Trail", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -256,17 +267,16 @@ class _TrailPageState extends State<TrailPage> {
     );
   }
 
-  Widget _infoCard(IconData icon, String label, String? value) {
+  Widget _infoCard(IconData icon, String label, Widget valueWidget) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
         border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -276,7 +286,7 @@ class _TrailPageState extends State<TrailPage> {
               Expanded(
                 child: Text(
                   label,
-                  style: Theme.of(context).textTheme.labelSmall,
+                  style: Theme.of(context).textTheme.labelMedium,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -285,12 +295,7 @@ class _TrailPageState extends State<TrailPage> {
           ),
           const SizedBox(height: 8),
           Flexible(
-            child: Text(
-              value ?? "-",
-              style: Theme.of(context).textTheme.bodyMedium,
-              overflow: TextOverflow.visible, // Allow text to wrap
-              softWrap: true, // Enable wrapping for long text
-            ),
+            child: valueWidget,
           ),
         ],
       ),
