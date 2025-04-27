@@ -188,7 +188,6 @@ class WeatherService {
                       style: TextStyle(
                         fontSize: AppConstants.kFontSizeLarge,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 8),
