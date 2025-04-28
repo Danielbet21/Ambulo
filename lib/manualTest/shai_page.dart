@@ -13,9 +13,8 @@ import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:ambulo/views/pages/login_page.dart';
 import 'package:ambulo/views/pages/register_page.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'manualTest/usertTests.dart';
-import 'views/pages/NavigationPage.dart';
+import 'usertTests.dart';
+import '../views/pages/NavigationPage.dart';
 import 'package:ambulo/models/user.dart';
 
 import 'package:ambulo/utils/user_utils.dart'; // Import the utility file

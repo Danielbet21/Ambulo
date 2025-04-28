@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: no_leading_underscores_for_local_identifiers, override_on_non_overriding_member
 import 'dart:async';
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
@@ -56,10 +56,9 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-
   (IconData, Color) _getWeatherIconAndColor(String weather) {
-  weather = weather.toLowerCase();
-  
+    weather = weather.toLowerCase();
+
     if (weather.contains('rain')) {
       return (Icons.cloudy_snowing, Colors.blue);
     } else if (weather.contains('cloud')) {
@@ -92,7 +91,9 @@ class _MapPageState extends State<MapPage> {
   @override
   void didUpdateWidget(covariant MapPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.triggerRender && !oldWidget.triggerRender && widget.shouldAutoCenter) {
+    if (widget.triggerRender &&
+        !oldWidget.triggerRender &&
+        widget.shouldAutoCenter) {
       Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) {
           _fitToRouteBounds();
@@ -104,7 +105,9 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _initializeMap() async {
     try {
-      if (widget.routePoints.length > 1 && widget.shouldAutoCenter && !_hasInitiallyCentered) {
+      if (widget.routePoints.length > 1 &&
+          widget.shouldAutoCenter &&
+          !_hasInitiallyCentered) {
         await Future.delayed(const Duration(milliseconds: 50));
         _fitToRouteBounds();
         _hasInitiallyCentered = true;
@@ -144,7 +147,8 @@ class _MapPageState extends State<MapPage> {
   Future<void> _fetchWeather() async {
     try {
       final center = _mapController.camera.center;
-      final weatherText = await WeatherService.getTodayForecastText(center.latitude, center.longitude);
+      final weatherText = await WeatherService.getTodayForecastText(
+          center.latitude, center.longitude);
       setState(() {
         _weatherInfo = weatherText ?? 'Unable to fetch weather';
       });
@@ -192,7 +196,8 @@ class _MapPageState extends State<MapPage> {
               initialZoom: 13.0,
               maxZoom: 18.0,
               minZoom: 3.0,
-              interactionOptions: InteractionOptions(flags: InteractiveFlag.all),
+              interactionOptions:
+                  InteractionOptions(flags: InteractiveFlag.all),
               onTap: (tapPosition, latlng) {
                 widget.onTapToAddPoint?.call(latlng);
               },
@@ -205,13 +210,19 @@ class _MapPageState extends State<MapPage> {
               if (widget.routePoints.isNotEmpty)
                 PolylineLayer(
                   polylines: [
-                    Polyline(points: widget.routePoints, strokeWidth: 4, color: Colors.blue),
+                    Polyline(
+                        points: widget.routePoints,
+                        strokeWidth: 4,
+                        color: Colors.blue),
                   ],
                 ),
               if (widget.walkedPath.isNotEmpty)
                 PolylineLayer(
                   polylines: [
-                    Polyline(points: widget.walkedPath, color: Colors.red, strokeWidth: 4.0),
+                    Polyline(
+                        points: widget.walkedPath,
+                        color: Colors.red,
+                        strokeWidth: 4.0),
                   ],
                 ),
               if (widget.routePoints.isNotEmpty)
@@ -269,7 +280,8 @@ class _MapPageState extends State<MapPage> {
                       point: _myLocation!,
                       width: 40,
                       height: 40,
-                      child: const Icon(Icons.navigation, color: Colors.green, size: 36),
+                      child: const Icon(Icons.navigation,
+                          color: Colors.deepOrange, size: 36),
                     ),
                   ],
                 ),
@@ -282,11 +294,13 @@ class _MapPageState extends State<MapPage> {
             right: 6,
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 232, 231, 231).withOpacity(0.8),
-                shape: const CircleBorder()
-                
-              ),
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TrailSuggesterPage())),
+                  backgroundColor:
+                      const Color.fromARGB(255, 232, 231, 231).withOpacity(0.8),
+                  shape: const CircleBorder()),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TrailSuggesterPage())),
               child: Icon(Icons.tune),
             ),
           ),
@@ -327,7 +341,7 @@ class _MapPageState extends State<MapPage> {
                     onPressed: () => MapsOps.showLegend(context),
                     child: const Icon(Icons.info_outline),
                   ),
-                ],  
+                ],
               ),
             ),
           ],
@@ -335,14 +349,14 @@ class _MapPageState extends State<MapPage> {
             bottom: 60,
             right: 16,
             child: FloatingActionButton(
-                  mini: true,
-                  heroTag: 'rotate_btn',
-                  onPressed: () {
-                    _mapController.rotate(0); // Reset rotation to 0 degrees
-                  },
-                  tooltip: 'Reset map rotation',
-                  child: const Icon(Icons.explore),
-                ),
+              mini: true,
+              heroTag: 'rotate_btn',
+              onPressed: () {
+                _mapController.rotate(0); // Reset rotation to 0 degrees
+              },
+              tooltip: 'Reset map rotation',
+              child: const Icon(Icons.explore),
+            ),
           ),
           Positioned(
             bottom: 16,
@@ -361,20 +375,20 @@ class _MapPageState extends State<MapPage> {
   }
 
   Widget _buildScaleBar() => Container(
-    padding: AppConstants.kPaddingSmall,
-    decoration: BoxDecoration(
-      color: context.colorScheme.surface.withOpacity(0.8),
-      borderRadius: BorderRadius.circular(AppConstants.kRadiusMedium),
-      border: Border.all(color: context.colorScheme.outline),
-    ),
-    child: Row(
-      children: [
-        const Icon(Icons.straighten, size: 18),
-        const SizedBox(width: 4),
-        Text('1:10000', style: context.textTheme.bodyMedium),
-      ],
-    ),
-  );
+        padding: AppConstants.kPaddingSmall,
+        decoration: BoxDecoration(
+          color: context.colorScheme.surface.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(AppConstants.kRadiusMedium),
+          border: Border.all(color: context.colorScheme.outline),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.straighten, size: 18),
+            const SizedBox(width: 4),
+            Text('1:10000', style: context.textTheme.bodyMedium),
+          ],
+        ),
+      );
 
   Widget _buildWeatherInfo() {
     final (iconData, iconColor) = _getWeatherIconAndColor(_weatherInfo);
@@ -392,18 +406,15 @@ class _MapPageState extends State<MapPage> {
         children: [
           Icon(iconData, size: 20, color: iconColor),
           const SizedBox(width: 4),
-          Text(
-            temperature.isNotEmpty ? temperature : 'N/A',
-            style: TextStyle(
-              fontSize: AppConstants.kFontSizeSmall,
-              fontWeight: FontWeight.bold,) 
-          ),
+          Text(temperature.isNotEmpty ? temperature : 'N/A',
+              style: TextStyle(
+                fontSize: AppConstants.kFontSizeSmall,
+                fontWeight: FontWeight.bold,
+              )),
         ],
       ),
     );
   }
-
-
 
   void _showMapLayersDialog() {
     showDialog(
@@ -414,30 +425,37 @@ class _MapPageState extends State<MapPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildLayerOption('Standard', 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
-              _buildLayerOption('Hiking', 'https://israelhiking.osm.org.il/Tiles/{z}/{x}/{y}.png'),
-              _buildLayerOption('Satellite', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
-              _buildLayerOption('Topographic', 'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png'),
-              _buildLayerOption('Outdoors', 'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png'),
+              _buildLayerOption(
+                  'Standard', 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
+              _buildLayerOption('Hiking',
+                  'https://israelhiking.osm.org.il/Tiles/{z}/{x}/{y}.png'),
+              _buildLayerOption('Satellite',
+                  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+              _buildLayerOption('Topographic',
+                  'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png'),
+              _buildLayerOption('Outdoors',
+                  'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png'),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close')),
         ],
       ),
     );
   }
 
   Widget _buildLayerOption(String name, String url) => ListTile(
-    title: Text(name),
-    selected: _currentMapLayer == url,
-    onTap: () {
-      MapsOps.changeMapLayer(url);
-      setState(() => _currentMapLayer = url);
-      Navigator.pop(context);
-    },
-  );
+        title: Text(name),
+        selected: _currentMapLayer == url,
+        onTap: () {
+          MapsOps.changeMapLayer(url);
+          setState(() => _currentMapLayer = url);
+          Navigator.pop(context);
+        },
+      );
 
   @override
   void dispose() {

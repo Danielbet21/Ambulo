@@ -144,12 +144,13 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                       Text(globalUser.name ?? 'Guest',
                           style: TextStyle(
                               fontSize: AppConstants.kFontSizeLarge,
-                              fontWeight: FontWeight.bold)
+                              fontWeight: FontWeight.bold)),
+                      Text(
+                        getUserTitle(globalUser.totalKm),
+                        style: TextStyle(
+                            color: getUserTitleColor(globalUser.totalKm),
+                            fontWeight: FontWeight.bold),
                       ),
-                      Text( getUserTitle(globalUser.totalKm),
-                          style: TextStyle(color: getUserTitleColor(globalUser.totalKm), 
-                              fontWeight: FontWeight.bold),
-                          ),
                       SizedBox(height: 8),
                     ],
                   ),
@@ -189,13 +190,13 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                 nameOfCategory: 'Saved Routes',
                 pageToNavigateTo: SavedRoutesPage(user: globalUser),
                 icon: Icons.save_alt),
-            ProfileCategory(
-                nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
+            // ProfileCategory(
+            //     nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
             ProfileCategory(
                 nameOfCategory: 'Settings',
                 pageToNavigateTo: SettingsPage(),
                 icon: Icons.settings),
-            ProfileCategory(nameOfCategory: 'Help', icon: Icons.help),
+            // ProfileCategory(nameOfCategory: 'Help', icon: Icons.help),
             ProfileCategory(
                 nameOfCategory: 'Log Out',
                 icon: Icons.logout,

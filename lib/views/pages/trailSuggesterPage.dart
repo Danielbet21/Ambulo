@@ -1,5 +1,7 @@
 // trail_suggester_test.dart
 
+// ignore_for_file: unused_local_variable
+
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/utils/trail_suggester.dart';
 import 'package:ambulo/views/widgets/trail_card.dart';
@@ -60,7 +62,7 @@ class _TrailSuggesterPageState extends State<TrailSuggesterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Search your Trails")),
+      appBar: AppBar(title: const Text("Search your trails")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
@@ -84,23 +86,26 @@ class _TrailSuggesterPageState extends State<TrailSuggesterPage> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(labelText: 'Trail Type'),
               items: TrailType.values
-                  .map((r) => DropdownMenuItem(value: r,
-                                                child: Row(
-                                                  children: [
-                                                     if (r == 'Kids Friendly') 
-                                                       Icon(Icons.stroller_sharp) 
-                                                    else if (r == 'Couples') 
-                                                       Icon(Icons.favorite)
-                                                    else if (r == 'Wheel Chair Friendly') 
-                                                       Icon(Icons.accessible_forward_sharp)
-                                                    else if (r == 'Dog Friendly') 
-                                                       Icon(Icons.pets), // Default icon for unknown types
-                                                    const SizedBox(width: 8), // Add spacing between the icon and text
-                                                    Text(r),
-                                                  ],
-                                                ),
-                                                )
-                                                )
+                  .map((r) => DropdownMenuItem(
+                        value: r,
+                        child: Row(
+                          children: [
+                            if (r == 'Kids Friendly')
+                              Icon(Icons.stroller_sharp)
+                            else if (r == 'Couples')
+                              Icon(Icons.favorite)
+                            else if (r == 'Wheel Chair Friendly')
+                              Icon(Icons.accessible_forward_sharp)
+                            else if (r == 'Dog Friendly')
+                              Icon(
+                                  Icons.pets), // Default icon for unknown types
+                            const SizedBox(
+                                width:
+                                    8), // Add spacing between the icon and text
+                            Text(r),
+                          ],
+                        ),
+                      ))
                   .toList(),
               value: selectedTrailType,
               onChanged: (val) => setState(() => selectedTrailType = val),
@@ -108,22 +113,26 @@ class _TrailSuggesterPageState extends State<TrailSuggesterPage> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(labelText: 'Season'),
               items: TrailSeason.values
-                  .map((r) => DropdownMenuItem(value: r,
-                                                child: Row(
-                                                  children: [
-                                                     if (r == 'Summer') 
-                                                       Icon(Icons.wb_sunny_outlined) 
-                                                    else if (r == 'Winter') 
-                                                       Icon(Icons.water_drop_outlined)
-                                                    else if (r == 'Spring') 
-                                                       Icon(Icons.park_outlined)
-                                                    else if (r == 'Autumn') 
-                                                       Icon(Icons.eco_outlined), // Default icon for unknown types
-                                                    const SizedBox(width: 8), // Add spacing between the icon and text
-                                                    Text(r),
-                                                  ],
-                                                ),
-                                                ))
+                  .map((r) => DropdownMenuItem(
+                        value: r,
+                        child: Row(
+                          children: [
+                            if (r == 'Summer')
+                              Icon(Icons.wb_sunny_outlined)
+                            else if (r == 'Winter')
+                              Icon(Icons.water_drop_outlined)
+                            else if (r == 'Spring')
+                              Icon(Icons.park_outlined)
+                            else if (r == 'Autumn')
+                              Icon(Icons
+                                  .eco_outlined), // Default icon for unknown types
+                            const SizedBox(
+                                width:
+                                    8), // Add spacing between the icon and text
+                            Text(r),
+                          ],
+                        ),
+                      ))
                   .toList(),
               value: selectedSeason,
               onChanged: (val) => setState(() => selectedSeason = val),
@@ -171,7 +180,7 @@ class _TrailSuggesterPageState extends State<TrailSuggesterPage> {
                   vertical: 1.0,
                   horizontal: 2.0,
                 ),
-              ), 
+              ),
               onPressed: _runSuggestion,
               child: const Text("Suggest Trails"),
             ),

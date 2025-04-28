@@ -1,5 +1,7 @@
 // trail_page.dart
 
+// ignore_for_file: unused_element
+
 import 'package:ambulo/services/weather_api.dart';
 import 'package:ambulo/views/pages/EditTrailPage.dart';
 import 'package:flutter/material.dart';
