@@ -7,7 +7,6 @@ import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail_keys.dart';
 import 'package:ambulo/views/pages/NavigationPage.dart';
 import 'package:ambulo/views/pages/MapPage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ambulo/models/trail.dart';
 import 'package:gpx/gpx.dart';
 import 'package:latlong2/latlong.dart';

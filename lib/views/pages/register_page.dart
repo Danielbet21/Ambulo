@@ -3,7 +3,6 @@ import 'package:ambulo/main.dart';
 import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/HomePage.dart';
 import 'package:ambulo/views/pages/login_page.dart';
-import 'package:ambulo/views/pages/profile_mobile_page.dart';
 // import 'package:ambulo/views/pages/login_page.dart'; //TODO: make sure it works without this import
 import 'package:flutter/material.dart';
 
