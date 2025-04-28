@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, override_on_non_overriding_member
+// ignore_for_file: no_leading_underscores_for_local_identifiers, override_on_non_overriding_member, unused_element
 import 'dart:async';
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
