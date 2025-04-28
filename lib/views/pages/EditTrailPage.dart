@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail.dart';
 import 'package:ambulo/models/trail_keys.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditTrailPage extends StatefulWidget {
   final String trailId;
@@ -183,7 +182,12 @@ class _EditTrailPageState extends State<EditTrailPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Edit Trail'),
-          automaticallyImplyLeading: false, // Remove back button from AppBar
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Navigate back to the previous page
+            },
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),

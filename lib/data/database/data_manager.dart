@@ -64,6 +64,11 @@ class DataManager {
     await deleteUser();
   }
 
+  // Reset password for a user
+  Future<void> resetPassword(String email) async {
+    await authService.resetPassword(email);
+  }
+
   // ----------- User Part -----------
 
   // Create a new user profile in Firestore

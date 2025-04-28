@@ -1,7 +1,7 @@
 import 'package:ambulo/main.dart';
 import 'package:ambulo/manualTest/TrailPageTest.dart';
 import 'package:ambulo/manualTest/WeatherTest.dart';
-import 'package:ambulo/manualTest/trailSuggesterTest.dart';
+import 'package:ambulo/views/pages/trailSuggesterPage.dart';
 import 'package:ambulo/manualTest/trailTest.dart';
 import 'package:ambulo/manualTest/show_all_trail_test.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
@@ -13,9 +13,8 @@ import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:ambulo/views/pages/login_page.dart';
 import 'package:ambulo/views/pages/register_page.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'manualTest/usertTests.dart';
-import 'views/pages/NavigationPage.dart';
+import 'usertTests.dart';
+import '../views/pages/NavigationPage.dart';
 import 'package:ambulo/models/user.dart';
 
 import 'package:ambulo/utils/user_utils.dart'; // Import the utility file
@@ -150,7 +149,7 @@ class ShaiPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => TrailSuggesterTestPage()),
+                            builder: (context) => TrailSuggesterPage()),
                       );
                     },
                     child: const Text('Go To Trail Suggester Test'),

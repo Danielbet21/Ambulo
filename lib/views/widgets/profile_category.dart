@@ -1,12 +1,12 @@
-import 'package:ambulo/data/styles/constant.dart';
 import 'package:flutter/material.dart';
 
 class ProfileCategory extends StatelessWidget {
   final String nameOfCategory;
   final IconData? icon;
-// icon color , will be default to grey[700] if not provided by the user
+  // icon color , will be default to grey[700] if not provided by the user
   final Color? iconColor;
   final Widget? pageToNavigateTo;
+  final Function()? onTap; // Add onTap callback function
 
   ProfileCategory({
     super.key,
@@ -14,6 +14,7 @@ class ProfileCategory extends StatelessWidget {
     this.icon,
     this.iconColor = const Color(0xFF616161),
     this.pageToNavigateTo, // Accept a Widget for navigation
+    this.onTap, // Initialize onTap
   });
 
   @override
@@ -32,7 +33,11 @@ class ProfileCategory extends StatelessWidget {
             padding: EdgeInsets.zero,
           ),
           onPressed: () {
-            if (pageToNavigateTo != null) {
+            if (onTap != null) {
+              // Execute the provided function if available
+              onTap!();
+            } else if (pageToNavigateTo != null) {
+              // Navigate to page if provided and no onTap function
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => pageToNavigateTo!),
@@ -48,10 +53,8 @@ class ProfileCategory extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (icon != null)
-                      Icon(icon, size: 20, color: iconColor),
-                    if (icon != null)
-                      const SizedBox(width: 12),
+                    if (icon != null) Icon(icon, size: 20, color: iconColor),
+                    if (icon != null) const SizedBox(width: 12),
                     Text(
                       nameOfCategory,
                       style: const TextStyle(
@@ -62,7 +65,8 @@ class ProfileCategory extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                const Icon(Icons.arrow_forward_ios,
+                    size: 16, color: Colors.grey),
               ],
             ),
           ),

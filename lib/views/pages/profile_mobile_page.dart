@@ -7,6 +7,7 @@ import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/DeleteTrailsPage.dart';
 import 'package:ambulo/views/pages/SavedRoutesPage.dart';
 import 'package:ambulo/views/pages/adminCreateTrail.dart';
+import 'package:ambulo/views/pages/login_page.dart';
 import 'package:ambulo/views/pages/settings_page.dart';
 import 'package:ambulo/views/widgets/profile_category.dart';
 import 'package:flutter/material.dart';
@@ -58,14 +59,46 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
     }
   }
 
+  String getUserTitle(double totalKm) {
+    if (totalKm < 50) {
+      return 'Newbie';
+    } else if (totalKm < 200) {
+      return 'Explorer';
+    } else if (totalKm < 500) {
+      return 'Adventurer';
+    } else if (totalKm < 1000) {
+      return 'Pathfinder';
+    } else if (totalKm < 2000) {
+      return 'Trailblazer';
+    } else {
+      return 'Legend';
+    }
+  }
+
+  Color getUserTitleColor(double totalKm) {
+    if (totalKm < 50) {
+      return Colors.pink;
+    } else if (totalKm < 200) {
+      return Colors.lightBlue;
+    } else if (totalKm < 500) {
+      return Colors.green;
+    } else if (totalKm < 1000) {
+      return Colors.orange;
+    } else if (totalKm < 2000) {
+      return Colors.red;
+    } else {
+      return Colors.purple;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title:
             Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
         elevation: 0,
-        foregroundColor: Colors.black,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -100,7 +133,9 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                       ),
                     ],
                   ),
-                  SizedBox( width: 24), // a horozontal space between the avatar and text
+                  SizedBox(
+                      width:
+                          24), // a horozontal space between the avatar and text
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -110,8 +145,12 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                           style: TextStyle(
                               fontSize: AppConstants.kFontSizeLarge,
                               fontWeight: FontWeight.bold)),
-                      Text(globalUser.selfTitle ?? 'Newbie',
-                          style: TextStyle(color: Colors.grey[600])),
+                      Text(
+                        getUserTitle(globalUser.totalKm),
+                        style: TextStyle(
+                            color: getUserTitleColor(globalUser.totalKm),
+                            fontWeight: FontWeight.bold),
+                      ),
                       SizedBox(height: 8),
                     ],
                   ),
@@ -121,18 +160,22 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
 
             Divider(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 40.0, vertical: 8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: ToggleButtons(
                   borderRadius: BorderRadius.circular(12),
-                  isSelected: [globalUser.isLightTheme, !globalUser.isLightTheme],
+                  isSelected: [
+                    globalUser.isLightTheme,
+                    !globalUser.isLightTheme
+                  ],
                   onPressed: (int index) async {
                     await AppTheme.toggleAppTheme(context);
                   },
                   children: const [
                     Icon(Icons.wb_sunny),
-                    Icon(Icons.dark_mode),
+                    Icon(Icons.nightlight_round_outlined),
                   ],
                 ),
               ),
@@ -147,22 +190,51 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                 nameOfCategory: 'Saved Routes',
                 pageToNavigateTo: SavedRoutesPage(user: globalUser),
                 icon: Icons.save_alt),
-            ProfileCategory(
-                nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
-            ProfileCategory(
-                nameOfCategory: 'PrimeBulo',
-                icon: Icons.star,
-                iconColor: Colors.amber),
+            // ProfileCategory(
+            //     nameOfCategory: 'Saved Guides', icon: Icons.bookmark),
             ProfileCategory(
                 nameOfCategory: 'Settings',
                 pageToNavigateTo: SettingsPage(),
                 icon: Icons.settings),
-            ProfileCategory(nameOfCategory: 'Help', icon: Icons.help),
-            ProfileCategory(nameOfCategory: 'About', icon: Icons.info),
+            // ProfileCategory(nameOfCategory: 'Help', icon: Icons.help),
             ProfileCategory(
                 nameOfCategory: 'Log Out',
                 icon: Icons.logout,
-                iconColor: Colors.red),
+                iconColor: Colors.red,
+                onTap: () async {
+                  // Show confirmation dialog
+                  final shouldLogout = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Log Out'),
+                      content: Text('Are you sure you want to log out?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text('Log Out'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (shouldLogout == true) {
+                    // Call logout function from user_utils.dart
+                    await logoutUser(dataManager);
+
+                    // Navigate to login page
+                    if (!mounted) return;
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()),
+                      (route) => false, // Remove all previous routes
+                    );
+                  }
+                }),
             if (isAdmin) SizedBox(height: 30),
             if (isAdmin)
               Text(
@@ -183,11 +255,6 @@ class _ProfileMobilePageState extends State<ProfileMobilePage> {
                   pageToNavigateTo: DeleteTrailsPage(user: globalUser),
                   icon: Icons.delete,
                   iconColor: Colors.red),
-            // Bottom Navigation
-            // TODO delete ---------------- Below --------
-            // toggle light and dark mode
-
-            // TODO delete ^^^^^^^^^^^^ Above ^^^^^^^^^^
           ],
         ),
       ),

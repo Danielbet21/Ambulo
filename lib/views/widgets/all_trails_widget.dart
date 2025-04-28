@@ -12,6 +12,7 @@ class AllTrailsWidget extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('All Trails'),
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('trails').snapshots(),
@@ -27,6 +28,7 @@ class AllTrailsWidget extends StatelessWidget {
           final trails = snapshot.data!.docs;
 
           return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
             itemCount: trails.length,
             itemBuilder: (context, index) {
               final trailData = trails[index].data() as Map<String, dynamic>;

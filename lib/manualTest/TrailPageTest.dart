@@ -1,5 +1,7 @@
 // trail_page_test.dart
 
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:ambulo/views/pages/trail_page.dart';
 import 'package:ambulo/models/user.dart';

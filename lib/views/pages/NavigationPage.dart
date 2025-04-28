@@ -465,6 +465,7 @@ class _NavigationPageState extends State<NavigationPage> {
                         ],
                       ),
                       SizedBox(height: verticalSpacing),
+                      AppConstants.kSizedBoxMedium,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -512,7 +513,7 @@ class _NavigationPageState extends State<NavigationPage> {
     // Scale button based on available height rather than screen height
     final buttonSize =
         availableHeight * 0.25; // Larger button relative to container
-    final iconSize = buttonSize * 0.45; // Larger icon
+    final iconSize = buttonSize * 0.1; // Larger icon
     final fontSize = buttonSize * 0.3; // Larger text
 
     return ElevatedButton(
@@ -520,7 +521,7 @@ class _NavigationPageState extends State<NavigationPage> {
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.symmetric(
           horizontal: buttonSize * 0.5,
-          vertical: buttonSize * 0.25,
+          vertical: buttonSize * 0.035,
         ),
         minimumSize:
             Size(buttonSize * 1.2, buttonSize * 0.9), // Control minimum size
@@ -531,8 +532,9 @@ class _NavigationPageState extends State<NavigationPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: iconSize),
-          SizedBox(height: fontSize * 0.4),
-          Text(label, style: TextStyle(fontSize: fontSize)),
+          Center(
+            child: Text(label, style: TextStyle(fontSize: fontSize)),
+          ),
         ],
       ),
     );

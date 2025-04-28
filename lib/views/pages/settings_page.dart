@@ -1,4 +1,5 @@
-import 'package:ambulo/views/pages/profile_mobile_page.dart';
+import 'package:ambulo/views/pages/AppInfoPage.dart';
+import 'package:ambulo/views/pages/ChangePasswordPage.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -7,20 +8,24 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Settings", style: TextStyle(fontWeight: FontWeight.w500)),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
           // --- Account Settings Section ---
           const SectionHeader(icon: Icons.person_outline, title: "Account Settings"),
-          _buildSettingTile("Change Password", onTap: () {}),
+          _buildSettingTile("Change Password", onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+            );
+          }),
+
 
           // --- Privacy & Security Section ---
           const SectionHeader(icon: Icons.lock_outline, title: "Privacy & Security"),
@@ -38,7 +43,12 @@ class SettingsPage extends StatelessWidget {
 
           // --- About Section ---
           const SectionHeader(icon: Icons.info_outline, title: "About"),
-          _buildSettingTile("App Info", onTap: () {}),
+          _buildSettingTile("App Info", onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AppInfoPage()),
+            );
+          }),
         ],
       ),
     );
@@ -48,7 +58,7 @@ class SettingsPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[100], // 👈 Light gray tile background
+        color: Colors.white, // 👈 Light gray tile background
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
@@ -60,11 +70,11 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget _buildToggleTile(String title,
-      {required bool initialValue, required ValueChanged<bool> onChanged}) {
+    {required bool initialValue, required ValueChanged<bool> onChanged}) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[100], // 👈 Light gray tile background
+        color: Colors.white, // 👈 Light gray tile background
         borderRadius: BorderRadius.circular(12),
       ),
       child: StatefulBuilder(
@@ -74,8 +84,7 @@ class SettingsPage extends StatelessWidget {
             title: Text(title),
             value: value,
             onChanged: (val) {
-              setState(() => value = val);
-              onChanged(val);
+              setState(() => value = val); // Update the local state
             },
           );
         },

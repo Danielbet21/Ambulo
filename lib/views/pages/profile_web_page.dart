@@ -4,7 +4,6 @@ import 'package:ambulo/main.dart';
 import 'package:ambulo/views/pages/settings_page.dart';
 import 'package:ambulo/views/widgets/analytics_card.dart';
 import 'package:ambulo/views/widgets/profile_category.dart';
-import 'package:ambulo/views/widgets/profile_info_card.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
