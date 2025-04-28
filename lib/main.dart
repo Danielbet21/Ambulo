@@ -1,6 +1,5 @@
 import 'package:ambulo/data/database/data_manager.dart';
 import 'package:ambulo/data/database/firebase_services.dart';
-import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/firebase_options.dart';
 import 'package:ambulo/models/user.dart';
@@ -8,9 +7,6 @@ import 'package:ambulo/views/pages/loading_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'shai_page.dart';
-import 'daniel_page.dart';
-import 'dataManagerManualTests.dart';
 import 'package:flutter/services.dart';
 
 // Global DataManager & User instances for easy access throughout the app

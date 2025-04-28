@@ -2,7 +2,6 @@ import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/helpers/image_helper.dart';
 import 'package:ambulo/main.dart';
-import 'package:ambulo/views/pages/trailSuggesterPage.dart';
 import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/CompletedRoutesPage.dart';
 import 'package:ambulo/views/pages/DeleteTrailsPage.dart';

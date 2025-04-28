@@ -1,12 +1,9 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
-
 import 'dart:async';
-
 import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';
 import 'package:ambulo/models/AlertTypes.dart';
 import 'package:ambulo/utils/maps_ops.dart';
-import 'package:ambulo/utils/trail_suggester.dart';
 import 'package:ambulo/views/pages/trailSuggesterPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';

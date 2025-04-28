@@ -1,4 +1,3 @@
-import 'package:ambulo/data/styles/constant.dart';
 import 'package:ambulo/models/trail_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:ambulo/data/styles/theme_extentions.dart';

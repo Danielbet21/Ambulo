@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ambulo/models/user.dart';
 import 'package:ambulo/models/trail.dart';
 import 'package:ambulo/models/trail_keys.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditTrailPage extends StatefulWidget {
   final String trailId;

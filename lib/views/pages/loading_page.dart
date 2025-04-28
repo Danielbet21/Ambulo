@@ -1,10 +1,8 @@
 import 'package:ambulo/data/styles/themes.dart';
 import 'package:ambulo/main.dart';
-import 'package:ambulo/shai_page.dart';
 import 'package:ambulo/utils/user_utils.dart';
 import 'package:ambulo/views/pages/HomePage.dart';
 import 'package:ambulo/views/pages/login_page.dart';
-import 'package:ambulo/views/pages/profile_mobile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

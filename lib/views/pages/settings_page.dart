@@ -1,7 +1,5 @@
 import 'package:ambulo/views/pages/AppInfoPage.dart';
 import 'package:ambulo/views/pages/ChangePasswordPage.dart';
-import 'package:ambulo/views/pages/profile_mobile_page.dart';
-import 'package:ambulo/views/widgets/profile_category.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
