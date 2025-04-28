@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Needed for Clipboard
 import 'package:ambulo/main.dart';
-import 'package:ambulo/dataManagerImageTests.dart'; // Import the new test page
+import 'package:ambulo/manualTest/dataManagerImageTests.dart'; // Import the new test page
 
 class DataManagerManualTests extends StatefulWidget {
   const DataManagerManualTests({super.key});
