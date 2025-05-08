@@ -16,7 +16,7 @@ late bool isAdmin = false; // Default value for isAdmin
 late ThemeData appTheme;   // Will be initialized in main
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // make sure Flutter's engine is turned on and ready to listen.
 
   // Force portrait orientation
   await SystemChrome.setPreferredOrientations([
@@ -39,7 +39,7 @@ Future<void> main() async {
     appTheme = AppTheme.lightTheme; // Default to light theme on error
   }
 
-  // ✨ Now that appTheme is ready, update system UI overlay
+  // Set the app theme based on the loaded theme before run time
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       systemNavigationBarColor: appTheme.scaffoldBackgroundColor, // background of bottom buttons
@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
 
-    // 🛠️ Correctly setting system UI
+    // Set the system UI overlay style based on the current theme brightness while run time
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
@@ -92,7 +92,7 @@ class _MyAppState extends State<MyApp> {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness:
             brightness == Brightness.dark ? Brightness.light : Brightness.dark,
-        systemNavigationBarContrastEnforced: false, // 🚨 important fix!
+        systemNavigationBarContrastEnforced: false, // Allow system navigation bar to blend with the app theme
       ),
     );
 
