@@ -308,7 +308,6 @@ class _MapPageState extends State<MapPage> {
             top: 95,
             right: 16,
             child: FloatingActionButton(
-              // backgroundColor: const Color.fromARGB(255, 157, 210, 158),
               backgroundColor: context.colorScheme.surface,
               mini: true,
               heroTag: 'toggle_map_tools',
@@ -317,7 +316,7 @@ class _MapPageState extends State<MapPage> {
               child: Icon(_showMapTools ? Icons.close : Icons.menu),
             ),
           ),
-          if (_showMapTools) ...[
+          if (_showMapTools) ...[ // ... Spread op used to insert all the elements of a list into another list
             Positioned(
               top: 150,
               right: 16,
@@ -447,15 +446,28 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  Widget _buildLayerOption(String name, String url) => ListTile(
-        title: Text(name),
-        selected: _currentMapLayer == url,
-        onTap: () {
-          MapsOps.changeMapLayer(url);
-          setState(() => _currentMapLayer = url);
-          Navigator.pop(context);
-        },
-      );
+  Widget _buildLayerOption(String name, String url) {
+  final bool isSelected = _currentMapLayer == url;
+
+  return ListTile(
+    title: Text(
+      name,
+      style: TextStyle(
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        color: isSelected ? Colors.green[800] : Colors.black,
+      ),
+    ),
+    tileColor: isSelected ? Colors.green.withOpacity(0.15) : null,
+    leading: isSelected ? Icon(Icons.check, color: Colors.green) : null,
+    selected: isSelected,
+    onTap: () {
+      MapsOps.changeMapLayer(url);
+      setState(() => _currentMapLayer = url);
+      Navigator.pop(context);
+    },
+  );
+}
+
 
   @override
   void dispose() {
