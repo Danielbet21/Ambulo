@@ -13,15 +13,19 @@ import 'package:flutter/services.dart';
 late DataManager dataManager;
 late User globalUser;
 late bool isAdmin = false; // Default value for isAdmin
-late ThemeData appTheme; // Will be initialized in main
+late ThemeData appTheme;   // Will be initialized in main
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
+  WidgetsFlutterBinding.ensureInitialized(); // make sure Flutter's engine is turned on and ready to listen.
+
+  // Force portrait orientation
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
+  // Allow system bars (Home, Back, Status) to be visible
   SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.immersiveSticky,
+    SystemUiMode.edgeToEdge,
   );
 
   // Initialize theme from SharedPreferences
@@ -35,9 +39,23 @@ Future<void> main() async {
     appTheme = AppTheme.lightTheme; // Default to light theme on error
   }
 
+  // Set the app theme based on the loaded theme before run time
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      systemNavigationBarColor: appTheme.scaffoldBackgroundColor, // background of bottom buttons
+      systemNavigationBarIconBrightness: 
+          appTheme.brightness == Brightness.dark ? Brightness.light : Brightness.dark, // icon brightness based on theme
+      statusBarColor: Colors.transparent, // make status bar transparent
+      statusBarIconBrightness: 
+          appTheme.brightness == Brightness.dark ? Brightness.light : Brightness.dark, // status bar icons
+    ),
+  );
+
+  // Initialize Firebase
   try {
     await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     print("✔️ Firebase initialized successfully.");
   } catch (e) {
     print("❌ Firebase initialization failed: $e");
@@ -49,6 +67,7 @@ Future<void> main() async {
     authService: firebaseServices,
     databaseService: firebaseServices,
   );
+
   runApp(const MyApp());
 }
 
@@ -62,11 +81,26 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+
+    // Set the system UI overlay style based on the current theme brightness while run time
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
+        systemNavigationBarIconBrightness:
+            brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness:
+            brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+        systemNavigationBarContrastEnforced: false, // Allow system navigation bar to blend with the app theme
+      ),
+    );
+
     return MaterialApp(
       title: 'Ambulo',
       debugShowCheckedModeBanner: false,
-      theme: appTheme, // Use the global theme
-      home: const LoadingPage(), // Start with loading page
+      theme: appTheme,
+      home: const LoadingPage(),
     );
   }
 }

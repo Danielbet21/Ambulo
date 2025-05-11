@@ -400,14 +400,15 @@ class _NavigationPageState extends State<NavigationPage> {
                 ),
                 if (_isGpxBasedTrail)
                   Positioned(
-                    top: 16,
-                    right: 16,
+                    top: 140,
+                    left: 20,
                     child: FloatingActionButton(
+                      backgroundColor: const Color.fromARGB(255, 233, 150, 144),
                       mini: true,
                       heroTag: 'report_alert',
                       tooltip: "Report an issue",
                       onPressed: _reportAlert,
-                      child: const Icon(Icons.report_problem),
+                      child: const Icon(Icons.warning_amber_rounded),
                     ),
                   ),
               ],
