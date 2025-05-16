@@ -3,19 +3,22 @@
 Ambulo is an open-source Flutter-based hiking application that makes planning and navigating hikes easier, safer, and more enjoyable. It combines real-time trail alerts, personalized recommendations, weather forecasts, and a vibrant community all in one intuitive mobile app.
 
 
-## video ADD
+
+https://github.com/user-attachments/assets/fc544078-1ab3-472a-89c1-62d89e933499
+
+
+
 
 
 ## Table of Contents
 
 - [Ambulo – Your Smart Hiking Companion](#ambulo--your-smart-hiking-companion)
-  - [video ADD](#video-add)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
-  - [🔧 Features](#-features)
+  - [Features](#features)
   - [User Guide](#user-guide)
     - [Using the App (APK)](#using-the-app-apk)
-  - [🖼️ Screenshots](#️-screenshots)
+  - [Screenshots](#screenshots)
   - [Architecture \& Technology](#architecture--technology)
   - [References](#references)
 
@@ -33,7 +36,7 @@ Ambulo is designed to streamline every part of the hiking experience:
 The app is cross-platform, supporting Android and web, and offers seamless cloud sync and offline access.
 
 
-## 🔧 Features
+## Features
 
 * ✅ **Personalized Route Suggestions** using hybrid recommendation algorithms
 * 🗺️ **Interactive Maps** with real-time positioning and terrain overlays
@@ -57,7 +60,7 @@ The app is cross-platform, supporting Android and web, and offers seamless cloud
 6. Review trails and upload photos to help others
 
 
-## 🖼️ Screenshots
+## Screenshots
 
 * Home screen
 * Route search and filters
@@ -89,5 +92,5 @@ Diagrams:
 ## References
 
 * 📄 [Ambulo Development Notes (Technical)](https://github.com/Danielbet21/Ambulo/blob/main/Ambulo%20Development.md)
-* 📄 **Statement of Work** (Coming Soon)
+* 📄 [Statement of Work (Technical)](https://github.com/Danielbet21/Ambulo/blob/main/Documents/Statement%20of%20Work.pdf)
 * 🌐 [Israel Hiking Map (Open Source)](https://github.com/IsraelHikingMap)
