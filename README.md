@@ -62,15 +62,32 @@ The app is cross-platform, supporting Android and web, and offers seamless cloud
 
 ## Screenshots
 
-* Home screen
-* Route search and filters
-* Trail preview and navigation
-* Weather alerts
-* Community page
+A preview of Ambulo's interface:
 
-*(Add actual images to `/screenshots/` and embed here.)*
+<!-- Row 1 -->
+<p align="center">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499735_y.jpg" width="22%" style="margin: 8px;">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499736_y.jpg" width="22%" style="margin: 8px;">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499733_y.jpg" width="22%" style="margin: 8px;">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499732_y.jpg" width="22%" style="margin: 8px;">
+</p>
 
----
+<!-- Row 2 -->
+<p align="center">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499730_y.jpg" width="22%" style="margin: 8px;">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499729_y.jpg" width="22%" style="margin: 8px;">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499727_y.jpg" width="22%" style="margin: 8px;">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499728_y.jpg" width="22%" style="margin: 8px;">
+</p>
+
+<!-- Row 3 -->
+<p align="center">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499726_y.jpg" width="22%" style="margin: 8px;">
+  <img src="https://github.com/Danielbet21/Ambulo/blob/main/Screenshots/photo_5863786805210499731_y.jpg" width="22%" style="margin: 8px;">
+</p>
+
+
+
 
 ## Architecture & Technology
 
