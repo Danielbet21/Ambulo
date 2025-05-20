@@ -39,7 +39,8 @@ The app is cross-platform, supporting Android and web, and offers seamless cloud
 
 Check out a short demo of Ambulo in action:
 
-https://github.com/user-attachments/assets/0238fa1c-9e93-42bf-8f4e-1f1529e356c4
+https://github.com/user-attachments/assets/d069111e-5256-402a-a417-3f3797d5ed92
+
 
 ## Features
 
