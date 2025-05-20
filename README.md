@@ -35,6 +35,11 @@ Ambulo is designed to streamline every part of the hiking experience:
 
 The app is cross-platform, supporting Android and web, and offers seamless cloud sync and offline access.
 
+### Demo
+
+Check out a short demo of Ambulo in action:
+
+https://github.com/user-attachments/assets/0238fa1c-9e93-42bf-8f4e-1f1529e356c4
 
 ## Features
 
